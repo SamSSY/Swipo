@@ -100,17 +100,17 @@ var htmlToNewsObject = function(data){
 	}
 
 	// Get News Content
-	var contextLeader = /[<\s*p\s*>\s*]?（中央社/;
-	var contextTailer = /([0-9]{7})?\s*(<\s*[\/]?p>|<br\s*[\/]?><br\s*[\/]?>※你可能還想看：)/;
+	var contextLeader = /[<\s*p\s*>\s*]（中央社/;
+	var contextTailer = /[0-9]{7}(<\s*[\/]?p>|<br\s*[\/]?><br\s*[\/]?>※你可能還想看：)/;
 	var contextStartIndex = data.search(contextLeader);
-	if(contextStartIndex === -1) contextStartIndex = data.search(/[<\s*p\s*>\s*]?(中央社/);
+	if(contextStartIndex === -1) contextStartIndex = data.search(/[<\s*p\s*>\s*](中央社/);
 	var contextEndIndex = data.search(contextTailer);
 	if(contextStartIndex === -1) console.log('Cant find symbol: ' + contextLeader);
 	if(contextEndIndex === -1) console.log('Cant find symbol: tailer');
-	if(contextStartIndex === -1 || contextEndIndex === -1) console.log('Err Title' + title);
+	if(contextStartIndex === -1 || contextEndIndex === -1) console.log('Err Title: ' + title);
 
 	if( contextEndIndex !== -1 && contextStartIndex !== -1)
-		var context = data.substring(contextStartIndex + 3, contextEndIndex);
+		var context = data.substring(contextStartIndex + 1, contextEndIndex);
 	else if(contextEndIndex === -1)
 		var context = 'New Content trans error! (end)';
 	else
@@ -124,8 +124,10 @@ var htmlToNewsObject = function(data){
 		time: postTime,
 		content : context,
 	};
-
-	return newsObjectToReturn;
+	if( contextEndIndex !== -1 && contextStartIndex !== -1)
+		return newsObjectToReturn;
+	else
+		return null;
 }
 
 /*
@@ -244,19 +246,17 @@ console.log('News Listener now on!');
 getAALLNewsLinks().then(function(data){
 	updatePathsToFileByArray(newsPathsFile,data).then(function(){
 		getAllNewsObjectByPathsArray();
-		console.log('Done');
-	},function(err){
-		console.log(err);
-	});
-},function(reason){
-	console.log(reason);
+		},function(err){
+			console.log(err);
+		});
+	},function(reason){
+		console.log(reason);
 });
 
 setInterval(function(){
 	getAALLNewsLinks().then(function(data){
 		updatePathsToFileByArray(newsPathsFile,data).then(function(){
 			getAllNewsObjectByPathsArray();
-			console.log('Done');
 		},function(err){
 			console.log(err);
 		});
@@ -264,6 +264,8 @@ setInterval(function(){
 		console.log(reason);
 	});
 },5*60*1000);
+
+
 
 /* Here's a test funciton for httpGet which write the response in ./test.txt
 httpGetReturnRequestBody('www.cna.com.tw','/news/firstnews/201511145024-1.aspx').then(
