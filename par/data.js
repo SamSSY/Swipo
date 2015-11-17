@@ -8,11 +8,31 @@ var lastPathRecieved = '';
 var newsPathsFile = './paths.txt';
 
 // helper function
+/*
+	Summary:
+		Get substring by leading substring and ending substring
+	Params:
+		StringI (string): the string source
+		leadBy (string): the leading string of the wanted substring 
+		endWith (string): the ending string of the wanted substring 
+	Return: subStringToReturn (string) : the wanted substring
+
+	example:
+	var example = getSubstring('Ric\'s WebProgramming Project Final Project Product code ,'Web',/co../)
+	console.log(example) //'Programming Project Final Project Product '
+*/
 var getSubString = function(stringI, leadBy, endWith){
 	var startIndex = stringI.search(leadBy);
 	var endIndex = stringI.search(endWith);
 	if(startIndex === -1 || endIndex === -1) {
 		console.log('Can\'t find substring!');
+		if(startIndex === -1){
+			console.log('Starter: ' + leadBy);
+		}
+		if(endIndex === -1){
+			console.log('Tailer: ' +endWith);
+		}
+		console.log(stringI);
 		return '';
 	}
 	var subStringToReturn = stringI.substring(startIndex + leadBy.length, endIndex);
@@ -80,12 +100,14 @@ var htmlToNewsObject = function(data){
 	}
 
 	// Get News Content
-	var contextLeader = '<p>（中央社';
-	var contextTailer = /[0-9]{7}\s*(<\s*[\/]?p>|<br\s*[\/]?><br\s*[\/]?>※你可能還想看：)/;
+	var contextLeader = /[<\s*p\s*>\s*]?（中央社/;
+	var contextTailer = /([0-9]{7})?\s*(<\s*[\/]?p>|<br\s*[\/]?><br\s*[\/]?>※你可能還想看：)/;
 	var contextStartIndex = data.search(contextLeader);
+	if(contextStartIndex === -1) contextStartIndex = data.search(/[<\s*p\s*>\s*]?(中央社/);
 	var contextEndIndex = data.search(contextTailer);
 	if(contextStartIndex === -1) console.log('Cant find symbol: ' + contextLeader);
 	if(contextEndIndex === -1) console.log('Cant find symbol: tailer');
+	if(contextStartIndex === -1 || contextEndIndex === -1) console.log('Err Title' + title);
 
 	if( contextEndIndex !== -1 && contextStartIndex !== -1)
 		var context = data.substring(contextStartIndex + 3, contextEndIndex);
@@ -115,7 +137,7 @@ var htmlToNewsObject = function(data){
 var getAALLNewsLinks = function(){
 	var newsLinks = new Promise(function(resolve,reject){
 		console.log('Checking news from CNA...')
-		httpGetReturnRequestBody(newsHost,'/list/aall-'+ '1' +'.aspx').then(
+		httpGetReturnRequestBody(newsHost,'/list/aall-1.aspx').then(
 			function(data){
 				var articleLeader = '<div class="article_list">';
 				var articalTailer = 'class="pagination">';
@@ -140,6 +162,18 @@ var getAALLNewsLinks = function(){
 	return newsLinks;
 }
 
+/*
+	Summary:
+		read the path array get from the internet and check if the paths exists in the file,
+		write the new paths into the file.
+
+	Params:
+		path (string) : the file path
+		array (Array of string): the result get from httpRequest, which is an array of paths to news
+	Return:
+		promise
+			use .then(function(){ successCallBack you want to do }, function(reason){...})
+*/
 // TODO: Should have a version to online DB
 var updatePathsToFileByArray = function(path,array){
 	var promiseToReturn = new Promise(function(recieve,reject){
@@ -167,6 +201,13 @@ var updatePathsToFileByArray = function(path,array){
 	return promiseToReturn;
 }
 
+/*
+	Summary: 
+		by reading paths in the file in file <newsPathsFile>, do httpGetRequest,
+		generate news object and write the result to the file 
+		(change the string './news.txt' to change the dest file)
+
+*/
 var getAllNewsObjectByPathsArray = function(){
 	console.log('Retrieveing news content');
 
@@ -194,11 +235,28 @@ var getAllNewsObjectByPathsArray = function(){
 }
 
 // main
+/* 
+	Summary:
+		main function of data source server, which update news data from CNA every 5 min
+*/
 console.log('News Listener now on!');
+
+getAALLNewsLinks().then(function(data){
+	updatePathsToFileByArray(newsPathsFile,data).then(function(){
+		getAllNewsObjectByPathsArray();
+		console.log('Done');
+	},function(err){
+		console.log(err);
+	});
+},function(reason){
+	console.log(reason);
+});
+
 setInterval(function(){
 	getAALLNewsLinks().then(function(data){
 		updatePathsToFileByArray(newsPathsFile,data).then(function(){
 			getAllNewsObjectByPathsArray();
+			console.log('Done');
 		},function(err){
 			console.log(err);
 		});
@@ -207,9 +265,7 @@ setInterval(function(){
 	});
 },5*60*1000);
 
-
-
-/*
+/* Here's a test funciton for httpGet which write the response in ./test.txt
 httpGetReturnRequestBody('www.cna.com.tw','/news/firstnews/201511145024-1.aspx').then(
 	function(data){
 		fs.appendFileSync('./test.txt', data + '\n');
