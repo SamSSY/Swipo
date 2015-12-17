@@ -1,8 +1,8 @@
 // import modules
 var http = require('http');
 var fs = require('fs');
- 
 
+// const strings
 var newsHost = 'www.cna.com.tw';
 var lastPathRecieved = '';
 var newsPathsFile = './paths.txt';
@@ -105,6 +105,8 @@ var htmlToNewsObject = function(data){
 	var contextStartIndex = data.search(contextLeader);
 	if(contextStartIndex === -1) contextStartIndex = data.search(/[<\s*p\s*>\s*](中央社/);
 	var contextEndIndex = data.search(contextTailer);
+	if(contextEndIndex === -1) contextEndIndex = data.search(/※你可能還想看/);
+	if(contextEndIndex === -1) contextEndIndex = data.search(/\s*[\/]?p>/);
 	if(contextStartIndex === -1) console.log('Cant find symbol: ' + contextLeader);
 	if(contextEndIndex === -1) console.log('Cant find symbol: tailer');
 	if(contextStartIndex === -1 || contextEndIndex === -1) console.log('Err Title: ' + title);
@@ -212,9 +214,10 @@ var updatePathsToFileByArray = function(path,array){
 */
 var getAllNewsObjectByPathsArray = function(){
 	console.log('Retrieveing news content');
-
 	var array = fs.readFileSync(newsPathsFile).toString().split('\n');
 	if (array.length <=2) return;
+	var newPathIndex = (lastPathRecieved === '')? 0 : array.indexOf(lastPathRecieved);
+	newPathIndex = (newPathIndex === -1)? 0 : newPathIndex;
 
 	fs.writeFile('./news.txt','');
 	array.forEach(function(path){
@@ -222,11 +225,14 @@ var getAllNewsObjectByPathsArray = function(){
 			httpGetReturnRequestBody('www.cna.com.tw',path).then(
 				function(data){
 					var news = htmlToNewsObject(data);
-						news.path = path;
-						fs.appendFileSync('./news.txt', 'Title: ' + news.title.toString() + '\n');
-						fs.appendFileSync('./news.txt', 'Path: ' + news.path.toString() + '\n');
-						fs.appendFileSync('./news.txt', 'Time: ' + news.time.toString() + '\n');
-						fs.appendFileSync('./news.txt', news.content.toString() + '\n\n\n\n');
+					news.path = path;
+					news.liked = 0;
+					news.disliked = 0;
+						
+					fs.appendFileSync('./news.txt', 'Title: ' + news.title.toString() + '\n');
+					fs.appendFileSync('./news.txt', 'Path: ' + news.path.toString() + '\n');
+					fs.appendFileSync('./news.txt', 'Time: ' + news.time.toString() + '\n');
+					fs.appendFileSync('./news.txt', news.content.toString() + '\n\n\n\n');					
 				},
 				function(reason){
 					console.log(reason);
