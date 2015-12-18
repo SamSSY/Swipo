@@ -41,6 +41,97 @@ var getSubString = function(stringI, leadBy, endWith){
 };
 
 /*
+	Summary
+		Get image url and description from news content
+	params
+		content (string): the news content which contains image
+	return
+		array of object {url ,description} 
+*/
+var getImageObjectsFromContent = function(content){
+	var imageObjectArray = [];
+	var urlArray = [];
+	var desArray = [];
+	var result = undefined;
+	var urlIndicesLead = [];
+	var urlIndicesTail = [];
+	var desIndicesLead = [];
+	var desIndicesTail = [];
+
+	var urlRegexL = /img src="http/gi;
+	while ( (result = urlRegexL.exec(content)) ) {
+   		urlIndicesLead.push(result.index);
+	}
+
+	var urlRegexT = /jpg"/gi;
+	while ( (result = urlRegexT.exec(content)) ) {
+   		urlIndicesTail.push(result.index);
+	}
+	
+	var desRegexL = /<span>/gi;
+	while ( (result = desRegexL.exec(content)) ) {
+   		desIndicesLead.push(result.index);
+	}
+
+	var desRegexT = /<[\/]span>/gi;
+	while ( (result = desRegexT.exec(content)) ) {
+   		desIndicesTail.push(result.index);
+	}
+
+	if(urlIndicesLead.length === urlIndicesTail.length){
+		for(var i=0;i<urlIndicesLead.length;i++){
+			urlArray.push(content.substring(urlIndicesLead[i]+9,urlIndicesTail[i]+3));
+		}
+	}
+
+	if(desIndicesLead.length === desIndicesTail.length){
+		for(var i=0;i<desIndicesLead.length;i++){
+			desArray.push(content.substring(desIndicesLead[i]+6,desIndicesTail[i]));
+		}
+	}
+
+	if(urlArray.length === desArray.length){
+		for(var i=0;i<urlArray.length;i++){
+			var imgObj = {
+				url: urlArray[i],
+				description: desArray[i]
+			};
+			imageObjectArray.push(imgObj);
+		}
+	}
+
+	return imageObjectArray;
+}
+
+/*
+	summary
+		delete the html tags in the news content
+*/
+var deleteHTMLTags = function(content){
+	// TODO: we'll like to remove all html tags, and replace <br/><br/> as \n
+	// Remove the html tags (</p>...<p> or <blockquote....</blockquote> or <script>...</script>)
+	
+	var contentToReturn = content;
+	/* Failed code here
+	var result = undefined;
+	var indicesLead = [];
+	var indicesTail = [];
+	var tagSubstrings = [];
+	console.log('!' + contentToReturn);
+	var contentToReturn = content.replace(/\n/gi,'');
+	contentToReturn = contentToReturn.replace(/^[<\/p>][<p>]$/gi,'');
+
+	console.log('!!' + contentToReturn);
+	*/
+
+	// Replace </br></br> as \n
+	var brReplacer = /<br\s*[\/]?><br\s*[\/]?>/gi;
+	contentToReturn = contentToReturn.replace(brReplacer,'\n');
+
+	return contentToReturn;
+}
+
+/*
 	summary:
 			function that use http get request and get data
 
@@ -101,30 +192,39 @@ var htmlToNewsObject = function(data){
 
 	// Get News Content
 	var contextLeader = /[<\s*p\s*>\s*]（中央社/;
-	var contextTailer = /[0-9]{7}(<\s*[\/]?p>|<br\s*[\/]?><br\s*[\/]?>※你可能還想看：)/;
 	var contextStartIndex = data.search(contextLeader);
 	if(contextStartIndex === -1) contextStartIndex = data.search(/[<\s*p\s*>\s*](中央社/);
+	if(contextStartIndex === -1) console.log('Cant find symbol: ' + contextLeader);
+
+	// Get end index
+	var contextTailer = /[0-9]{7}(<\s*[\/]?p>|<br\s*[\/]?><br\s*[\/]?>※你可能還想看：)/;
 	var contextEndIndex = data.search(contextTailer);
 	if(contextEndIndex === -1) contextEndIndex = data.search(/※你可能還想看/);
-	if(contextEndIndex === -1) contextEndIndex = data.search(/\s*[\/]?p>/);
-	if(contextStartIndex === -1) console.log('Cant find symbol: ' + contextLeader);
+	if(contextEndIndex === -1) contextEndIndex = data.search(/。<\s*[\/]?p>/);
+	if(contextEndIndex === -1) contextEndIndex = data.search(/[0-9]{7}<br\s*[\/]?><br\s*[\/]?>/);
 	if(contextEndIndex === -1) console.log('Cant find symbol: tailer');
+
 	if(contextStartIndex === -1 || contextEndIndex === -1) console.log('Err Title: ' + title);
 
-	if( contextEndIndex !== -1 && contextStartIndex !== -1)
+	if( contextEndIndex !== -1 && contextStartIndex !== -1 && contextStartIndex < contextEndIndex)
 		var context = data.substring(contextStartIndex + 1, contextEndIndex);
 	else if(contextEndIndex === -1)
 		var context = 'New Content trans error! (end)';
-	else
+	else if(contextStartIndex === -1)
 		var context = 'New Content trans error! (start)';
-	var brReplacer = /<br\s*[\/]?><br\s*[\/]?>/gi;
-	context = context.replace(brReplacer,'\n');
+	else
+		var context = 'New Content trans error, index wrong!';
+
+	context = deleteHTMLTags(context);
 	
+	var imgArray = getImageObjectsFromContent(context);
+
 	// Construct the news object to return
 	var newsObjectToReturn = {
 		title : title,
 		time: postTime,
 		content : context,
+		image: imgArray,
 	};
 	if( contextEndIndex !== -1 && contextStartIndex !== -1)
 		return newsObjectToReturn;
@@ -232,6 +332,7 @@ var getAllNewsObjectByPathsArray = function(){
 					fs.appendFileSync('./news.txt', 'Title: ' + news.title.toString() + '\n');
 					fs.appendFileSync('./news.txt', 'Path: ' + news.path.toString() + '\n');
 					fs.appendFileSync('./news.txt', 'Time: ' + news.time.toString() + '\n');
+					fs.appendFileSync('./news.txt', 'PicsAmount: ' + news.image.length.toString() + '\n');
 					fs.appendFileSync('./news.txt', news.content.toString() + '\n\n\n\n');					
 				},
 				function(reason){
@@ -247,6 +348,7 @@ var getAllNewsObjectByPathsArray = function(){
 	Summary:
 		main function of data source server, which update news data from CNA every 5 min
 */
+/*
 console.log('News Listener now on!');
 
 getAALLNewsLinks().then(function(data){
@@ -270,21 +372,27 @@ setInterval(function(){
 		console.log(reason);
 	});
 },5*60*1000);
-
-
+*/
 
 /* Here's a test funciton for httpGet which write the response in ./test.txt
-httpGetReturnRequestBody('www.cna.com.tw','/news/firstnews/201511145024-1.aspx').then(
+*/
+httpGetReturnRequestBody('www.cna.com.tw','/news/aopl/201511240395-1.aspx').then(
 	function(data){
-		fs.appendFileSync('./test.txt', data + '\n');
 		//console.log(data)
 		var news = htmlToNewsObject(data);
 		console.log(news.title);
 		console.log(news.time);
-		console.log(news.content);
+		console.log(news.image.length);
+		fs.appendFileSync('./test1.txt', news.content + '\n');
+
+		for(var i=0;i<news.image.length;i++){
+			//console.log(news.image[i].url);
+			//console.log(news.image[i].description + '\n\n\n');
+		}
 	},
 	function(reason){
 		console.log(reason);
 	}
-)
+);
+/*
 */
