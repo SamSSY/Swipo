@@ -2,44 +2,14 @@
 var http = require('http');
 var fs = require('fs');
 
+var helper = require('./httpStringHelper.js');
+
 // const strings
 var newsHost = 'www.cna.com.tw';
 var lastPathRecieved = '';
 var newsPathsFile = './paths.txt';
 
 // helper function
-/*
-	Summary:
-		Get substring by leading substring and ending substring
-	Params:
-		StringI (string): the string source
-		leadBy (string): the leading string of the wanted substring 
-		endWith (string): the ending string of the wanted substring 
-	Return: subStringToReturn (string) : the wanted substring
-
-	example:
-	var example = getSubstring('Ric\'s WebProgramming Project Final Project Product code ,'Web',/co../)
-	console.log(example) //'Programming Project Final Project Product '
-*/
-var getSubString = function(stringI, leadBy, endWith){
-	var startIndex = stringI.search(leadBy);
-	var endIndex = stringI.search(endWith);
-	if(startIndex === -1 || endIndex === -1) {
-		console.log('Can\'t find substring!');
-		if(startIndex === -1){
-			console.log('Starter: ' + leadBy);
-		}
-		if(endIndex === -1){
-			console.log('Tailer: ' +endWith);
-		}
-		console.log(stringI);
-		return '';
-	}
-	var subStringToReturn = stringI.substring(startIndex + leadBy.length, endIndex);
-
-	return subStringToReturn;
-};
-
 /*
 	Summary
 		Get image url and description from news content
@@ -104,68 +74,6 @@ var getImageObjectsFromContent = function(content){
 }
 
 /*
-	summary
-		delete the html tags in the news content
-*/
-var deleteHTMLTags = function(content){
-	// TODO: we'll like to remove all html tags, and replace <br/><br/> as \n
-	// Remove the html tags (</p>...<p> or <blockquote....</blockquote> or <script>...</script>)
-	
-	var contentToReturn = content;
-	/* Failed code here
-	var result = undefined;
-	var indicesLead = [];
-	var indicesTail = [];
-	var tagSubstrings = [];
-	console.log('!' + contentToReturn);
-	var contentToReturn = content.replace(/\n/gi,'');
-	contentToReturn = contentToReturn.replace(/^[<\/p>][<p>]$/gi,'');
-
-	console.log('!!' + contentToReturn);
-	*/
-
-	// Replace </br></br> as \n
-	var brReplacer = /<br\s*[\/]?><br\s*[\/]?>/gi;
-	contentToReturn = contentToReturn.replace(brReplacer,'\n');
-
-	return contentToReturn;
-}
-
-/*
-	summary:
-			function that use http get request and get data
-
-	params: host (string): the host to send request
-			path (string): the path of the host to send request
-	return: httpGetRequest (promise)
-			use .then(sccessCallBack(data),errorCallBack(reason))
-*/
-var httpGetReturnRequestBody = function(host, path){
-	var httpTry = new Promise(function(resolve,reject){
-		try{
-			http.get({
-        		host: host,
-        		path: path
-    		}, function(response) {
-        	// Continuously update stream with data
-        		var body = '';
-        		response.on('data', function(d) {
-            		body += d;
-        		});
-        		response.on('end', function() {
-            		// Data reception is done, do whatever with it!
-            		resolve(body);
-        		});
-    		});
-		}catch(err){
-			reject(err);
-		}
-	});
-
-	return httpTry;
-};
-
-/*
 	summary:
 			http request response parser for CNA news site.
 
@@ -176,7 +84,7 @@ var htmlToNewsObject = function(data){
 	// Get Title
 	var titleLeader = '<h1 itemprop="headline">';
 	var titleTailer = '</h1>';
-	var title = getSubString(data,titleLeader,titleTailer);
+	var title = helper.getSubString(data,titleLeader,titleTailer);
 
 	//Get Time Info
 	var timeStartLeader = '<p>發稿時間：';
@@ -215,7 +123,7 @@ var htmlToNewsObject = function(data){
 	else
 		var context = 'New Content trans error, index wrong!';
 
-	context = deleteHTMLTags(context);
+	context = helper.deleteHTMLTags(context);
 	
 	var imgArray = getImageObjectsFromContent(context);
 
@@ -241,11 +149,11 @@ var htmlToNewsObject = function(data){
 var getAALLNewsLinks = function(){
 	var newsLinks = new Promise(function(resolve,reject){
 		console.log('Checking news from CNA...')
-		httpGetReturnRequestBody(newsHost,'/list/aall-1.aspx').then(
+		helper.httpGetReturnRequestBody(newsHost,'/list/aall-1.aspx').then(
 			function(data){
 				var articleLeader = '<div class="article_list">';
 				var articalTailer = 'class="pagination">';
-				var articlesSubString = getSubString(data,articleLeader,articalTailer);
+				var articlesSubString = helper.getSubString(data,articleLeader,articalTailer);
 
 				//console.log(articlesSubString);
 				var index = 0;
@@ -322,7 +230,7 @@ var getAllNewsObjectByPathsArray = function(){
 	fs.writeFile('./news.txt','');
 	array.forEach(function(path){
 		if(path.search('/news/') !== -1){
-			httpGetReturnRequestBody('www.cna.com.tw',path).then(
+			helper.httpGetReturnRequestBody('www.cna.com.tw',path).then(
 				function(data){
 					var news = htmlToNewsObject(data);
 					news.path = path;
@@ -348,7 +256,7 @@ var getAllNewsObjectByPathsArray = function(){
 	Summary:
 		main function of data source server, which update news data from CNA every 5 min
 */
-/*
+
 console.log('News Listener now on!');
 
 getAALLNewsLinks().then(function(data){
@@ -372,11 +280,10 @@ setInterval(function(){
 		console.log(reason);
 	});
 },5*60*1000);
-*/
+
 
 /* Here's a test funciton for httpGet which write the response in ./test.txt
-*/
-httpGetReturnRequestBody('www.cna.com.tw','/news/aopl/201511240395-1.aspx').then(
+helper.httpGetReturnRequestBody('www.cna.com.tw','/news/aopl/201511240395-1.aspx').then(
 	function(data){
 		//console.log(data)
 		var news = htmlToNewsObject(data);
@@ -394,5 +301,4 @@ httpGetReturnRequestBody('www.cna.com.tw','/news/aopl/201511240395-1.aspx').then
 		console.log(reason);
 	}
 );
-/*
 */
