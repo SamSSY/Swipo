@@ -68,13 +68,15 @@ exports.httpGetReturnRequestBody = function(host, path){
 };
 
 /*
-	summary
-		delete the html tags in the news content
+	summary:
+		delete the html tags in the news content (remove <quoteblock/>, non-<p> region, <script/> and replace <br/> as '\n')
+	param:
+		content (string): the original content of the news
+	return:
+		contentToReturn (string): the string without html tags
 */
 exports.deleteHTMLTags = function(content){
-	// TODO: we'll like to remove all html tags, and replace <br/><br/> as \n
 	// Remove the html tags (</p>...<p> or <blockquote....</blockquote> or <script>...</script>)
-	
 	var preContent = content;
 	var contentToReturn = _deleteOneTag(preContent);
 	while(preContent !== contentToReturn){

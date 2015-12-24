@@ -1,5 +1,4 @@
 // import modules
-var http = require('http');
 var fs = require('fs');
 
 var helper = require('./httpStringHelper.js');
@@ -133,6 +132,8 @@ var htmlToNewsObject = function(data){
 		time: postTime,
 		content : context,
 		image: imgArray,
+		// TODO
+		tag: [],
 	};
 	if( contextEndIndex !== -1 && contextStartIndex !== -1)
 		return newsObjectToReturn;
