@@ -1,0 +1,79 @@
+html, body{
+	height: 100%;
+	margin: 0;
+    padding: 0;
+}
+
+#root{
+	height:100%;
+	//min-height: 100% !important;
+	display: block;
+
+	& .pane{
+		top: 0;
+		//height: 450px;
+		height:100%;
+		//min-height: 100% !important;
+		line-height: 400px;
+		float: left;
+		font-size: 80px;
+		text-align: center;
+		display: block;
+		width: 100%;
+		position: relative;
+		background-color: #ffffcc;
+	}
+
+	& .hidden{
+		display: none;
+	}
+
+	& #one{
+		background-color: green;
+	}
+
+	& #two{
+		background-color:yellow;
+	}
+
+	& #three{
+		background-color:red;
+	}
+
+	& #four{
+		background-color:blue;
+	}
+
+	& #five{
+		background-color: white;
+	}
+
+	& #six{
+		background-color: #FFA1FF;
+	}
+
+	& #seven{
+		background-color: #99FFCC;
+	}
+
+	& #eight{
+		background-color: #FFFFDA;
+	}
+
+	& button{
+		position: fixed;
+	}
+}
+
+
+
+/* viewport support*/
+@-ms-viewport {
+   width: device-width;
+}
+@-o-viewport { 
+   width: device-width;
+}
+@viewport {
+   width: device-width; 
+}
