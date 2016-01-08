@@ -3,6 +3,7 @@ const { render } = require('react-dom');
 
 import { Router, Route, Link, browserHistory } from 'react-router';
 import SwipePane from './component/SwipePane';
+
 require('./main.scss');
 // material-ui
 const RaisedButton = require('material-ui/lib/raised-button');
