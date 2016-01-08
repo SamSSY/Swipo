@@ -25,7 +25,7 @@ const initialState = {
     isMobile : false
 }
 
-class SwipeBody extends React.Component {
+class MainBody extends React.Component {
     
     constructor(props) {
         super(props);
@@ -86,10 +86,12 @@ class SwipeBody extends React.Component {
         const displayNone = {display: 'none'};
         var isMobile = this.state.isMobile;
         var appBarStyle = {};//{ isMobile? {display:"none"} : {display:"none"}};
+        //<AppBar style={ isMobile? {display: 'none'} : {display: 'flex'}} title="Swipo" iconClassNameRight="muidocs-icon-navigation-expand-more" /> 
+
         return (
             <div style={fullHeight}>
-                <AppBar style={ isMobile? {display: 'none'} : {display: 'flex'}} title="Swipo" iconClassNameRight="muidocs-icon-navigation-expand-more" /> 
-            	<div style={fullHeight}> 
+                <AppBar className='header' title="Swipo" iconClassNameRight="muidocs-icon-navigation-expand-more" /> 
+            	<div className='swipePanes' style={fullHeight} > 
             		{this.renderSingleSwipePane()}
             	</div>
             </div>
@@ -97,8 +99,8 @@ class SwipeBody extends React.Component {
     }
 }
 
-SwipeBody.childContextTypes = {
+MainBody.childContextTypes = {
     muiTheme: React.PropTypes.object,
 }
 
-render(<SwipeBody />, document.getElementById('root'));
+render(<MainBody />, document.getElementById('root'));

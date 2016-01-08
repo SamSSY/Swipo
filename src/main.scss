@@ -14,7 +14,7 @@ html, body{
 		//height: 450px;
 		height:100%;
 		//min-height: 100% !important;
-		line-height: 400px;
+		line-height: 450px;
 		float: left;
 		font-size: 80px;
 		text-align: center;
@@ -28,44 +28,10 @@ html, body{
 		display: none;
 	}
 
-	& #one{
-		background-color: green;
-	}
-
-	& #two{
-		background-color:yellow;
-	}
-
-	& #three{
-		background-color:red;
-	}
-
-	& #four{
-		background-color:blue;
-	}
-
-	& #five{
-		background-color: white;
-	}
-
-	& #six{
-		background-color: #FFA1FF;
-	}
-
-	& #seven{
-		background-color: #99FFCC;
-	}
-
-	& #eight{
-		background-color: #FFFFDA;
-	}
-
 	& button{
 		position: fixed;
 	}
 }
-
-
 
 /* viewport support*/
 @-ms-viewport {
@@ -76,4 +42,12 @@ html, body{
 }
 @viewport {
    width: device-width; 
+}
+
+/* Responsive UI */
+@media screen and (max-width: 450px) {
+	.header{
+		display: none !important;
+	}
+
 }
