@@ -54,7 +54,7 @@
 /******/ 	
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "78f8a6cf3d037cf1c26f"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "dca313afc3a989d48d3c"; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentParents = []; // eslint-disable-line no-unused-vars
 /******/ 	
@@ -1838,7 +1838,7 @@
 /* 215 */
 /***/ function(module, exports, __webpack_require__) {
 
-	eval("exports = module.exports = __webpack_require__(216)();\n// imports\n\n\n// module\nexports.push([module.id, \"html, body {\\n  height: 100%;\\n  margin: 0;\\n  padding: 0; }\\n\\n#root {\\n  height: 100%;\\n  display: block; }\\n  #root .pane {\\n    top: 0;\\n    height: 100%;\\n    line-height: 450px;\\n    float: left;\\n    font-size: 80px;\\n    text-align: center;\\n    display: block;\\n    width: 100%;\\n    position: relative;\\n    background-color: #ffffcc; }\\n  #root .hidden {\\n    display: none; }\\n  #root button {\\n    position: fixed; }\\n\\n/* viewport support*/\\n@-ms-viewport {\\n  width: device-width; }\\n\\n@-o-viewport {\\n  width: device-width; }\\n\\n@viewport {\\n  width: device-width; }\\n\\n/* Responsive UI */\\n@media screen and (max-width: 450px) {\\n  .header {\\n    display: none !important; } }\\n\", \"\"]);\n\n// exports\n\n\n/*****************\n ** WEBPACK FOOTER\n ** ./~/css-loader!./~/sass-loader!./src/main.scss\n ** module id = 215\n ** module chunks = 0\n **/\n//# sourceURL=webpack:///./src/main.scss?./~/css-loader!./~/sass-loader");
+	eval("exports = module.exports = __webpack_require__(216)();\n// imports\n\n\n// module\nexports.push([module.id, \"html, body {\\n  height: 100%;\\n  margin: 0;\\n  padding: 0; }\\n\\n#root {\\n  height: 100%;\\n  display: block; }\\n  #root .pane {\\n    top: 0;\\n    height: 100%;\\n    line-height: 450px;\\n    float: left;\\n    font-size: 80px;\\n    text-align: center;\\n    display: block;\\n    width: 100%;\\n    position: relative;\\n    background-color: #ffffcc; }\\n  #root .hidden {\\n    display: none; }\\n  #root .swipePanes {\\n    display: none; }\\n  #root button {\\n    position: fixed; }\\n\\n/* viewport support*/\\n@-ms-viewport {\\n  width: device-width; }\\n\\n@-o-viewport {\\n  width: device-width; }\\n\\n@viewport {\\n  width: device-width; }\\n\\n/* Responsive UI */\\n@media screen and (max-width: 450px) {\\n  .header {\\n    display: none !important; }\\n  .swipePanes {\\n    display: block !important; } }\\n\", \"\"]);\n\n// exports\n\n\n/*****************\n ** WEBPACK FOOTER\n ** ./~/css-loader!./~/sass-loader!./src/main.scss\n ** module id = 215\n ** module chunks = 0\n **/\n//# sourceURL=webpack:///./src/main.scss?./~/css-loader!./~/sass-loader");
 
 /***/ },
 /* 216 */
