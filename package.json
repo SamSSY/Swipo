@@ -3,27 +3,19 @@
   "version": "1.0.0",
   "description": "",
   "main": "devServer.js",
-  "dependencies": {},
-  "devDependencies": {},
-  "scripts": {
-    "build:webpack": "NODE_ENV=production webpack --config webpack.config.prod.js",
-    "start": "node devServer.js",
-    "build": "webpack",
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "author": "",
-  "license": "ISC",
   "dependencies": {
+    "express": "^4.13.3",
+    "history": "^1.17.0",
+    "material-ui": "^0.14.2",
     "react": "^0.14.0",
-    "react-dom": "^0.14.0",
-    "react-swipe": "^3.0.0",
-    "material-ui": "^0.13.0",
-    "react-tap-event-plugin": "^0.2.1",
     "react-addons-create-fragment": "^0.14.0",
     "react-addons-pure-render-mixin": "^0.14.0",
     "react-addons-transition-group": "^0.14.0",
     "react-addons-update": "^0.14.0",
-    "express": "^4.13.3"
+    "react-dom": "^0.14.0",
+    "react-router": "^1.0.3",
+    "react-swipe": "^3.0.0",
+    "react-tap-event-plugin": "^0.2.1"
   },
   "devDependencies": {
     "babel-core": "^5.8.29",
@@ -39,5 +31,13 @@
     "webpack": "^1.12.2",
     "webpack-dev-middleware": "^1.2.0",
     "webpack-hot-middleware": "^2.4.1"
-  }
+  },
+  "scripts": {
+    "build:webpack": "NODE_ENV=production webpack --config webpack.config.prod.js",
+    "start": "node devServer.js",
+    "build": "webpack",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
 }

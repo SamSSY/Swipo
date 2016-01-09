@@ -50,9 +50,6 @@ html, body{
 
 /* Responsive UI */
 @media screen and (max-width: 450px) {
-	.header{
-		display: none !important;
-	}
 
 	.swipePanes{
 		display: block !important;

@@ -12,6 +12,7 @@ const ThemeManager = require('material-ui/lib/styles/theme-manager');
 const LightRawTheme = require('material-ui/lib/styles/raw-themes/light-raw-theme');
 const Colors = require('material-ui/lib/styles/colors');
 const AppBar = require('material-ui/lib/app-bar');
+const LeftNav = require('material-ui/lib/left-nav')
 const injectTapEventPlugin = require('react-tap-event-plugin');
 
 //Needed for onTouchTap
@@ -23,7 +24,8 @@ injectTapEventPlugin();
 const initialState = {
     muiTheme: ThemeManager.getMuiTheme(LightRawTheme),
     currentIndex : 0,
-    isMobile : false
+    isMobile : false,
+    isLeftNavOpen: false
 }
 
 class MainBody extends React.Component {
@@ -47,7 +49,7 @@ class MainBody extends React.Component {
             else{
                 this.setState({ isMobile: false});
             }
-            console.log(this.state.isMobile);
+            console.log($(window).width(), this.state.isMobile);
         });
     }
 
@@ -67,12 +69,27 @@ class MainBody extends React.Component {
     }
 
     renderSingleSwipePane(content){
-        console.log("currentIndex: " + this.state.currentIndex);        
+        //console.log("currentIndex: " + this.state.currentIndex);        
         return(
             <SwipePane 
                 paneContent={this.state.currentIndex} 
                 paneIndex={this.state.currentIndex} 
                 updateIndex = {this.updateIndex.bind(this)} />
+        );
+    }
+
+    renderAppBar(){
+        let { isLeftNavOpen } = this.state;
+        return (
+            <AppBar title="Swipo" iconClassNameRight="muidocs-icon-navigation-expand-more" onLeftIconButtonTouchTap={() => this.setState({isLeftNavOpen: !isLeftNavOpen })} />
+        );
+    }
+
+    renderLeftNav(){
+        return(
+            <LeftNav docked={false}
+width={200} open={this.state.isLeftNavOpen} onRequestChange={open => this.setState({isLeftNavOpen: open}) } >
+            </LeftNav>
         );
     }
 
@@ -82,17 +99,17 @@ class MainBody extends React.Component {
     }
 
     render() {
-    	//const contents = this.state.contents;
         const fullHeight = {height: "100%" };
         const displayNone = {display: 'none'};
         var isMobile = this.state.isMobile;
         var appBarStyle = {};//{ isMobile? {display:"none"} : {display:"none"}};
         //<AppBar style={ isMobile? {display: 'none'} : {display: 'flex'}} title="Swipo" iconClassNameRight="muidocs-icon-navigation-expand-more" /> 
-
+        //{ isMobile? null: this.renderLeftNav() }
         return (
             <div style={fullHeight}>
-                <AppBar className='header' title="Swipo" iconClassNameRight="muidocs-icon-navigation-expand-more" /> 
-            	<div className='swipePanes' style={fullHeight} > 
+                { isMobile? null: this.renderAppBar() }
+                { isMobile? null: this.renderLeftNav() }
+                <div className='swipePanes' style={fullHeight} > 
             		{this.renderSingleSwipePane()}
             	</div>
             </div>
