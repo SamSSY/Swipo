@@ -60,14 +60,6 @@ class MainBody extends React.Component {
         this.setState({muiTheme: newMuiTheme});
     }
 
-    renderSwipePane(content, index){
-    	return(
-    		<SwipePane key={index} 
-    			paneContent={content.content} 
-    			paneIndex={index} />
-    	);
-    }
-
     renderSingleSwipePane(content){
         //console.log("currentIndex: " + this.state.currentIndex);        
         return(
@@ -75,6 +67,14 @@ class MainBody extends React.Component {
                 paneContent={this.state.currentIndex} 
                 paneIndex={this.state.currentIndex} 
                 updateIndex = {this.updateIndex.bind(this)} />
+        );
+    }
+
+    renderSwipePanes(){
+        return(                
+            <div className='swipePanes' style={{height: "100%" }} > 
+                {this.renderSingleSwipePane()}
+            </div>
         );
     }
 
@@ -88,7 +88,9 @@ class MainBody extends React.Component {
     renderLeftNav(){
         return(
             <LeftNav docked={false}
-width={200} open={this.state.isLeftNavOpen} onRequestChange={open => this.setState({isLeftNavOpen: open}) } >
+                    width={200} 
+                    open={this.state.isLeftNavOpen} 
+                    onRequestChange={open => this.setState({isLeftNavOpen: open}) } >
             </LeftNav>
         );
     }
@@ -105,13 +107,12 @@ width={200} open={this.state.isLeftNavOpen} onRequestChange={open => this.setSta
         var appBarStyle = {};//{ isMobile? {display:"none"} : {display:"none"}};
         //<AppBar style={ isMobile? {display: 'none'} : {display: 'flex'}} title="Swipo" iconClassNameRight="muidocs-icon-navigation-expand-more" /> 
         //{ isMobile? null: this.renderLeftNav() }
+        //console.log(this.state);
         return (
             <div style={fullHeight}>
                 { isMobile? null: this.renderAppBar() }
                 { isMobile? null: this.renderLeftNav() }
-                <div className='swipePanes' style={fullHeight} > 
-            		{this.renderSingleSwipePane()}
-            	</div>
+                { isMobile? this.renderSwipePanes(): null }
             </div>
         );
     }
