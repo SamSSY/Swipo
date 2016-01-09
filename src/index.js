@@ -12,7 +12,8 @@ const ThemeManager = require('material-ui/lib/styles/theme-manager');
 const LightRawTheme = require('material-ui/lib/styles/raw-themes/light-raw-theme');
 const Colors = require('material-ui/lib/styles/colors');
 const AppBar = require('material-ui/lib/app-bar');
-const LeftNav = require('material-ui/lib/left-nav')
+const LeftNav = require('material-ui/lib/left-nav');
+import IconButton from 'material-ui/lib/icon-button';
 const injectTapEventPlugin = require('react-tap-event-plugin');
 
 //Needed for onTouchTap
@@ -80,8 +81,12 @@ class MainBody extends React.Component {
 
     renderAppBar(){
         let { isLeftNavOpen } = this.state;
+        // iconElementRight={<i className="fa fa-facebook fa-2x" style={{margin: '10px', color: 'white'}}></i>
         return (
-            <AppBar title="Swipo" iconClassNameRight="muidocs-icon-navigation-expand-more" onLeftIconButtonTouchTap={() => this.setState({isLeftNavOpen: !isLeftNavOpen })} />
+            <AppBar title="Swipo" 
+                    iconClassNameRight="fa fa-facebook fa-2x" 
+                    onLeftIconButtonTouchTap={() => this.setState({isLeftNavOpen: !isLeftNavOpen })} 
+                    onRightIconButtonTouchTap={() => {console.log("click!");}} />
         );
     }
 
