@@ -52,7 +52,8 @@ var getNewsObject = function(data){
 
 	// Get Content
 	var contentPartLeadIndex = data.indexOf('<div class="articulum trans"');
-	var contentPartTailIndex = data.indexOf('</p><hr class="clearman vanisher"');
+	var contentPartTailIndex = data.indexOf('</p><hr class="clearman');
+	contentPartTailIndex = (contentPartTailIndex === -1)? data.indexOf('</p><div class="aml_like">') : contentPartTailIndex
 	var contentPart = data.substring(contentPartLeadIndex,contentPartTailIndex);
 
 	// Image Part
@@ -60,8 +61,12 @@ var getNewsObject = function(data){
 
 	// Content Part
 	var contentLeader = '<p id="introid">';
-	var newsContent = contentPart.substring(contentPart.indexOf(contentLeader) + contentLeader.length);
-	newsContent = newsContent.replace(/<BR>/gi,'\n');
+	var contentLeaderIndex = contentPart.indexOf(contentLeader);
+	var newsContent = '';
+	if(contentLeaderIndex !== -1)
+		newsContent = contentPart.substring(contentLeaderIndex + contentLeader.length);
+	newsContent = newsContent.replace(/(<BR>|<div>&nbsp;<\/div>)/gi,'\n');
+	newsContent = decodeURI(newsContent);
 
 	var newsToReturn = {
 		title: title,
@@ -114,10 +119,9 @@ var getImagesInNewsObject = function(data){
 */
 var getAllNewsObjectByPathsArray = function(pathArray){
 	console.log('Retrieving News From Apple Daily');
-	//pathArray = ['/appledaily/article/headline/20151226/36970019/神正妹不修圖全靠打的遮瑕膏'];
 	pathArray.forEach(function(path){
 		if(path.search('/appledaily/') !== -1){
-			helper.httpGetReturnRequestBody(newsHost,path).then(
+			helper.httpGetReturnRequestBody(newsHost,encodeURI(path)).then(
 				function(data){
 					var news = getNewsObject(data);
 					news.path = path;
@@ -128,8 +132,9 @@ var getAllNewsObjectByPathsArray = function(pathArray){
 					fs.appendFileSync('./appleNews.txt', 'Title: ' + news.title.toString() + '\n');
 					fs.appendFileSync('./appleNews.txt', 'Path: ' + news.path.toString() + '\n');
 					fs.appendFileSync('./appleNews.txt', 'Time: ' + news.time.toString() + '\n');
-					fs.appendFileSync('./appleNews.txt', 'Tag: ' + news.tag.toString() + '\n');					
-					fs.appendFileSync('./appleNews.txt', 'Pics: ' + news.image[0].description.toString() + '\t' + news.image[0].url.toString() + '\n');
+					fs.appendFileSync('./appleNews.txt', 'Tag: ' + news.tag.toString() + '\n');
+					if(news.image.length >= 1)			
+						fs.appendFileSync('./appleNews.txt', 'Pics: ' + news.image[0].description.toString() + '\t' + news.image[0].url.toString() + '\n');
 					fs.appendFileSync('./appleNews.txt', '\n' + news.content.toString() + '\n\n\n\n');					
 				},
 				function(reason){
@@ -148,7 +153,6 @@ var getTagFromPath = function(path){
 	if(path.indexOf('sports') !== -1) tagToReturn.push('體育');
 	if(path.indexOf('finance') !== -1) tagToReturn.push('財經');
 	if(path.indexOf('supplement') !== -1) tagToReturn.push('副刊');
-	if(path.indexOf('headline') !== -1) tagToReturn.push('頭條要聞');
 	if(path.indexOf('forum') !== -1) tagToReturn.push('專欄');
 
 	return tagToReturn;
@@ -156,46 +160,51 @@ var getTagFromPath = function(path){
 
 
 // Main
+var debug = true;
 
-getAllNewsLinks().then(
-	function(paths){
-		fs.writeFile('./appleNews.txt','');
-		console.log('Got ' + paths.length + ' News from Apple Daily!');
-		getAllNewsObjectByPathsArray(paths);
-	},
-	function(reason){
-		console.error(reason);
-	}
-);
-
-
+if(!debug){
+	getAllNewsLinks().then(
+		function(paths){
+			fs.writeFile('./appleNews.txt','');
+			console.log('Got ' + paths.length + ' News from Apple Daily!');
+			getAllNewsObjectByPathsArray(paths);
+		},
+		function(reason){
+			console.error(reason);
+		}
+	);
+}else{
 // Tester
 //
 ///appledaily/article/headline/20151225/36974086/applesearch/4男同事霸凌女遭辱「用黃瓜」
 ///appledaily/article/headline/20151226/36976321/趙藤雄免入監行賄全認罪捐2億換緩刑
 ///appledaily/article/headline/20151226/36970019/神正妹不修圖全靠打的遮瑕膏
-/*
-helper.httpGetReturnRequestBody(newsHost,'/appledaily/article/headline/20151226/36970019/神正妹不修圖全靠打的遮瑕膏').then(
-	function(data){
-		console.log('Got news list data from Apple Daily');
-		fs.writeFile('./appleTest.txt',data);
-		
+
+	helper.httpGetReturnRequestBody(newsHost,encodeURI('/appledaily/article/sports/20160101/36986501/蘋果報馬仔NBA黃蜂vs.暴龍')).then(
+		function(data){
+			console.log('Got news list data from Apple Daily');
+			fs.writeFile('./appleTest.txt',data);
+			
 					var news = getNewsObject(data);
-					news.path = '/appledaily/article/headline/20151226/36970019/神正妹不修圖全靠打的遮瑕膏';
+					news.path = '/appledaily/article/headline/20160101/36966502/疲勞、濛霧、流目油、畏光你需要補腎水、養肝血！';
 					news.liked = 0;
 					news.disliked = 0;
-					news.tag = getTagFromPath('/appledaily/article/headline/20151226/36970019/神正妹不修圖全靠打的遮瑕膏');
+					news.tag = getTagFromPath('/appledaily/article/headline/20160101/36966502/疲勞、濛霧、流目油、畏光你需要補腎水、養肝血！');
 						
 					fs.appendFileSync('./appleNews.txt', 'Title: ' + news.title.toString() + '\n');
 					fs.appendFileSync('./appleNews.txt', 'Path: ' + news.path.toString() + '\n');
 					fs.appendFileSync('./appleNews.txt', 'Time: ' + news.time.toString() + '\n');
 					fs.appendFileSync('./appleNews.txt', 'Tag: ' + news.tag.toString() + '\n');					
-					fs.appendFileSync('./appleNews.txt', 'Pics: ' + news.image[0].description.toString() + '\t' + news.image[0].url.toString() + '\n');
+					if(news.image.length >= 1)
+						fs.appendFileSync('./appleNews.txt', 'Pics: ' + news.image[0].description.toString() + '\t' + news.image[0].url.toString() + '\n');
 					fs.appendFileSync('./appleNews.txt', '\n' + news.content.toString() + '\n\n\n\n');			
 
-	},
-	function(reason){
-		console.error('Apple Daily retrieving data failed: ' + reason.toString());
-	}
-);
-*/
+		},
+		function(reason){
+			console.error('Apple Daily retrieving data failed: ' + reason.toString());
+		}
+	);
+}
+
+
+

@@ -25,7 +25,6 @@ exports.getSubString = function(stringI, leadBy, endWith){
 		if(endIndex === -1){
 			console.log('Tailer: ' +endWith);
 		}
-		console.log(stringI);
 		return '';
 	}
 	var subStringToReturn = stringI.substring(startIndex + leadBy.length, endIndex);
