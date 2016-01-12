@@ -1,12 +1,9 @@
 // import modules
 var fs = require('fs');
-
 var helper = require('./httpStringHelper.js');
 
 // const strings
 var newsHost = 'www.cna.com.tw';
-var lastPathRecieved = '';
-var newsPathsFile = './paths.txt';
 
 // helper function
 /*
@@ -72,6 +69,52 @@ var getImageObjectsFromContent = function(content){
 	return imageObjectArray;
 }
 
+var CNAReplaceLinkTag = function(content){
+	var result = undefined;
+	var leaderIndices = [];
+	var tailerIndices = [];
+	var descriptionIndices = [];
+
+	var hyperLinkLeader = /href="/gi;
+	var hyperLinkTailer = /">/gi;
+	var descriptionTailer = /<\/a>/gi;
+
+	while ( (result = hyperLinkLeader.exec(content)) ) {
+    	leaderIndices.push(result.index);
+	}
+
+	while ( (result = hyperLinkTailer.exec(content)) ) {
+    	tailerIndices.push(result.index);
+	}
+
+	while ( (result = descriptionTailer.exec(content)) ) {
+    	descriptionIndices.push(result.index);
+	}
+
+	if(leaderIndices.length !== tailerIndices.length || leaderIndices.length !== descriptionIndices.length){
+		console.error('delete HtmlTag (<a><\\a>) Problem!');
+		return content;
+	}
+
+	var url = [];
+	var description = [];
+	for(var i=0;i<leaderIndices.length;i++){
+		url.push(content.substring(leaderIndices[i]+6,tailerIndices[i]));
+	}
+
+	for(var i=0;i<descriptionIndices.length;i++){
+		description.push(content.substring(tailerIndices[i]+2,descriptionIndices[i]));
+	}
+
+	var toBeReplaced = /(<a)(.*)(\/a>)/;
+	var contentToReturn = content;
+	for(var i=0;i<url.length;i++){
+		contentToReturn = contentToReturn.replace(toBeReplaced,description[i]+ ' (' + url[i] + ') ');
+	}
+
+	return contentToReturn;
+}
+
 /*
 	summary:
 			http request response parser for CNA news site.
@@ -123,6 +166,7 @@ var htmlToNewsObject = function(data){
 		var context = 'New Content trans error, index wrong!';
 
 	context = helper.deleteHTMLTags(context);
+	context = CNAReplaceLinkTag(context);
 	
 	var imgArray = getImageObjectsFromContent(context);
 
@@ -132,14 +176,27 @@ var htmlToNewsObject = function(data){
 		time: postTime,
 		content : context,
 		image: imgArray,
-		// TODO
-		tag: [],
 	};
 	if( contextEndIndex !== -1 && contextStartIndex !== -1)
 		return newsObjectToReturn;
 	else
 		return null;
 }
+
+var getTagFromPath = function(path){
+	var tagToReturn = [];
+	if(path.indexOf('aipl') !== -1 || path.indexOf('firstnews') !== -1) tagToReturn.push('頭條要聞');
+	if(path.indexOf('asoc') !== -1) tagToReturn.push('社會');
+	if(path.indexOf('ahel') !== -1) tagToReturn.push('生活');
+	if(path.indexOf('afe') !== -1) tagToReturn.push('財經');
+	if(path.indexOf('aopl') !== -1) tagToReturn.push('國際');
+	if(path.indexOf('acn') !== -1) tagToReturn.push('兩岸');
+	if(path.indexOf('amov') !== -1) tagToReturn.push('娛樂名人');
+	if(path.indexOf('aspt') !== -1) tagToReturn.push('體育');
+	if(path.indexOf('aloc') !== -1) tagToReturn.push('地方');
+
+	return tagToReturn;
+};
 
 /*
 	summary:
@@ -176,59 +233,17 @@ var getAALLNewsLinks = function(){
 }
 
 /*
-	Summary:
-		read the path array get from the internet and check if the paths exists in the file,
-		write the new paths into the file.
-
-	Params:
-		path (string) : the file path
-		array (Array of string): the result get from httpRequest, which is an array of paths to news
-	Return:
-		promise
-			use .then(function(){ successCallBack you want to do }, function(reason){...})
-*/
-// TODO: Should have a version to online DB
-var updatePathsToFileByArray = function(path,array){
-	var promiseToReturn = new Promise(function(recieve,reject){
-		try{
-			var exitPaths = fs.readFileSync(path).toString().split('\n');
-			var newPathIndex = (exitPaths.length >= 2)? array.indexOf(exitPaths[exitPaths.length - 2]) : array.length;
-			newPathIndex = (newPathIndex === -1)? array.length : newPathIndex;
-			if(newPathIndex === 0){
-				console.log('No news from CNA now.');
-			}else{
-				console.log('Got ' + newPathIndex + ' news from CNA, retrieving paths...');
-			}
-
-			for(var i = newPathIndex - 1 ; i >= 0 ; i--){
-				fs.appendFileSync(path, array[i].toString() + '\n');
-				console.log('Path: '+ array[i] + ' written to '+ path);
-			};
-			recieve(fs.closeSync(newPathIndex));
-		}catch(err){
-			reject(err);
-		}
-	});
-
-
-	return promiseToReturn;
-}
-
-/*
 	Summary: 
 		by reading paths in the file in file <newsPathsFile>, do httpGetRequest,
 		generate news object and write the result to the file 
 		(change the string './news.txt' to change the dest file)
 
 */
-var getAllNewsObjectByPathsArray = function(){
+var getAllNewsObjectByPathsArray = function(array){
+	console.log('Got ' + array.length + ' news...');
 	console.log('Retrieveing news content');
-	var array = fs.readFileSync(newsPathsFile).toString().split('\n');
-	if (array.length <=2) return;
-	var newPathIndex = (lastPathRecieved === '')? 0 : array.indexOf(lastPathRecieved);
-	newPathIndex = (newPathIndex === -1)? 0 : newPathIndex;
 
-	fs.writeFile('./news.txt','');
+	fs.writeFile('./CNAnews.txt','');
 	array.forEach(function(path){
 		if(path.search('/news/') !== -1){
 			helper.httpGetReturnRequestBody('www.cna.com.tw',path).then(
@@ -237,12 +252,14 @@ var getAllNewsObjectByPathsArray = function(){
 					news.path = path;
 					news.liked = 0;
 					news.disliked = 0;
-						
-					fs.appendFileSync('./news.txt', 'Title: ' + news.title.toString() + '\n');
-					fs.appendFileSync('./news.txt', 'Path: ' + news.path.toString() + '\n');
-					fs.appendFileSync('./news.txt', 'Time: ' + news.time.toString() + '\n');
-					fs.appendFileSync('./news.txt', 'PicsAmount: ' + news.image.length.toString() + '\n');
-					fs.appendFileSync('./news.txt', news.content.toString() + '\n\n\n\n');					
+					news.tag = getTagFromPath(path);
+
+					fs.appendFileSync('./CNAnews.txt', 'Title: ' + news.title.toString() + '\n');
+					fs.appendFileSync('./CNAnews.txt', 'Path: ' + news.path.toString() + '\n');
+					fs.appendFileSync('./CNAnews.txt', 'Time: ' + news.time.toString() + '\n');
+					fs.appendFileSync('./CNAnews.txt', 'Tag: ' + news.tag.toString() + '\n');
+					fs.appendFileSync('./CNAnews.txt', 'PicsAmount: ' + news.image.length.toString() + '\n');
+					fs.appendFileSync('./CNAnews.txt', news.content.toString() + '\n\n\n\n');					
 				},
 				function(reason){
 					console.log(reason);
@@ -260,25 +277,19 @@ var getAllNewsObjectByPathsArray = function(){
 
 console.log('News Listener now on!');
 
-getAALLNewsLinks().then(function(data){
-	updatePathsToFileByArray(newsPathsFile,data).then(function(){
-		getAllNewsObjectByPathsArray();
-		},function(err){
-			console.log(err);
-		});
+getAALLNewsLinks().then(
+	function(data){
+		getAllNewsObjectByPathsArray(data);
 	},function(reason){
 		console.log(reason);
 });
 
 setInterval(function(){
-	getAALLNewsLinks().then(function(data){
-		updatePathsToFileByArray(newsPathsFile,data).then(function(){
-			getAllNewsObjectByPathsArray();
-		},function(err){
-			console.log(err);
-		});
-	},function(reason){
-		console.log(reason);
+	getAALLNewsLinks().then(
+		function(data){
+			getAllNewsObjectByPathsArray(data);
+		},function(reason){
+			console.log(reason);
 	});
 },5*60*1000);
 
