@@ -66,6 +66,42 @@ exports.httpGetReturnRequestBody = function(host, path){
 	return httpTry;
 };
 
+exports.deleteHyperLinkTags = function(content){
+	var result = undefined;
+	var leaderIndices = [];
+	var tailerIndices = [];
+
+	var hyperLinkLeader = /(>)(\s)*(http|[0-9])/gi;
+	var hyperLinkTailer = /<[\/]a>/gi;
+
+	while ( (result = hyperLinkLeader.exec(content)) ) {
+    	leaderIndices.push(result.index);
+	}
+
+	while ( (result = hyperLinkTailer.exec(content)) ) {
+    	tailerIndices.push(result.index);
+	}
+
+	if(leaderIndices.length !== tailerIndices.length){
+		console.error('delete HtmlTag (<a><\\a>) Problem!');
+		return content;
+	}
+
+	var url = [];
+	for(var i=0;i<leaderIndices.length;i++){
+		url.push(content.substring(leaderIndices[i]+1,tailerIndices[i]));
+	}
+
+	var toBeReplaced = /(<a)(.*)(\/a>)/;
+	var contentToReturn = content;
+	for(var i=0;i<url.length;i++){
+		contentToReturn = contentToReturn.replace(toBeReplaced,url[i]);
+	}
+
+	return contentToReturn;
+}
+
+
 /*
 	summary:
 		delete the html tags in the news content (remove <quoteblock/>, non-<p> region, <script/> and replace <br/> as '\n')

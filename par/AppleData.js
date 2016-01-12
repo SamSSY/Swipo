@@ -66,7 +66,10 @@ var getNewsObject = function(data){
 	if(contentLeaderIndex !== -1)
 		newsContent = contentPart.substring(contentLeaderIndex + contentLeader.length);
 	newsContent = newsContent.replace(/(<BR>|<div>&nbsp;<\/div>)/gi,'\n');
-	newsContent = decodeURI(newsContent);
+	newsContent = helper.deleteHyperLinkTags(newsContent);
+	newsContent = decodeURIComponent(newsContent);
+
+	if(newsContent === '' && imageArray.length === 0) return null;
 
 	var newsToReturn = {
 		title: title,
@@ -124,18 +127,20 @@ var getAllNewsObjectByPathsArray = function(pathArray){
 			helper.httpGetReturnRequestBody(newsHost,encodeURI(path)).then(
 				function(data){
 					var news = getNewsObject(data);
-					news.path = path;
-					news.liked = 0;
-					news.disliked = 0;
-					news.tag = getTagFromPath(path);
+					if(news !== null){
+						news.path = path;
+						news.liked = 0;
+						news.disliked = 0;
+						news.tag = getTagFromPath(path);
 						
-					fs.appendFileSync('./appleNews.txt', 'Title: ' + news.title.toString() + '\n');
-					fs.appendFileSync('./appleNews.txt', 'Path: ' + news.path.toString() + '\n');
-					fs.appendFileSync('./appleNews.txt', 'Time: ' + news.time.toString() + '\n');
-					fs.appendFileSync('./appleNews.txt', 'Tag: ' + news.tag.toString() + '\n');
-					if(news.image.length >= 1)			
-						fs.appendFileSync('./appleNews.txt', 'Pics: ' + news.image[0].description.toString() + '\t' + news.image[0].url.toString() + '\n');
-					fs.appendFileSync('./appleNews.txt', '\n' + news.content.toString() + '\n\n\n\n');					
+						fs.appendFileSync('./appleNews.txt', 'Title: ' + news.title.toString() + '\n');
+						fs.appendFileSync('./appleNews.txt', 'Path: ' + news.path.toString() + '\n');
+						fs.appendFileSync('./appleNews.txt', 'Time: ' + news.time.toString() + '\n');
+						fs.appendFileSync('./appleNews.txt', 'Tag: ' + news.tag.toString() + '\n');
+						if(news.image.length >= 1)			
+							fs.appendFileSync('./appleNews.txt', 'Pics: ' + news.image[0].description.toString() + '\t' + news.image[0].url.toString() + '\n');
+						fs.appendFileSync('./appleNews.txt', '\n' + news.content.toString() + '\n\n\n\n');	
+					}				
 				},
 				function(reason){
 					console.log(reason);
@@ -160,9 +165,10 @@ var getTagFromPath = function(path){
 
 
 // Main
-var debug = true;
+var debug = false;
 
 if(!debug){
+	console.log('Apple Daily News Crawler Running...');
 	getAllNewsLinks().then(
 		function(paths){
 			fs.writeFile('./appleNews.txt','');
@@ -173,6 +179,19 @@ if(!debug){
 			console.error(reason);
 		}
 	);
+
+	setInterval(function(){
+		getAllNewsLinks().then(
+			function(paths){
+				fs.writeFile('./appleNews.txt','');
+				console.log('Got ' + paths.length + ' News from Apple Daily!');
+				getAllNewsObjectByPathsArray(paths);
+			},
+			function(reason){
+				console.error(reason);
+			}
+		);
+	},5*60*1000);
 }else{
 // Tester
 //
