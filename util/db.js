@@ -16,13 +16,7 @@ var sqlzModel = require('../models/sqlz')(sequelize);
 require('../models/mongo');
 var mongoose = require('mongoose');
 mongoose.connect('mongodb://davidhu34:123qweasd@ds058508.mongolab.com:58508/news');
-/*
-//docooment
-require('./models/mongo');
-var mongoose = require('docooment');
-mongoose.connect('https://davidnews.documents.azure.com', 443, 'News', {
-	masterKey: '5f5ifYa6bpBQ8wXy5uT5168lBPl6ptNmsPo1HIH09xuxgQKEZ+sPb8crRKlTPzXOIQdH/P9OSLmOM6bYe5KI7w=='});
-*/
+
 module.exports = {
 	checkPath: function (path) {
 		sqlzModels.Post.findOne({
@@ -30,6 +24,7 @@ module.exports = {
 				path: path
 			}
 		}).then( function (data) {
+			//console.log(data.dataValues);
 			return (data)? true: false;
 		}, function (err) {
 			console.log('sqlz query err: ' + err);
@@ -44,15 +39,15 @@ module.exports = {
 			title: title,
 			path: path,
 			source: source,
-		}).then( function (newdata) {
+		}).then( function (data) {
 			console.log('created');
-			console.log(newdata.dataValues);
-			var newPostMongo = new PostMongo();
-			newPostMongo.idx = newdata.dataValues.id;
-			if (tags) newPostMongo.tags = tags;
-			if (images) newPostMongo.images = images;
-			newPostMongo.content = content;
-			newPostMongo.save( function(err) {
+			//console.log(data.dataValues);
+			var PostMongo = new mongoose.model('User')();
+			PostMongo.idx = data.dataValues.path;
+			if (tags) PostMongo.tags = tags;
+			if (images) PostMongo.images = images;
+			PostMongo.content = content;
+			PostMongo.save( function(err) {
 				if (err) {
 					console.log( 'Error in Saving PostMongo: ' + err);  
 					throw err;  

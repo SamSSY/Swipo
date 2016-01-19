@@ -3,7 +3,7 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var postSchema = new Schema({
-	idx: Number,
+	idx: String,
 	likes: [Number],
 	dislikes: [Number],
 	viewed: [Number],
