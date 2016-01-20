@@ -1,6 +1,6 @@
 var db = require('./util/db');
-var appleCrawler = require('./newsCrawler/AppleData.js');
-var CNACrawler = require('./newsCrawler/CNAData.js');
+var appleCrawler = require('./newsCrawler/AppleData');
+var CNACrawler = require('./newsCrawler/CNAData');
 console.log('haha');
 //db.checkPath(path)
 //return false if data from "path"(String) is not yet collected
@@ -23,17 +23,11 @@ if ( db.checkPath(path) ) {
 }
 */
 
-// Apple Daily Crawler
-appleCrawler.getAllNewsLinks().then(
-	function(paths){
-		appleCrawler.getAllNewsObjectByPathsArray(paths, db.checkPath, db.newPost);
-	},
-	function(reason){
-		console.error(reason);
-	}
-);
+var apple = true;
+var cna = true;
 
-setInterval(function(){
+// Apple Daily Crawler
+if(apple){
 	appleCrawler.getAllNewsLinks().then(
 		function(paths){
 			appleCrawler.getAllNewsObjectByPathsArray(paths, db.checkPath, db.newPost);
@@ -41,20 +35,22 @@ setInterval(function(){
 		function(reason){
 			console.error(reason);
 		}
-	);
-},5*60*1000);
-
-// CNA Crawler
-CNACrawler.getAllNewsLinks().then(
-	function(paths){
-		CNACrawler.getAllNewsObjectByPathsArray(paths, db.checkPath, db.newPost);
-	},
-	function(reason){
-		console.error(reason);
-	}
 );
 
-setInterval(function(){
+	setInterval(function(){
+		appleCrawler.getAllNewsLinks().then(
+			function(paths){
+				appleCrawler.getAllNewsObjectByPathsArray(paths, db.checkPath, db.newPost);
+			},
+			function(reason){
+				console.error(reason);
+			}
+		);
+	},5*60*1000);
+}
+
+// CNA Crawler
+if(cna){
 	CNACrawler.getAllNewsLinks().then(
 		function(paths){
 			CNACrawler.getAllNewsObjectByPathsArray(paths, db.checkPath, db.newPost);
@@ -63,4 +59,16 @@ setInterval(function(){
 			console.error(reason);
 		}
 	);
-},5*60*1000);
+
+	setInterval(function(){
+		CNACrawler.getAllNewsLinks().then(
+			function(paths){
+				CNACrawler.getAllNewsObjectByPathsArray(paths, db.checkPath, db.newPost);
+			},
+			function(reason){
+				console.error(reason);
+			}
+		);
+	},5*60*1000);
+}
+

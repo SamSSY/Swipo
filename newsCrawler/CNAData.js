@@ -243,8 +243,7 @@ exports.getAllNewsLinks = function(){
 
 */
 exports.getAllNewsObjectByPathsArray = function(array, checkFunction, uploadFunction){
-	console.log('Got ' + array.length + ' news...');
-	console.log('Retrieveing news content');
+	console.log('Retrieveing news from CNA...');
 
 	array.forEach(function(path){
 		if(path.search('/news/') !== -1 && !checkFunction(path)){
@@ -253,12 +252,15 @@ exports.getAllNewsObjectByPathsArray = function(array, checkFunction, uploadFunc
 					var news = htmlToNewsObject(data);
 
 					if(news !== null){
+						console.log('Got news: ' + news.title.toString() + ', uploading...');
 						var tag = getTagFromPath(path);
 						var dateTime = helper.createTimeByString(news.time.toString());
 
 						//db.newPost(time, title, path, source, tags, content, images)
 						//param types(Date, String, String, String, String, [String], String, [String] )
 						uploadFunction(dateTime, news.title.toString(), path.toString(), '中央社', tag, news.content.toString(), news.image);				
+						console.log('News: ' + news.title.toString() + ', uploading DONE!');
+
 					}
 				},
 				function(reason){
@@ -267,6 +269,8 @@ exports.getAllNewsObjectByPathsArray = function(array, checkFunction, uploadFunc
 			)
 		}
 	});
+
+	console.log('CNA news uploading DONE!');
 }
 
 // main

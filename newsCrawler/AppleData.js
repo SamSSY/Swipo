@@ -124,7 +124,8 @@ var getImagesInNewsObject = function(data){
 
 */
 exports.getAllNewsObjectByPathsArray = function(pathArray, checkFunction, uploadFunction){
-	console.log('Retrieving News From Apple Daily');
+	console.log('Retrieving News From Apple Daily...');
+
 	pathArray.forEach(function(path){
 		if(path.search('/appledaily/') !== -1 && !checkFunction(path)){
 			helper.httpGetReturnRequestBody(newsHost,encodeURI(path)).then(
@@ -137,7 +138,7 @@ exports.getAllNewsObjectByPathsArray = function(pathArray, checkFunction, upload
 						
 						//db.newPost(time, title, path, source, tags, content, images)
 						//param types(Date, String, String, String, String, [String], String, [String] )
-						uploadFunction(dateTime, news.title.toString(), path.toString(), '蘋果日報', tag, news.content.toString(), news.image);				
+						uploadFunction(dateTime, news.title.toString(), path.toString(), '蘋果日報', tag, news.content.toString(), news.image);
 					}				
 				},
 				function(reason){
@@ -146,6 +147,8 @@ exports.getAllNewsObjectByPathsArray = function(pathArray, checkFunction, upload
 			)
 		}
 	});
+
+	console.log('Apple Daily news uploading DONE!');
 };
 
 var getTagFromPath = function(path){
