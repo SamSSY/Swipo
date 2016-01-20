@@ -31,7 +31,7 @@ const initialState = {
     currentIndex : 0,
     isMobile : false,
     isLeftNavOpen: false,
-    logined: false,
+    isLogin: false,
     propValue : null,
     username : null,
     userID: null,
@@ -54,7 +54,6 @@ class MainBody extends React.Component {
     }
 
     componentDidMount(){
-
         //appID: 882849945170096
         window.fbAyncInit = function(){
             FB.init({
@@ -101,7 +100,13 @@ class MainBody extends React.Component {
             }
             console.log($(window).width(), this.state.isMobile);
         });
+    }
 
+    componentWillMount() {
+        let newMuiTheme = ThemeManager.modifyRawThemePalette(this.state.muiTheme, {
+            accent1Color: Colors.deepOrange500,
+        });
+        this.setState({muiTheme: newMuiTheme});
     }
 
     testAPI() {
@@ -111,11 +116,11 @@ class MainBody extends React.Component {
             console.log('Successful login for: ' + response.name + " id: " + response.id);
             this.setState({username: response.name, userID: response.id});
             this._getUserProfilePic();
-
+            this.setState({isLogin: true});
         }.bind(this));
     }
 
-        // This is called with the results from from FB.getLoginStatus().
+    // This is called with the results from from FB.getLoginStatus().
     statusChangeCallback(response) {
         console.log('statusChangeCallback');
         console.log(response);
@@ -126,7 +131,7 @@ class MainBody extends React.Component {
         if (response.status === 'connected') {
             // Logged into your app and Facebook.
             this.testAPI();
-            this.refs.loginDialog.dismiss();
+            this.setState({isLoginDialogOpen: false});
             this._getUserProfilePic();
 
         } else if (response.status === 'not_authorized') {
@@ -149,17 +154,6 @@ class MainBody extends React.Component {
         FB.login(this.checkLoginState());
     }
 
-    _handleLogin(){
-        this.refs.loginDialog.show();
-    }
-
-    _onDialogSubmit(){
-        let username = this.refs.userNameInput.getValue();
-        this.setState({username: username});
-        //TODO: define callback function
-        this.refs.loginDialog.dismiss();
-    }
-
     _handleLoginEnterKeyDown(){
         let username = this.refs.userNameInput.getValue();
         this.setState({username: username});
@@ -177,14 +171,13 @@ class MainBody extends React.Component {
     }
 
     _getUserProfilePic(){
-
         console.log("getUserProfilePic");
-        let queryStr = `/${this.state.userID}/picture`;
+        let queryStr = `/${this.state.userID}/picture?type=large&redirect=true&width=250&height=250`;
         console.log(queryStr);
         // API call
         FB.api(queryStr, function (response) {
               if (response && !response.error) {
-                    //console.log(response);
+                    console.log(response);
                     this.setState({userProfilePicUrl: response.data.url});
               }
             }.bind(this)
@@ -201,13 +194,6 @@ class MainBody extends React.Component {
               autoHideDuration={this.state.autoHideDuration}
               onActionTouchTap={this._handleAction}/>
         );
-    }
-
-    componentWillMount() {
-        let newMuiTheme = ThemeManager.modifyRawThemePalette(this.state.muiTheme, {
-            accent1Color: Colors.deepOrange500,
-        });
-        this.setState({muiTheme: newMuiTheme});
     }
 
     renderSingleSwipePane(content){
@@ -261,10 +247,33 @@ class MainBody extends React.Component {
         return(         
             <Dialog
                 title="User Login"
-                actions={actions}
-                ref="loginDialog" 
-                open={this.state.isLoginDialogOpen} >
+                actions={actions} 
+                modal={false}  
+                open={this.state.isLoginDialogOpen} 
+                onRequestClose={this.handleLoginDialogClose.bind(this)} >
                 <RaisedButton label="Login with Facebook" style={{'marginTop': '15px'}} secondary={true} onTouchTap={this.handleFBLoginButtonClick.bind(this)} />
+            </Dialog>
+        );
+    }
+
+    renderUserInfo(actions){
+        const divStyle = { display: "inline-block",
+                             verticalAlign: "top", 
+                             fontSize: "30px", 
+                             lineHeight: "150px",
+                             marginLeft: "50px"
+                         };
+        return(
+            <Dialog
+                title="User Info"
+                actions={actions} 
+                modal={false}
+                open={this.state.isLoginDialogOpen}
+                onRequestClose={this.handleLoginDialogClose.bind(this)} >
+                <Avatar size={250} src={this.state.userProfilePicUrl} />
+                <div style={divStyle}>
+                    {this.state.username}
+                </div>
             </Dialog>
         );
     }
@@ -276,7 +285,7 @@ class MainBody extends React.Component {
     render() {
         const fullHeight = {height: "100%" };
         const displayNone = {display: 'none'};
-        var isMobile = this.state.isMobile;
+        var {isMobile, isLogin} = this.state;
         var appBarStyle = {};//{ isMobile? {display:"none"} : {display:"none"}};
         //<AppBar style={ isMobile? {display: 'none'} : {display: 'flex'}} title="Swipo" iconClassNameRight="muidocs-icon-navigation-expand-more" /> 
         //{ isMobile? null: this.renderLeftNav() }
@@ -286,17 +295,13 @@ class MainBody extends React.Component {
                 label="Cancel"
                 secondary={true}
                 onTouchTap={this.handleLoginDialogClose.bind(this)} />,
-            //<FlatButton
-            //    label="Submit"
-            //    primary={true}
-            //    onTouchTap={this.handleClose} />,
         ];
         return (
             <div style={fullHeight}>
                 { isMobile? null: this.renderAppBar() }
                 { isMobile? null: this.renderLeftNav() }
                 { isMobile? this.renderSwipePanes(): null }
-                { this.renderLoginDialog(actions)}
+                { isLogin? this.renderUserInfo(actions): this.renderLoginDialog(actions)}
             </div>
         );
     }
