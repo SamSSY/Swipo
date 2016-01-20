@@ -164,6 +164,8 @@ var getTagFromPath = function(path){
 
 // Main
 /*
+=======
+>>>>>>> origin/Machine
 var debug = false;
 
 if(!debug){
@@ -223,4 +225,5 @@ if(!debug){
 		}
 	);
 }
+<<<<<<< HEAD
 */
