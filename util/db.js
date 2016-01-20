@@ -16,6 +16,7 @@ var sqlzModels = require('../models/sqlz')(sequelize);
 require('../models/mongo');
 var mongoose = require('mongoose');
 mongoose.connect('mongodb://davidhu34:123qweasd@ds058508.mongolab.com:58508/news');
+var mongoPost = mongoose.model('Post');
 
 exports = module.exports = {};
 
@@ -35,6 +36,7 @@ exports.checkPath = function (path) {
 };
 exports.newPost = function ( time, title, path, source, tags, content, images) {
 //parameter types(Date, String, String, String, String, [String], String, [String] )
+	console.log(images);
 	sqlzModels.Post.create({
 		time: time,
 		title: title,
@@ -43,10 +45,10 @@ exports.newPost = function ( time, title, path, source, tags, content, images) {
 	}).then( function (data) {
 		console.log('created');
 		//console.log(data.dataValues);
-		var PostMongo = new mongoose.model('User')();
+		var PostMongo = new mongoPost();
 		PostMongo.idx = data.dataValues.path;
 		if (tags) PostMongo.tags = tags;
-		if (images) PostMongo.images = images;
+		//if (images) PostMongo.images = images;
 		PostMongo.content = content;
 		PostMongo.save( function(err) {
 			if (err) {
