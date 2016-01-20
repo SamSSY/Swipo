@@ -28,10 +28,6 @@ html, body{
 		display: none;
 	}
 
-	.swipePanes{
-		display: none;
-	}
-
 	& button{
 		position: fixed;
 	}
@@ -51,8 +47,5 @@ html, body{
 /* Responsive UI */
 @media screen and (max-width: 450px) {
 
-	.swipePanes{
-		display: block !important;
-	}
 
 }
