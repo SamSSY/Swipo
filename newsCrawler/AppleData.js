@@ -135,10 +135,14 @@ exports.getAllNewsObjectByPathsArray = function(pathArray, checkFunction, upload
 					if(news !== null){
 						var tag = getTagFromPath(path);
 						var dateTime = helper.createTimeByString(news.time.toString());
+						var imagesToUpload = [];
+						for(var i=0; i<news.image.length; i++){
+							imagesToUpload.push(news.image[i].url);
+						}
 						
 						//db.newPost(time, title, path, source, tags, content, images)
 						//param types(Date, String, String, String, String, [String], String, [String] )
-						uploadFunction(dateTime, news.title.toString(), path.toString(), '蘋果日報', tag, news.content.toString(), news.image);
+						uploadFunction(dateTime, news.title.toString(), path.toString(), '蘋果日報', tag, news.content.toString(), imagesToUpload);
 					}				
 				},
 				function(reason){
