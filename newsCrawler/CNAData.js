@@ -256,9 +256,14 @@ exports.getAllNewsObjectByPathsArray = function(array, checkFunction, uploadFunc
 						var tag = getTagFromPath(path);
 						var dateTime = helper.createTimeByString(news.time.toString());
 
+						var imagesToUpload = [];
+						for(var i=0; i<news.image.length; i++){
+							imagesToUpload.push(news.image[i].url);
+						}
+
 						//db.newPost(time, title, path, source, tags, content, images)
 						//param types(Date, String, String, String, String, [String], String, [String] )
-						uploadFunction(dateTime, news.title.toString(), path.toString(), '中央社', tag, news.content.toString(), news.image);				
+						uploadFunction(dateTime, news.title.toString(), path.toString(), '中央社', tag, news.content.toString(), imagesToUpload);				
 						console.log('News: ' + news.title.toString() + ', uploading DONE!');
 
 					}
