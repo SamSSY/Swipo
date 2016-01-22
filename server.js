@@ -14,12 +14,13 @@ app.use(require('webpack-dev-middleware')(compiler, {
 }));
 
 app.use(require('webpack-hot-middleware')(compiler));
+app.use('/dist', express.static(__dirname + '/dist'));
 
 app.get('/', function(req, res) {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-app.listen(5000, 'localhost', function(err) {
+app.listen(5000,'localhost',  function(err) {
   if (err) {
     console.log(err);
     return;
@@ -30,5 +31,4 @@ app.listen(5000, 'localhost', function(err) {
 app.get('/policy', function (req, res) {
     console.log("privacy policy");
     res.sendFile(path.join(__dirname, 'privacy-policy.html'));
-
 });
