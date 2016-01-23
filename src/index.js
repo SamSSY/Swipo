@@ -104,7 +104,7 @@ class MainBody extends React.Component {
         }(document, 'script', 'facebook-jssdk'));
 
         $(window).resize(() => {
-            if($(window).width() < 200){
+            if($(window).width() < 600){
                 this.setState({ isMobile: true});
             }
             else{
@@ -113,7 +113,7 @@ class MainBody extends React.Component {
             console.log($(window).width(), this.state.isMobile);
         });
 
-        if($(window).width() < 200){
+        if($(window).width() < 600){
             this.setState({ isMobile: true});
         }
     }
