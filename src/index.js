@@ -44,7 +44,8 @@ const initialState = {
     userID: null,
     autoHideDuration: 1000,
     userProfilePicUrl: null,
-    isLoginDialogOpen : false
+    isLoginDialogOpen : false,
+    inHomepage: true
 }
 
 class MainBody extends React.Component {
@@ -232,11 +233,14 @@ class MainBody extends React.Component {
         );
     }
 
+    goToHomepage(){
+        this.setState({inHomepage: true});
+    }
+
     renderHomepage(){
         let styles = {
             height: "500px",
             backgroundColor: "#00bcd4",
-            lineHeight: "360px",
             margin: "0px",
             textAlign: "center",
             color: "white",
@@ -245,18 +249,20 @@ class MainBody extends React.Component {
             margin: "0px",
             fontSize: "190px",
             fontWeight: "200",
+            lineHeight: "360px",
             fontFamily: //'Shadows Into Light Two'//'Covered By Your Grace'//'Architects Daughter'//'Amatic SC'
             'Shadows Into Light'
         };
         let descriptStyle = {
             lineHeight: "0px",
-            display: "block"
-
+            display: "block",
+            height: "30px"
         }
         return(
             <div style={styles}>
                 <h1 style={titleStyle}>Swipo</h1>
                 <span style={descriptStyle}>Brand new world in a swipe.</span>
+                <RaisedButton label="Swipo!" secondary={true} />
             </div>
         );
     }
@@ -274,7 +280,7 @@ class MainBody extends React.Component {
                     <ListItem primaryText="Home" leftIcon={<FontIcon
                         className="material-icons"
                         style={iconStyles}
-                        color={Colors.blue500}>home</FontIcon>} 
+                        color={Colors.lightBlue100}>home</FontIcon>} 
                     />
                     <ListItem
                             key={1}
@@ -415,7 +421,7 @@ class MainBody extends React.Component {
         return (
             <div style={fullHeight}>
                 { isMobile? null: this.renderAppBar() }
-                { isMobile? null: this.renderHomepage() }
+                { isMobile&&inHomepage? null: this.renderHomepage() }
                 { isMobile? null: this.renderLeftNav() }
                 { isMobile? this.renderSwipePanes(): null }
                 { isLogin? this.renderUserInfo(actions): this.renderLoginDialog(actions)}
