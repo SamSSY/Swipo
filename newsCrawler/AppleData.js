@@ -131,7 +131,7 @@ var getTagFromPath = function(path){
 	return toReturn;
 };
 
-var getSingleNewsByPath = function(path, checkFunction, uploadFunction){
+var getSingleNewsByPath = function(path, checkFunction, uploadFunctionSql, uploadFunctionDoc, useSummary){
 	if(path.search('/appledaily/') !== -1 && !checkFunction(md5(path))){
 		helper.httpGetReturnRequestBody(newsHost,encodeURI(path)).then(function(data){
 			var news = getNewsObject(data);
@@ -143,13 +143,18 @@ var getSingleNewsByPath = function(path, checkFunction, uploadFunction){
 				news.url = newsHost + encodeURI(path);
 
 				if(news.content !== null && news.content !== '' && news.image.length !== 0){
-					if(news.content !== null && news.content !== ''){
-						summaryHelper.submitSummary(news, '蘋果日報', uploadFunction);
+					if(news.content !== null && news.content !== '' && useSummary){
+						//db.newPostSQL( md5, time, title, url, source, tag)
+						//parameter types( String, Date, String, String, String, String )
+						uploadFunctionSql(news.id, news.dateTime, news.title, news.url, '蘋果日報', news.classification);
+
+						summaryHelper.submitSummary(news, '蘋果日報', uploadFunctionSql);
 					}else{
-						news.newsTags = []
-						//db.newPost(id, time, title, url, source, classification, tags, content, images)
-						//param types(string, Date, String, String, String, String, [String], String, [Object] )
-						uploadFunction(news.id.toString(), news.dateTime, news.title.toString(), news.url.toString(), '蘋果日報', news.classification, news.newsTags, news.content.toString(), news.image);
+						uploadFunctionSql(news.id, news.dateTime, news.title, news.url, '蘋果日報', news.classification);
+
+						//db.newPostDOC( md5, keywords, content, images)
+						//parameter types( String, [String], String, [ {url: String, description: String} ] )
+						uploadFunctionDoc(news.id, [], news.content, news.image);
 					}
 				}		
 			}
@@ -160,12 +165,12 @@ var getSingleNewsByPath = function(path, checkFunction, uploadFunction){
 	}
 };
 
-var pathArrayRecursiveFunction = function(array, cuts, checkFunction, uploadFunction){
+var pathArrayRecursiveFunction = function(array, cuts, checkFunction, uploadFunctionSql, uploadFunctionDoc, useSummary){
 	var theRemained = array;
 	var pathArray = theRemained.splice(theRemained.length/cuts, theRemained.length);
 
 	pathArray.forEach(function(path){
-		getSingleNewsByPath(path, checkFunction, uploadFunction);
+		getSingleNewsByPath(path, checkFunction, uploadFunctionSql, uploadFunctionDoc, useSummary);
 	});
 
 	return theRemained;
@@ -178,59 +183,59 @@ var pathArrayRecursiveFunction = function(array, cuts, checkFunction, uploadFunc
 		(change the string './news.txt' to change the dest file)
 
 */
-exports.getAllNewsObjectByPathsArray = function(pathArray, checkFunction, uploadFunction){
+exports.getAllNewsObjectByPathsArray = function(pathArray, checkFunction, uploadFunctionSql, uploadFunctionDoc, useSummary){
 	console.log('Retrieving News From Apple Daily...');
 	var summaryGenerater = undefined;
 
 	// Splice the array to prevent overloading
 	if(pathArray.length >= 20){
-		var pathArray1 = pathArrayRecursiveFunction(pathArray, 16, checkFunction, uploadFunction);
-		var pathArray2 = pathArrayRecursiveFunction(pathArray1, 16, checkFunction, uploadFunction);
+		var pathArray1 = pathArrayRecursiveFunction(pathArray, 16, checkFunction, uploadFunctionSql, uploadFunctionDoc, useSummary);
+		var pathArray2 = pathArrayRecursiveFunction(pathArray1, 16, checkFunction, uploadFunctionSql, uploadFunctionDoc, useSummary);
 		setInterval(function(){
-			pathArray1 = pathArrayRecursiveFunction(pathArray2, 16, checkFunction, uploadFunction);
+			pathArray1 = pathArrayRecursiveFunction(pathArray2, 16, checkFunction, uploadFunctionSql, uploadFunctionDoc, useSummary);
 		},1*60*1000);
 		setInterval(function(){
-			pathArray2 = pathArrayRecursiveFunction(pathArray1, 16, checkFunction, uploadFunction);
+			pathArray2 = pathArrayRecursiveFunction(pathArray1, 16, checkFunction, uploadFunctionSql, uploadFunctionDoc, useSummary);
 		},2*60*1000);
 		setInterval(function(){
-			pathArray1 = pathArrayRecursiveFunction(pathArray2, 16, checkFunction, uploadFunction);
+			pathArray1 = pathArrayRecursiveFunction(pathArray2, 16, checkFunction, uploadFunctionSql, uploadFunctionDoc, useSummary);
 		},3*60*1000);
 		setInterval(function(){
-			pathArray2 = pathArrayRecursiveFunction(pathArray1, 16, checkFunction, uploadFunction);
+			pathArray2 = pathArrayRecursiveFunction(pathArray1, 16, checkFunction, uploadFunctionSql, uploadFunctionDoc, useSummary);
 		},4*60*1000);
 		setInterval(function(){
-			pathArray1 = pathArrayRecursiveFunction(pathArray2, 16, checkFunction, uploadFunction);
+			pathArray1 = pathArrayRecursiveFunction(pathArray2, 16, checkFunction, uploadFunctionSql, uploadFunctionDoc, useSummary);
 		},5*60*1000);
 		setInterval(function(){
-			pathArray2 = pathArrayRecursiveFunction(pathArray1, 16, checkFunction, uploadFunction);
+			pathArray2 = pathArrayRecursiveFunction(pathArray1, 16, checkFunction, uploadFunctionSql, uploadFunctionDoc, useSummary);
 		},6*60*1000);
 		setInterval(function(){
-			pathArray1 = pathArrayRecursiveFunction(pathArray2, 16, checkFunction, uploadFunction);
+			pathArray1 = pathArrayRecursiveFunction(pathArray2, 16, checkFunction, uploadFunctionSql, uploadFunctionDoc, useSummary);
 		},7*60*1000);
 		setInterval(function(){
-			pathArray2 = pathArrayRecursiveFunction(pathArray1, 16, checkFunction, uploadFunction);
+			pathArray2 = pathArrayRecursiveFunction(pathArray1, 16, checkFunction, uploadFunctionSql, uploadFunctionDoc, useSummary);
 		},8*60*1000);
 		setInterval(function(){
-			pathArray1 = pathArrayRecursiveFunction(pathArray2, 16, checkFunction, uploadFunction);
+			pathArray1 = pathArrayRecursiveFunction(pathArray2, 16, checkFunction, uploadFunctionSql, uploadFunctionDoc, useSummary);
 		},9*60*1000);
 		setInterval(function(){
-			pathArray2 = pathArrayRecursiveFunction(pathArray1, 16, checkFunction, uploadFunction);
+			pathArray2 = pathArrayRecursiveFunction(pathArray1, 16, checkFunction, uploadFunctionSql, uploadFunctionDoc, useSummary);
 		},10*60*1000);
 		setInterval(function(){
-			pathArray1 = pathArrayRecursiveFunction(pathArray2, 16, checkFunction, uploadFunction);
+			pathArray1 = pathArrayRecursiveFunction(pathArray2, 16, checkFunction, uploadFunctionSql, uploadFunctionDoc, useSummary);
 		},11*60*1000);
 		setInterval(function(){
-			pathArray2 = pathArrayRecursiveFunction(pathArray1, 16, checkFunction, uploadFunction);
+			pathArray2 = pathArrayRecursiveFunction(pathArray1, 16, checkFunction, uploadFunctionSql, uploadFunctionDoc, useSummary);
 		},12*60*1000);
 		setInterval(function(){
-			pathArray1 = pathArrayRecursiveFunction(pathArray2, 16, checkFunction, uploadFunction);
+			pathArray1 = pathArrayRecursiveFunction(pathArray2, 16, checkFunction, uploadFunctionSql, uploadFunctionDoc, useSummary);
 		},13*60*1000);
 		setInterval(function(){
-			pathArray2 = pathArrayRecursiveFunction(pathArray1, 16, checkFunction, uploadFunction);
+			pathArray2 = pathArrayRecursiveFunction(pathArray1, 16, checkFunction, uploadFunctionSql, uploadFunctionDoc, useSummary);
 		},14*60*1000);		
 	}else{
 		pathArray.forEach(function(path){
-			getSingleNewsByPath(path, checkFunction, uploadFunction);
+			getSingleNewsByPath(path, checkFunction, uploadFunctionSql, uploadFunctionDoc);
 		});
 	}
 };
