@@ -267,6 +267,8 @@ var getSingleNewsByPath = function(path, checkFunction, uploadFunctionSql, uploa
 		function(reason){
 			console.log(reason);
 		})
+	}else{
+		return done();
 	}
 };
 
