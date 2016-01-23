@@ -1,8 +1,9 @@
 import React from 'react';
 import { render } from 'react-dom';
-import { Router, Route, Link, browserHistory } from 'react-router';
+import { Router, Route, Link, IndexLink, browserHistory } from 'react-router';
 
 import SwipePane from './SwipePane';
+import AppLeftNav from './AppLeftNav';
 // material-ui
 import RaisedButton from 'material-ui/lib/raised-button';
 import Dialog from 'material-ui/lib/dialog';
@@ -49,7 +50,6 @@ const initialState = {
     autoHideDuration: 1000,
     userProfilePicUrl: null,
     isLoginDialogOpen : false,
-    inHomepage: true
 }
 
 class MainBody extends React.Component {
@@ -243,96 +243,24 @@ class MainBody extends React.Component {
         );
     }
 
-    goToHomepage(){
-        this.setState({inHomepage: true});
+    handleLeftNavRequestChange(open){
+        this.setState({isLeftNavOpen: open});
     }
 
     renderLeftNav(){
         const iconStyles = {
             marginRight: 24,
         };
+        const { history, location, children } = this.props;
         return(
-            <LeftNav docked={false}
+            <AppLeftNav 
+                    history={history} 
+                    location={location} 
+                    docked={false} 
                     width={300} 
                     open={this.state.isLeftNavOpen} 
-                    onRequestChange={open => this.setState({isLeftNavOpen: open}) } >
-                    <List subheader="Swipo">
-                    <ListItem primaryText="Home" leftIcon={<FontIcon
-                        className="material-icons"
-                        style={iconStyles}
-                        color={Colors.lightBlue100}>home</FontIcon>}
-                        onTouchTap={this.goToHomepage} 
-                    />
-                    <ListItem
-                            key={1}
-                            primaryText="Starred News"
-                            leftIcon={<ActionGrade />}
-                            initiallyOpen={true}
-                            primaryTogglesNestedList={true}
-                            nestedItems={[
-                                <ListItem
-                                    key={2}
-                                    primaryText="Date"
-                                    leftIcon={<FontIcon
-                                                className="material-icons"
-                                                style={iconStyles}
-                                              >date_range</FontIcon>}
-                                    disabled={true}
-                                    nestedItems={[
-                                        <ListItem key={1} primaryText="Today" 
-                                            leftIcon={<FontIcon
-                                                className="material-icons"
-                                                style={iconStyles}
-                                              >schedule</FontIcon>} 
-                                        />,
-                                        <ListItem key={2} primaryText="This Week" 
-                                            leftIcon={<FontIcon
-                                                className="material-icons"
-                                                style={iconStyles}
-                                              >schedule</FontIcon>} 
-                                        />,
-                                    ]}
-                                />,
-                                <ListItem
-                                    key={3}
-                                    primaryText="Category"
-                                    leftIcon={<FontIcon
-                                                className="material-icons"
-                                                style={iconStyles}
-                                              >class</FontIcon>}
-                                    disabled={true}
-                                    nestedItems={[
-                                        <ListItem key={1} primaryText="Entertainment" leftIcon={<FontIcon
-                                                className="material-icons"
-                                                style={iconStyles}
-                                              >bookmark</FontIcon>} 
-                                        />,
-                                        <ListItem key={2} primaryText="Politics" leftIcon={<FontIcon
-                                                className="material-icons"
-                                                style={iconStyles}
-                                              >bookmark</FontIcon>} 
-                                        />,
-                                    ]}
-                                />
-                            ]}
-                    />
-                    <ListItem primaryText="Timeline" leftIcon={<FontIcon
-                        className="material-icons"
-                        style={iconStyles}
-                        >timeline</FontIcon>} 
-                    />
-                    <ListItem primaryText="Dashboard" leftIcon={<FontIcon
-                        className="material-icons"
-                        style={iconStyles}
-                        >dashboard</FontIcon>} 
-                    />
-                    <ListItem primaryText="Settings" leftIcon={<FontIcon
-                        className="material-icons"
-                        style={iconStyles}
-                        >settings</FontIcon>} 
-                    />
-                    </List>
-            </LeftNav>
+                    onRequestChange={this.handleLeftNavRequestChange.bind(this)}
+                    iconStyles={iconStyles} />
         );
     }
 
@@ -393,6 +321,7 @@ class MainBody extends React.Component {
         const displayNone = {display: 'none'};
         var {isMobile, isLogin} = this.state;
         var appBarStyle = {};
+
         const actions =[
             <FlatButton
                 label="Cancel"
