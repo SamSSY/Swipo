@@ -21,6 +21,10 @@ import ContentInbox from 'material-ui/lib/svg-icons/content/inbox';
 import ContentDrafts from 'material-ui/lib/svg-icons/content/drafts';
 import ContentSend from 'material-ui/lib/svg-icons/content/send';
 import FontIcon from 'material-ui/lib/font-icon';
+import Card from 'material-ui/lib/card/card';
+import CardActions from 'material-ui/lib/card/card-actions';
+import CardHeader from 'material-ui/lib/card/card-header';
+import CardText from 'material-ui/lib/card/card-text';
 const FlatButton = require('material-ui/lib/flat-button');
 const TextField = require('material-ui/lib/text-field');
 const Snackbar = require('material-ui/lib/snackbar');
@@ -212,7 +216,7 @@ class MainBody extends React.Component {
         );
     }
 
-    renderSwipePanes(){
+    renderMobileSwipePanes(){
         return(                
             <div className='swipePanes' style={{height: "100%" }} > 
                 {this.renderSingleSwipePane()}
@@ -222,7 +226,7 @@ class MainBody extends React.Component {
 
     renderAppBar(){
         let { isLeftNavOpen } = this.state;
-        return (
+        return this.state.isMobile ? null: (
             <AppBar title="Swipo" 
                     style={{boxShadow: "0px"}}
                     iconClassNameRight="fa fa-facebook fa-2x" 
@@ -250,8 +254,7 @@ class MainBody extends React.Component {
             fontSize: "190px",
             fontWeight: "200",
             lineHeight: "360px",
-            fontFamily: //'Shadows Into Light Two'//'Covered By Your Grace'//'Architects Daughter'//'Amatic SC'
-            'Shadows Into Light'
+            fontFamily: 'Shadows Into Light'
         };
         let descriptStyle = {
             lineHeight: "0px",
@@ -420,10 +423,10 @@ class MainBody extends React.Component {
         ];
         return (
             <div style={fullHeight}>
-                { isMobile? null: this.renderAppBar() }
-                { isMobile&&inHomepage? null: this.renderHomepage() }
+                { this.renderAppBar() }
+                { isMobile ? null: this.renderHomepage() }
                 { isMobile? null: this.renderLeftNav() }
-                { isMobile? this.renderSwipePanes(): null }
+                { isMobile? this.renderMobileSwipePanes(): null }
                 { isLogin? this.renderUserInfo(actions): this.renderLoginDialog(actions)}
                 { isMobile? null: this.renderFooter() }
             </div>
