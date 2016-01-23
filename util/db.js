@@ -13,6 +13,7 @@ var sequelize = new Sequelize('acsm_3863f055e350ee9', 'bdac84d335f56e', '613f8f9
 		maxIdleTime: 15*60000
 	}
 });
+sequelize.authenticate().then(function(errors) { console.log(errors) });
 var sqlzModels = require('../models/sqlz')(sequelize);
 
 //mongodb
