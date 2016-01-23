@@ -4,8 +4,8 @@ var CNACrawler = require('./newsCrawler/CNAData');
 //db.checkPath(path)
 //return false if data from "path"(String) is not yet collected
 
-//db.newPost( md5, time, title, url, source, tag, content, images)
-//parameter types( String, Date, String, String, String, String, String, [ {url: String, description: String} ] )
+//db.newPost( md5, time, title, url, source, tag, keywords, content, images)
+//parameter types( String, Date, String, String, String, String, [String], String, [ {url: String, description: String} ] )
 /*	
 
 <(_ _)><(_ _)><(_ _)>start your code<(_ _)><(_ _)><(_ _)>

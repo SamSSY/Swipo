@@ -10,8 +10,12 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "fs": "0.0.2",
+    "md5": "^2.0.0",
     "mongoose": "^4.3.6",
     "mysql": "^2.10.2",
-    "sequelize": "^3.17.3"
+    "python-shell": "^0.3.0",
+    "sequelize": "^3.17.3",
+    "utf8": "^2.1.1"
   }
 }

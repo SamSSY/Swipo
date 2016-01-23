@@ -21,10 +21,10 @@ var mongoPost = mongoose.model('Post');
 
 exports = module.exports = {};
 
-exports.checkPath = function (path) {
+exports.checkPath = function (md5) {
 	sqlzModels.Post.findOne({
 		where: {
-			path: path
+			id: md5
 		}
 	}).then( function (data) {
 		//console.log(data.dataValues);
@@ -35,11 +35,11 @@ exports.checkPath = function (path) {
 	});
 	//return false if data from "path" is not yet collected
 };
-exports.newPost = function ( md5, time, title, url, source, tag, content, images) {
-//parameter types( String, Date, String, String, String, String, String, [ {url: String, description: String} ] )
+exports.newPost = function ( md5, time, title, url, source, keywords, content, images) {
+//parameter types( String, Date, String, String, String, [String], String, [ {url: String, description: String} ] )
 	console.log(images);
 	sqlzModels.Post.create({
-		id: md5
+		id: md5,
 		time: time,
 		title: title,
 		url: url,
@@ -50,6 +50,7 @@ exports.newPost = function ( md5, time, title, url, source, tag, content, images
 		//console.log(data.dataValues);
 		var PostMongo = new mongoPost();
 		PostMongo.id = md5;
+		PostMongo.keywords = keywords;
 		PostMongo.content = content;
 		PostMongo.images = images;
 		PostMongo.save( function(err) {

@@ -2,21 +2,28 @@
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
+var swipeSchema = new Schema({
+	id: String,
+	time: Date,
+});
+
 var postSchema = new Schema({
 	id: String,
 	likes: [swipeSchema],
 	dislikes: [swipeSchema],
 	content: String,
-	images: [String]
+	images: [String],
+	keywords: [String]
 });
 
-var swipeSchema = new Schema({
-	id: String,
-	time: Date,
-})
 var imageSchema = new Schema({
 	url: String,
 	description: String
+});
+
+var tagSchema = new Schema({
+	tag: String,
+	count: Number 
 });
 
 var userSchema = new Schema({
@@ -24,13 +31,8 @@ var userSchema = new Schema({
 	likes: [String],
 	dislikes: [swipeSchema],
 	friends: [swipeSchema],
-	tags: [TagSchema]
+	tags: [tagSchema]
 });
-
-var TagSchema = new Scema({
-	tag: String,
-	count: Number 
-})
 
 mongoose.model('Post', postSchema);
 mongoose.model('User', userSchema);
