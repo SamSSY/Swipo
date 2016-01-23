@@ -91,9 +91,12 @@ exports.createTimeByString = function(timeString){
 	if(emptyIndex !== -1 && mIndex !== -1){
 		hour = Number(timeString.substring(emptyIndex+1, mIndex));
 		minute = Number(timeString.substring(mIndex+1, timeString.length));
-	}
 
-	return new Date(year,month,date,hour,minute,0,0);
+		return new Date(year,month,date,hour,minute,0,0);
+	}else{
+		return new Date();
+	}
+	
 }
 
 exports.deleteHyperLinkTags = function(content){
