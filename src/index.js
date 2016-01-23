@@ -108,7 +108,7 @@ class MainBody extends React.Component {
             console.log("!!!!");
             console.log(width);
             //if($(window).width() < 1000){
-            if(width < 1000){
+            if(width < 750){
                 this.setState({ isMobile: true});
             }
             else{
@@ -119,7 +119,7 @@ class MainBody extends React.Component {
         });
         var width = (window.innerWidth > 0) ? window.innerWidth : screen.width;
         //if($(window).width() < 500){
-        if(width < 1000){
+        if(width < 750){
             this.setState({ isMobile: true});
         }
     }
