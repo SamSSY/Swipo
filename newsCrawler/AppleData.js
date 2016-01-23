@@ -1,6 +1,7 @@
 // import modules
 var fs = require('fs');
 var md5 = require('md5');
+var eachSeries = require('async-each-series');
 var summaryHelper = require('./summary.js');
 var helper = require('./httpStringHelper.js');
 
@@ -131,7 +132,7 @@ var getTagFromPath = function(path){
 	return toReturn;
 };
 
-var getSingleNewsByPath = function(path, checkFunction, uploadFunctionSql, uploadFunctionDoc, useSummary){
+var getSingleNewsByPath = function(path, checkFunction, uploadFunctionSql, uploadFunctionDoc, useSummary, done){
 	if(path.search('/appledaily/') !== -1 && !checkFunction(md5(path))){
 		console.log('Retriving news, path: ' + path);
 		helper.httpGetReturnRequestBody(newsHost,encodeURI(path)).then(function(data){
@@ -142,8 +143,7 @@ var getSingleNewsByPath = function(path, checkFunction, uploadFunctionSql, uploa
 				news.classification = getTagFromPath(path);
 				news.dateTime = helper.createTimeByString(news.time.toString());
 				news.id = md5(path);
-				news.url = newsHost + encodeURI(path);
-				//console.log('BBC');
+				news.url = newsHost + path;
 				if(news.content !== null && news.content !== '' && news.image.length !== 0){
 					//console.log('CCC');
 					if(news.content !== null && news.content !== '' && useSummary){
@@ -162,23 +162,14 @@ var getSingleNewsByPath = function(path, checkFunction, uploadFunctionSql, uploa
 					console.log('News: ' + news.title + '\nID:' + news.id);
 				}		
 			}
+
+			return done();
 		},
 		function(reason){
 			console.log(reason);
 		});
 	}
 };
-
-var pathArrayRecursiveFunction = function(array, cuts, checkFunction, uploadFunctionSql, uploadFunctionDoc, useSummary){
-	var theRemained = array;
-	var pathArray = theRemained.splice(theRemained.length/cuts, theRemained.length);
-
-	pathArray.forEach(function(path){
-		getSingleNewsByPath(path, checkFunction, uploadFunctionSql, uploadFunctionDoc, useSummary);
-	});
-
-	return theRemained;
-}
 
 /*
 	Summary: 
@@ -189,57 +180,27 @@ var pathArrayRecursiveFunction = function(array, cuts, checkFunction, uploadFunc
 */
 exports.getAllNewsObjectByPathsArray = function(pathArray, checkFunction, uploadFunctionSql, uploadFunctionDoc, useSummary){
 	console.log('Retrieving News From Apple Daily...');
-	var summaryGenerater = undefined;
 
-	// Splice the array to prevent overloading
-	if(pathArray.length >= 20){
-		var pathArray1 = pathArrayRecursiveFunction(pathArray, 16, checkFunction, uploadFunctionSql, uploadFunctionDoc, useSummary);
-		var pathArray2 = pathArrayRecursiveFunction(pathArray1, 16, checkFunction, uploadFunctionSql, uploadFunctionDoc, useSummary);
-		setInterval(function(){
-			pathArray1 = pathArrayRecursiveFunction(pathArray2, 16, checkFunction, uploadFunctionSql, uploadFunctionDoc, useSummary);
-		},1*60*1000);
-		setInterval(function(){
-			pathArray2 = pathArrayRecursiveFunction(pathArray1, 16, checkFunction, uploadFunctionSql, uploadFunctionDoc, useSummary);
-		},2*60*1000);
-		setInterval(function(){
-			pathArray1 = pathArrayRecursiveFunction(pathArray2, 16, checkFunction, uploadFunctionSql, uploadFunctionDoc, useSummary);
-		},3*60*1000);
-		setInterval(function(){
-			pathArray2 = pathArrayRecursiveFunction(pathArray1, 16, checkFunction, uploadFunctionSql, uploadFunctionDoc, useSummary);
-		},4*60*1000);
-		setInterval(function(){
-			pathArray1 = pathArrayRecursiveFunction(pathArray2, 16, checkFunction, uploadFunctionSql, uploadFunctionDoc, useSummary);
-		},5*60*1000);
-		setInterval(function(){
-			pathArray2 = pathArrayRecursiveFunction(pathArray1, 16, checkFunction, uploadFunctionSql, uploadFunctionDoc, useSummary);
-		},6*60*1000);
-		setInterval(function(){
-			pathArray1 = pathArrayRecursiveFunction(pathArray2, 16, checkFunction, uploadFunctionSql, uploadFunctionDoc, useSummary);
-		},7*60*1000);
-		setInterval(function(){
-			pathArray2 = pathArrayRecursiveFunction(pathArray1, 16, checkFunction, uploadFunctionSql, uploadFunctionDoc, useSummary);
-		},8*60*1000);
-		setInterval(function(){
-			pathArray1 = pathArrayRecursiveFunction(pathArray2, 16, checkFunction, uploadFunctionSql, uploadFunctionDoc, useSummary);
-		},9*60*1000);
-		setInterval(function(){
-			pathArray2 = pathArrayRecursiveFunction(pathArray1, 16, checkFunction, uploadFunctionSql, uploadFunctionDoc, useSummary);
-		},10*60*1000);
-		setInterval(function(){
-			pathArray1 = pathArrayRecursiveFunction(pathArray2, 16, checkFunction, uploadFunctionSql, uploadFunctionDoc, useSummary);
-		},11*60*1000);
-		setInterval(function(){
-			pathArray2 = pathArrayRecursiveFunction(pathArray1, 16, checkFunction, uploadFunctionSql, uploadFunctionDoc, useSummary);
-		},12*60*1000);
-		setInterval(function(){
-			pathArray1 = pathArrayRecursiveFunction(pathArray2, 16, checkFunction, uploadFunctionSql, uploadFunctionDoc, useSummary);
-		},13*60*1000);
-		setInterval(function(){
-			pathArray2 = pathArrayRecursiveFunction(pathArray1, 16, checkFunction, uploadFunctionSql, uploadFunctionDoc, useSummary);
-		},14*60*1000);		
-	}else{
-		pathArray.forEach(function(path){
-			getSingleNewsByPath(path, checkFunction, uploadFunctionSql, uploadFunctionDoc);
-		});
+	eachSeries(pathArray, function (prime, done) {
+  		getSingleNewsByPath(prime, checkFunction, uploadFunctionSql, uploadFunctionDoc, useSummary, done);
+	}, function (err) {
+  		if (err) { throw err; }
+  		console.log('AppleDaily Done!');
+	});
+
+	/*
+	var count = pathArray.length-1;
+	while(count) {
+		count = DO(count);
 	}
+	function DO(count){
+		if (getSingleNewsByPath(pathArray[count], checkFunction, uploadFunctionSql, uploadFunctionDoc, useSummary)) return count-1;
+		else return 0;
+	}
+	*/
+	/*
+	array.forEach(function(path){
+		getSingleNewsByPath(path, checkFunction, uploadFunctionSql, uploadFunctionDoc, useSummary);
+	});
+	*/
 };
