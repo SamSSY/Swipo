@@ -69,7 +69,8 @@ export default class AppLeftNav extends React.Component{
                                             leftIcon={<FontIcon
                                                 className="material-icons"
                                                 style={iconStyles}
-                                              >schedule</FontIcon>} 
+                                              >schedule</FontIcon>}
+                                            value="starred-news/view-by-date" 
                                         />,
                                         <ListItem key={2} primaryText="This Week" 
                                             leftIcon={<FontIcon
@@ -88,16 +89,72 @@ export default class AppLeftNav extends React.Component{
                                               >class</FontIcon>}
                                     disabled={true}
                                     nestedItems={[
-                                        <ListItem key={1} primaryText="Entertainment" leftIcon={<FontIcon
+                                        <ListItem key={1} primaryText="Headline" leftIcon={<FontIcon
                                                 className="material-icons"
                                                 style={iconStyles}
                                               >bookmark</FontIcon>} 
+                                             value="starred-news/view-by-category/headline"
                                         />,
-                                        <ListItem key={2} primaryText="Politics" leftIcon={<FontIcon
+                                        <ListItem key={2} primaryText="Society" leftIcon={<FontIcon
                                                 className="material-icons"
                                                 style={iconStyles}
                                               >bookmark</FontIcon>} 
+                                            value="starred-news/view-by-category/society"
                                         />,
+                                        <ListItem key={3} primaryText="Life" leftIcon={<FontIcon
+                                                className="material-icons"
+                                                style={iconStyles}
+                                              >bookmark</FontIcon>} 
+                                            value="starred-news/view-by-category/life"
+                                        />,
+                                        <ListItem key={4} primaryText="Finance" leftIcon={<FontIcon
+                                                className="material-icons"
+                                                style={iconStyles}
+                                              >bookmark</FontIcon>} 
+                                            value="starred-news/view-by-category/finance"
+                                        />,
+                                        <ListItem key={5} primaryText="International" leftIcon={<FontIcon
+                                                className="material-icons"
+                                                style={iconStyles}
+                                              >bookmark</FontIcon>} 
+                                            value="starred-news/view-by-category/international"
+                                        />,
+                                        <ListItem key={6} primaryText="Society" leftIcon={<FontIcon
+                                                className="material-icons"
+                                                style={iconStyles}
+                                              >China</FontIcon>} 
+                                            value="starred-news/view-by-category/china"
+                                        />,
+                                        <ListItem key={7} primaryText="Entertainment" leftIcon={<FontIcon
+                                                className="material-icons"
+                                                style={iconStyles}
+                                              >bookmark</FontIcon>} 
+                                            value="starred-news/view-by-category/entertainment"
+                                        />,
+                                        <ListItem key={8} primaryText="Sports" leftIcon={<FontIcon
+                                                className="material-icons"
+                                                style={iconStyles}
+                                              >bookmark</FontIcon>} 
+                                            value="starred-news/view-by-category/sports"
+                                        />,
+                                        <ListItem key={9} primaryText="Local" leftIcon={<FontIcon
+                                                className="material-icons"
+                                                style={iconStyles}
+                                              >bookmark</FontIcon>} 
+                                            value="starred-news/view-by-category/local"
+                                        />,
+                                        <ListItem key={10} primaryText="Supplement" leftIcon={<FontIcon
+                                                className="material-icons"
+                                                style={iconStyles}
+                                              >bookmark</FontIcon>} 
+                                            value="starred-news/view-by-category/supplement"
+                                        />,
+                                        <ListItem key={11} primaryText="Forum" leftIcon={<FontIcon
+                                                className="material-icons"
+                                                style={iconStyles}
+                                              >bookmark</FontIcon>} 
+                                            value="starred-news/view-by-category/forum"
+                                        />
                                     ]}
                                 />
                             ]}
