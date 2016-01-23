@@ -1,14 +1,31 @@
 import React from 'react';
 import { render } from 'react-dom';
 import RaisedButton from 'material-ui/lib/raised-button';
+import io from 'socket.io-client';
+import './main.scss';
 
-require('./main.scss');
 
-export default class Homepage extends React.Component{
-	render(){
-		let styles = {
-            height: "500px",
-            backgroundColor: "#00bcd4",
+export default class StarredNewsByCategory extends React.Component{
+	
+    constructor(props){
+        super(props);
+        this.state = {
+            socket: io.connect()
+        }
+    }
+
+    componentDidMount(){
+        const { socket } = this.state;
+        socket.emit('init', "from category");
+        socket.on('test', function(){
+            console.log("in category");
+        });
+    }
+
+    render(){	
+        let styles = {
+            height: "100%",
+            backgroundColor: "grey",
             margin: "0px",
             textAlign: "center",
             color: "white",
@@ -25,6 +42,7 @@ export default class Homepage extends React.Component{
             display: "block",
             height: "30px"
         }
+
         return(
             <div style={styles}>
                 <h1 style={titleStyle}>Swipo</h1>

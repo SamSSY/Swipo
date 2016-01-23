@@ -11,24 +11,6 @@ import {StylePropable} from 'material-ui/lib/mixins';
 
 const SelectableList = SelectableContainerEnhance(List);
 
-/*
-        <AppLeftNav
-          style={styles.leftNav}
-          history={history}
-          location={location}
-          docked={docked}
-          onRequestChangeLeftNav={this.handleChangeRequestLeftNav}
-          onRequestChangeList={this.handleRequestChangeList}
-          open={leftNavOpen}
-        />
-
-         <LeftNav docked={false}
-                    width={300} 
-                    open={this.state.isLeftNavOpen} 
-                    onRequestChange={open => this.setState({isLeftNavOpen: open}) } >
-                    <List subheader="Swipo">
-
-*/
 export default class AppLeftNav extends React.Component{
 	
     mixins: [
@@ -70,7 +52,7 @@ export default class AppLeftNav extends React.Component{
                                                 className="material-icons"
                                                 style={iconStyles}
                                               >schedule</FontIcon>}
-                                            value="starred-news/view-by-date" 
+                                            value="/starred-news/view-by-date/today" 
                                         />,
                                         <ListItem key={2} primaryText="This Week" 
                                             leftIcon={<FontIcon
@@ -93,67 +75,67 @@ export default class AppLeftNav extends React.Component{
                                                 className="material-icons"
                                                 style={iconStyles}
                                               >bookmark</FontIcon>} 
-                                             value="starred-news/view-by-category/headline"
+                                             value="/starred-news/view-by-category/headline"
                                         />,
                                         <ListItem key={2} primaryText="Society" leftIcon={<FontIcon
                                                 className="material-icons"
                                                 style={iconStyles}
                                               >bookmark</FontIcon>} 
-                                            value="starred-news/view-by-category/society"
+                                            value="/starred-news/view-by-category/society"
                                         />,
                                         <ListItem key={3} primaryText="Life" leftIcon={<FontIcon
                                                 className="material-icons"
                                                 style={iconStyles}
                                               >bookmark</FontIcon>} 
-                                            value="starred-news/view-by-category/life"
+                                            value="/starred-news/view-by-category/life"
                                         />,
                                         <ListItem key={4} primaryText="Finance" leftIcon={<FontIcon
                                                 className="material-icons"
                                                 style={iconStyles}
                                               >bookmark</FontIcon>} 
-                                            value="starred-news/view-by-category/finance"
+                                            value="/starred-news/view-by-category/finance"
                                         />,
                                         <ListItem key={5} primaryText="International" leftIcon={<FontIcon
                                                 className="material-icons"
                                                 style={iconStyles}
                                               >bookmark</FontIcon>} 
-                                            value="starred-news/view-by-category/international"
+                                            value="/starred-news/view-by-category/international"
                                         />,
                                         <ListItem key={6} primaryText="Society" leftIcon={<FontIcon
                                                 className="material-icons"
                                                 style={iconStyles}
-                                              >China</FontIcon>} 
-                                            value="starred-news/view-by-category/china"
+                                              >bookmark</FontIcon>} 
+                                            value="/starred-news/view-by-category/china"
                                         />,
                                         <ListItem key={7} primaryText="Entertainment" leftIcon={<FontIcon
                                                 className="material-icons"
                                                 style={iconStyles}
                                               >bookmark</FontIcon>} 
-                                            value="starred-news/view-by-category/entertainment"
+                                            value="/starred-news/view-by-category/entertainment"
                                         />,
                                         <ListItem key={8} primaryText="Sports" leftIcon={<FontIcon
                                                 className="material-icons"
                                                 style={iconStyles}
                                               >bookmark</FontIcon>} 
-                                            value="starred-news/view-by-category/sports"
+                                            value="/starred-news/view-by-category/sports"
                                         />,
                                         <ListItem key={9} primaryText="Local" leftIcon={<FontIcon
                                                 className="material-icons"
                                                 style={iconStyles}
                                               >bookmark</FontIcon>} 
-                                            value="starred-news/view-by-category/local"
+                                            value="/starred-news/view-by-category/local"
                                         />,
                                         <ListItem key={10} primaryText="Supplement" leftIcon={<FontIcon
                                                 className="material-icons"
                                                 style={iconStyles}
                                               >bookmark</FontIcon>} 
-                                            value="starred-news/view-by-category/supplement"
+                                            value="/starred-news/view-by-category/supplement"
                                         />,
                                         <ListItem key={11} primaryText="Forum" leftIcon={<FontIcon
                                                 className="material-icons"
                                                 style={iconStyles}
                                               >bookmark</FontIcon>} 
-                                            value="starred-news/view-by-category/forum"
+                                            value="/starred-news/view-by-category/forum"
                                         />
                                     ]}
                                 />

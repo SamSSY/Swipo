@@ -28,6 +28,8 @@ import injectTapEventPlugin from 'react-tap-event-plugin';
 
 import './main.scss';
 
+import io from 'socket.io-client';
+
 //Needed for onTouchTap
 //Can go away when react 1.0 release
 //Check this repo:
@@ -46,6 +48,7 @@ const initialState = {
     autoHideDuration: 1000,
     userProfilePicUrl: null,
     isLoginDialogOpen : false,
+    socket: io.connect()
 }
 
 class MainBody extends React.Component {
@@ -114,6 +117,11 @@ class MainBody extends React.Component {
         if(width < 750){
             this.setState({ isMobile: true});
         }
+
+        const { socket } = this.state;
+        socket.on('test', function(){
+            console.log("in App");
+        });
     }
 
     componentWillMount() {
@@ -244,8 +252,12 @@ class MainBody extends React.Component {
     }
 
     handleRequestChangeList(event, value) {
-        console.log("!!!");
         console.log(value);
+        if(value.indexOf("today") !== -1){
+            var today = new Date();
+            value = "starred-news/view-by-date/" + today.getFullYear() + 
+                    ((today.getMonth() + 1) < 10 ? '0' + (today.getMonth() + 1) : (today.getMonth() + 1)) + today.getDate();
+        }
         this.props.history.push(value);
         this.setState({
             isLeftNavOpen: false,

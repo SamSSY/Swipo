@@ -1,8 +1,7 @@
 import React from 'react';
 import { render } from 'react-dom';
 import RaisedButton from 'material-ui/lib/raised-button';
-
-require('./main.scss');
+import './main.scss';
 
 export default class Homepage extends React.Component{
 	render(){
