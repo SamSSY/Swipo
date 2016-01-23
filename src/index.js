@@ -14,6 +14,13 @@ const Colors = require('material-ui/lib/styles/colors');
 const AppBar = require('material-ui/lib/app-bar');
 const LeftNav = require('material-ui/lib/left-nav');
 import IconButton from 'material-ui/lib/icon-button';
+import List from 'material-ui/lib/lists/list';
+import ListItem from 'material-ui/lib/lists/list-item';
+import ActionGrade from 'material-ui/lib/svg-icons/action/grade';
+import ContentInbox from 'material-ui/lib/svg-icons/content/inbox';
+import ContentDrafts from 'material-ui/lib/svg-icons/content/drafts';
+import ContentSend from 'material-ui/lib/svg-icons/content/send';
+import FontIcon from 'material-ui/lib/font-icon';
 const FlatButton = require('material-ui/lib/flat-button');
 const TextField = require('material-ui/lib/text-field');
 const Snackbar = require('material-ui/lib/snackbar');
@@ -159,7 +166,6 @@ class MainBody extends React.Component {
         this.setState({username: username});
         console.log(this.state.username);
         //TODO: define callback function
-        this.refs.loginDialog.dismiss();
     }
 
     _userLoginCheck(){
@@ -197,7 +203,6 @@ class MainBody extends React.Component {
     }
 
     renderSingleSwipePane(content){
-        //console.log("currentIndex: " + this.state.currentIndex);        
         return(
             <SwipePane 
                 paneContent={this.state.currentIndex} 
@@ -216,25 +221,139 @@ class MainBody extends React.Component {
 
     renderAppBar(){
         let { isLeftNavOpen } = this.state;
-        // iconElementRight={<i className="fa fa-facebook fa-2x" style={{margin: '10px', color: 'white'}}></i>
         return (
             <AppBar title="Swipo" 
                     iconClassNameRight="fa fa-facebook fa-2x" 
                     onLeftIconButtonTouchTap={() => this.setState({isLeftNavOpen: !isLeftNavOpen })} 
                     onRightIconButtonTouchTap={ () => { 
                         console.log("click!"); 
-                        this.setState({isLoginDialogOpen: true})
+                        this.setState({isLoginDialogOpen: true});
                     }} />
         );
     }
 
+    renderHomepage(){
+        let styles = {
+            height: "500px",
+            backgroundColor: "#00bcd4",
+            lineHeight: "370px",
+            margin: "0px",
+            textAlign: "center",
+            color: "white",
+        };
+        let titleStyle = {
+            margin: "0px",
+            fontSize: "180px",
+            fontWeight: "200",
+            fontFamily: //'Shadows Into Light Two'//'Covered By Your Grace'//'Architects Daughter'//'Amatic SC'
+            'Shadows Into Light'
+        };
+        let descriptStyle = {
+            lineHeight: "0px",
+            display: "block"
+
+        }
+        return(
+            <div style={styles}>
+                <h1 style={titleStyle}>Swipo</h1>
+                <span style={descriptStyle}>Brand new world in a swipe.</span>
+            </div>
+        );
+    }
+
     renderLeftNav(){
+        const iconStyles = {
+            marginRight: 24,
+        };
         return(
             <LeftNav docked={false}
                     width={300} 
                     open={this.state.isLeftNavOpen} 
                     onRequestChange={open => this.setState({isLeftNavOpen: open}) } >
+                    <List subheader="Swipo">
+                    <ListItem primaryText="Home" leftIcon={<FontIcon
+                        className="material-icons"
+                        style={iconStyles}
+                        color={Colors.blue500}>home</FontIcon>} 
+                    />
+                    <ListItem
+                            key={1}
+                            primaryText="Starred News"
+                            leftIcon={<ActionGrade />}
+                            initiallyOpen={true}
+                            primaryTogglesNestedList={true}
+                            nestedItems={[
+                                <ListItem
+                                    key={2}
+                                    primaryText="Date"
+                                    leftIcon={<FontIcon
+                                                className="material-icons"
+                                                style={iconStyles}
+                                              >date_range</FontIcon>}
+                                    disabled={true}
+                                    nestedItems={[
+                                        <ListItem key={1} primaryText="Today" 
+                                            leftIcon={<FontIcon
+                                                className="material-icons"
+                                                style={iconStyles}
+                                              >schedule</FontIcon>} 
+                                        />,
+                                        <ListItem key={2} primaryText="This Week" 
+                                            leftIcon={<FontIcon
+                                                className="material-icons"
+                                                style={iconStyles}
+                                              >schedule</FontIcon>} 
+                                        />,
+                                    ]}
+                                />,
+                                <ListItem
+                                    key={3}
+                                    primaryText="Category"
+                                    leftIcon={<FontIcon
+                                                className="material-icons"
+                                                style={iconStyles}
+                                              >class</FontIcon>}
+                                    disabled={true}
+                                    nestedItems={[
+                                        <ListItem key={1} primaryText="Entertainment" leftIcon={<FontIcon
+                                                className="material-icons"
+                                                style={iconStyles}
+                                              >bookmark</FontIcon>} 
+                                        />,
+                                        <ListItem key={2} primaryText="Politics" leftIcon={<FontIcon
+                                                className="material-icons"
+                                                style={iconStyles}
+                                              >bookmark</FontIcon>} 
+                                        />,
+                                    ]}
+                                />
+                            ]}
+                    />
+                    <ListItem primaryText="Timeline" leftIcon={<FontIcon
+                        className="material-icons"
+                        style={iconStyles}
+                        >timeline</FontIcon>} 
+                    />
+                    <ListItem primaryText="Dashboard" leftIcon={<FontIcon
+                        className="material-icons"
+                        style={iconStyles}
+                        >dashboard</FontIcon>} 
+                    />
+                    <ListItem primaryText="Settings" leftIcon={<FontIcon
+                        className="material-icons"
+                        style={iconStyles}
+                        >settings</FontIcon>} 
+                    />
+                    </List>
             </LeftNav>
+        );
+    }
+
+    renderFooter(){
+        return(
+            <div className="footer">
+                <small>&copy;2015 Sam Su, Ray Chang, David Hu, Michael Hsiang</small>
+            </div>
         );
     }
 
@@ -286,10 +405,7 @@ class MainBody extends React.Component {
         const fullHeight = {height: "100%" };
         const displayNone = {display: 'none'};
         var {isMobile, isLogin} = this.state;
-        var appBarStyle = {};//{ isMobile? {display:"none"} : {display:"none"}};
-        //<AppBar style={ isMobile? {display: 'none'} : {display: 'flex'}} title="Swipo" iconClassNameRight="muidocs-icon-navigation-expand-more" /> 
-        //{ isMobile? null: this.renderLeftNav() }
-        //console.log(this.state);
+        var appBarStyle = {};
         const actions =[
             <FlatButton
                 label="Cancel"
@@ -299,9 +415,11 @@ class MainBody extends React.Component {
         return (
             <div style={fullHeight}>
                 { isMobile? null: this.renderAppBar() }
+                { isMobile? null: this.renderHomepage() }
                 { isMobile? null: this.renderLeftNav() }
                 { isMobile? this.renderSwipePanes(): null }
                 { isLogin? this.renderUserInfo(actions): this.renderLoginDialog(actions)}
+                { isMobile? null: this.renderFooter() }
             </div>
         );
     }

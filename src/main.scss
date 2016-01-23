@@ -31,6 +31,21 @@ html, body{
 	& button{
 		position: fixed;
 	}
+	.footer{
+	    bottom: 0;
+	    display: block;
+	    margin-left: auto;
+	    margin-right: auto;
+	    text-align: center;
+	    //color: white;
+	    //background-color: black;
+	    width: 400px;
+	    height: 30px;
+	    line-height: 30px;
+	    //position: fixed;
+	    left: 0;
+	    right: 0;
+	}
 }
 
 /* viewport support*/
