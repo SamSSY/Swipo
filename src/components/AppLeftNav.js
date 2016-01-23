@@ -29,8 +29,6 @@ const SelectableList = SelectableContainerEnhance(List);
                     <List subheader="Swipo">
 
 */
-
-
 export default class AppLeftNav extends React.Component{
 	
     mixins: [
@@ -38,17 +36,18 @@ export default class AppLeftNav extends React.Component{
   	]
 
 	render(){
-		const { history, width, location, docked, onRequestChange, open, iconStyles} = this.props;
+		const { history, width, location, docked, onRequestChange, onRequestChangeList, open, iconStyles} = this.props;
         return(
                 <LeftNav docked={docked}
                     width={width} 
                     open={open} 
                     onRequestChange={onRequestChange} >
-                    <List subheader="Swipo">
+                    <SelectableList valueLink={{value: location.pathname, requestChange: onRequestChangeList}} >
                     <ListItem primaryText="Home" leftIcon={<FontIcon
                         className="material-icons"
                         style={iconStyles}
                         color={Colors.lightBlue100}>home</FontIcon>}
+                        value=""
                     />
                     <ListItem
                             key={1}
@@ -118,7 +117,7 @@ export default class AppLeftNav extends React.Component{
                         style={iconStyles}
                         >settings</FontIcon>} 
                     />
-                    </List>
+                    </SelectableList>
                 </LeftNav>
         );
 	}

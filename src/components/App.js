@@ -15,10 +15,6 @@ import LeftNav from 'material-ui/lib/left-nav';
 import IconButton from 'material-ui/lib/icon-button';
 import List from 'material-ui/lib/lists/list';
 import ListItem from 'material-ui/lib/lists/list-item';
-import ActionGrade from 'material-ui/lib/svg-icons/action/grade';
-import ContentInbox from 'material-ui/lib/svg-icons/content/inbox';
-import ContentDrafts from 'material-ui/lib/svg-icons/content/drafts';
-import ContentSend from 'material-ui/lib/svg-icons/content/send';
 import FontIcon from 'material-ui/lib/font-icon';
 import Card from 'material-ui/lib/card/card';
 import CardActions from 'material-ui/lib/card/card-actions';
@@ -247,6 +243,15 @@ class MainBody extends React.Component {
         this.setState({isLeftNavOpen: open});
     }
 
+    handleRequestChangeList(event, value) {
+        console.log("!!!");
+        console.log(value);
+        this.props.history.push(value);
+        this.setState({
+            isLeftNavOpen: false,
+        });
+    }
+
     renderLeftNav(){
         const iconStyles = {
             marginRight: 24,
@@ -260,6 +265,7 @@ class MainBody extends React.Component {
                     width={300} 
                     open={this.state.isLeftNavOpen} 
                     onRequestChange={this.handleLeftNavRequestChange.bind(this)}
+                    onRequestChangeList={this.handleRequestChangeList.bind(this)} 
                     iconStyles={iconStyles} />
         );
     }
@@ -328,6 +334,7 @@ class MainBody extends React.Component {
                 secondary={true}
                 onTouchTap={this.handleLoginDialogClose.bind(this)} />,
         ];
+
         return (
             <div style={fullHeight}>
                 { this.renderAppBar() }
