@@ -1,0 +1,4 @@
+build
+textrank4zh/__pycache__
+*.pyc
+test.py
