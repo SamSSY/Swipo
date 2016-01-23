@@ -244,7 +244,7 @@ exports.getAllNewsLinks = function(){
 		(change the string './news.txt' to change the dest file)
 
 */
-exports.getAllNewsObjectByPathsArray = function(array, checkFunction, uploadFunction){
+exports.getAllNewsObjectByPathsArray = function(array, checkFunction, uploadFunctionSql, uploadFunctionDoc, useSummary){
 	console.log('Retrieveing news from CNA...');
 	var summaryGenerater = undefined;
 
@@ -260,7 +260,17 @@ exports.getAllNewsObjectByPathsArray = function(array, checkFunction, uploadFunc
 						news.id = md5(path);
 						news.url = newsHost + encodeURI(path);
 
-						summaryHelper.submitSummary(news, '中央社', uploadFunction);
+						//db.newPostSQL( md5, time, title, url, source, tag)
+						//parameter types( String, Date, String, String, String, String )
+						uploadFunctionSql(news.id, news.dateTime, news.title, news.url, '中央社', news.classification);
+
+						if(useSummary){
+							summaryHelper.submitSummary(news, '中央社', uploadFunctionDoc);
+						}else{
+							//db.newPostDOC( md5, keywords, content, images)
+							//parameter types( String, [String], String, [ {url: String, description: String} ] )
+							uploadFunctionDoc(news.id, [],news.content, news.image);
+						}
 					}
 				},
 				function(reason){

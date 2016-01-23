@@ -10,7 +10,7 @@ var sequelize = new Sequelize('acsm_3863f055e350ee9', 'bdac84d335f56e', '613f8f9
 		timestamps: false
 	},
 	pool: {
-		maxIdleTime: 15*60000
+		maxIdleTime: 900000
 	}
 });
 var sqlzModels = require('../models/sqlz')(sequelize);
