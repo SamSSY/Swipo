@@ -26,7 +26,7 @@ import Snackbar from 'material-ui/lib/snackbar';
 import Avatar from'material-ui/lib/avatar';
 import injectTapEventPlugin from 'react-tap-event-plugin';
 
-require('./main.scss');
+import './main.scss';
 
 //Needed for onTouchTap
 //Can go away when react 1.0 release
