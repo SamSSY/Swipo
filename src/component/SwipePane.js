@@ -46,31 +46,29 @@ export default class SwipePane extends React.Component{
     }
     render(){
 		const {paneContent, paneIndex} = this.props;
-		/*return(
-			<div className='pane'  id = { paneIndex }>
-				{paneIndex}
-			</div>
-		);*/
         return(
-             <Card className='pane' initiallyExpanded={true} style={{height: "96%", margin: "3% 1% 0 1%"}} >
-                <CardHeader
-                  title="Without Avatar"
-                  subtitle="Subtitle"
-                  actAsExpander={true}
-                  showExpandableButton={false} />
-                <CardText expandable={false}>
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                  Donec mattis pretium massa. Aliquam erat volutpat. Nulla facilisi.
-                  Donec vulputate interdum sollicitudin. Nunc lacinia auctor quam sed pellentesque.
-                  Aliquam dui mauris, mattis quis lacus id, pellentesque lobortis odio.
-                </CardText>
-                <CardText expandable={false}>
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                  Donec mattis pretium massa. Aliquam erat volutpat. Nulla facilisi.
-                  Donec vulputate interdum sollicitudin. Nunc lacinia auctor quam sed pellentesque.
-                  Aliquam dui mauris, mattis quis lacus id, pellentesque lobortis odio.
-                </CardText>
-              </Card>
+            <div className="pane" style={{height: "95%", margin: "3% 1% 0% 1%"}} >
+                <Card initiallyExpanded={true} style={{height: "100%"}} >
+                    <CardHeader
+                      title="Without Avatar"
+                      subtitle="Subtitle"
+                      actAsExpander={true}
+                      showExpandableButton={false} />
+                    <CardText expandable={false}>
+                      {paneIndex}
+                      Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                      Donec mattis pretium massa. Aliquam erat volutpat. Nulla facilisi.
+                      Donec vulputate interdum sollicitudin. Nunc lacinia auctor quam sed pellentesque.
+                      Aliquam dui mauris, mattis quis lacus id, pellentesque lobortis odio.
+                    </CardText>
+                    <CardText expandable={false}>
+                      Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                      Donec mattis pretium massa. Aliquam erat volutpat. Nulla facilisi.
+                      Donec vulputate interdum sollicitudin. Nunc lacinia auctor quam sed pellentesque.
+                      Aliquam dui mauris, mattis quis lacus id, pellentesque lobortis odio.
+                    </CardText>
+                </Card>
+            </div>
         );
 	}
 }

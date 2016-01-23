@@ -104,15 +104,18 @@ class MainBody extends React.Component {
         }(document, 'script', 'facebook-jssdk'));
 
         $(window).resize(() => {
-            if($(window).width() < 250){
+            var width = (window.innerWidth > 0) ? window.innerWidth : screen.width;
+            if(width < 750){
                 this.setState({ isMobile: true});
             }
             else{
                 this.setState({ isMobile: false});
             }
-            console.log($(window).width(), this.state.isMobile);
+            console.log(width, this.state.isMobile);
         });
-        if($(window).width() < 250){
+        
+        var width = (window.innerWidth > 0) ? window.innerWidth : screen.width;
+        if(width < 750){
             this.setState({ isMobile: true});
         }
     }
