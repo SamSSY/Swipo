@@ -133,16 +133,19 @@ var getTagFromPath = function(path){
 
 var getSingleNewsByPath = function(path, checkFunction, uploadFunctionSql, uploadFunctionDoc, useSummary){
 	if(path.search('/appledaily/') !== -1 && !checkFunction(md5(path))){
+		console.log('Retriving news, path: ' + path);
 		helper.httpGetReturnRequestBody(newsHost,encodeURI(path)).then(function(data){
 			var news = getNewsObject(data);
 
 			if(news !== null){
+				//console.log('AAA');
 				news.classification = getTagFromPath(path);
 				news.dateTime = helper.createTimeByString(news.time.toString());
 				news.id = md5(path);
 				news.url = newsHost + encodeURI(path);
-
+				//console.log('BBC');
 				if(news.content !== null && news.content !== '' && news.image.length !== 0){
+					//console.log('CCC');
 					if(news.content !== null && news.content !== '' && useSummary){
 						//db.newPostSQL( md5, time, title, url, source, tag)
 						//parameter types( String, Date, String, String, String, String )
@@ -156,6 +159,7 @@ var getSingleNewsByPath = function(path, checkFunction, uploadFunctionSql, uploa
 						//parameter types( String, [String], String, [ {url: String, description: String} ] )
 						uploadFunctionDoc(news.id, [], news.content, news.image);
 					}
+					console.log('News: ' + news.title + '\nID:' + news.id);
 				}		
 			}
 		},

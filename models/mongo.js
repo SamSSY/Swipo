@@ -7,18 +7,18 @@ var swipeSchema = new Schema({
 	time: Date,
 });
 
+var imageSchema = new Schema({
+	url: String,
+	description: String
+});
+
 var postSchema = new Schema({
 	id: String,
 	likes: [swipeSchema],
 	dislikes: [swipeSchema],
 	content: String,
-	images: [String],
+	images: [imageSchema],
 	keywords: [String]
-});
-
-var imageSchema = new Schema({
-	url: String,
-	description: String
 });
 
 var tagSchema = new Schema({

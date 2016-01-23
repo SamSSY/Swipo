@@ -250,16 +250,18 @@ exports.getAllNewsObjectByPathsArray = function(array, checkFunction, uploadFunc
 
 	array.forEach(function(path){
 		if(path.search('/news/') !== -1 && !checkFunction(md5(path))){
+			console.log('Retriving news, path: ' + path);
 			helper.httpGetReturnRequestBody('www.cna.com.tw',path).then(
 				function(data){
 					var news = htmlToNewsObject(data);
 
 					if(news !== null){
+						console.log('AAA');
 						news.dateTime = helper.createTimeByString(news.time.toString());
 						news.classification = getTagFromPath(path);
 						news.id = md5(path);
 						news.url = newsHost + encodeURI(path);
-
+						console.log('BBB');
 						//db.newPostSQL( md5, time, title, url, source, tag)
 						//parameter types( String, Date, String, String, String, String )
 						uploadFunctionSql(news.id, news.dateTime, news.title, news.url, '中央社', news.classification);
@@ -271,6 +273,8 @@ exports.getAllNewsObjectByPathsArray = function(array, checkFunction, uploadFunc
 							//parameter types( String, [String], String, [ {url: String, description: String} ] )
 							uploadFunctionDoc(news.id, [],news.content, news.image);
 						}
+						console.log('NNN');
+						console.log('News: ' + news.title + '\nID:' + news.id);
 					}
 				},
 				function(reason){

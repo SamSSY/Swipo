@@ -13,7 +13,7 @@ var sequelize = new Sequelize('acsm_3863f055e350ee9', 'bdac84d335f56e', '613f8f9
 		maxIdleTime: 900000
 	}
 });
-sequelize.authenticate().then(function(errors) { console.log(errors) });
+setInterval(function() {sequelize.authenticate().then(function(data) {console.log('live');}, function(errors) { console.log('dead') }) }, 60000);
 var sqlzModels = require('../models/sqlz')(sequelize);
 
 //mongodb
@@ -39,7 +39,7 @@ exports.checkPath = function (md5) {
 	});
 	//return false if data from "path" is not yet collected
 };
-exports.newPostSQL = function ( md5, time, title, url, source) {
+exports.newPostSQL = function ( md5, time, title, url, source, tag) {
 
 	sqlzModels.Post.create({
 		id: md5,
