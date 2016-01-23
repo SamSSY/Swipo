@@ -1,6 +1,7 @@
 // import modules
 var fs = require('fs');
 var md5 = require('md5');
+var eachSeries = require('async-each-series');
 var summaryHelper = require('./summary.js');
 var helper = require('./httpStringHelper.js');
 
@@ -131,7 +132,7 @@ var getTagFromPath = function(path){
 	return toReturn;
 };
 
-var getSingleNewsByPath = function(path, checkFunction, uploadFunctionSql, uploadFunctionDoc, useSummary){
+var getSingleNewsByPath = function(path, checkFunction, uploadFunctionSql, uploadFunctionDoc, useSummary, done){
 	if(path.search('/appledaily/') !== -1 && !checkFunction(md5(path))){
 		helper.httpGetReturnRequestBody(newsHost,encodeURI(path)).then(function(data){
 			var news = getNewsObject(data);
@@ -159,37 +160,13 @@ var getSingleNewsByPath = function(path, checkFunction, uploadFunctionSql, uploa
 				}		
 			}
 
-			return true;
+			return done();
 		},
 		function(reason){
 			console.log(reason);
 		});
 	}
-
-	return false;
 };
-
-var pathArrayRecursiveFunction = function(array, cuts, checkFunction, uploadFunctionSql, uploadFunctionDoc, useSummary){
-	var theRemained = array;
-	var pathArray = theRemained.splice(theRemained.length/cuts, theRemained.length);
-
-	var count = pathArray.length-1;
-	while(count) {
-		count = DO(count);
-	}
-	function DO(count){
-		if (getSingleNewsByPath(pathArray[count], checkFunction, uploadFunctionSql, uploadFunctionDoc, useSummary)) return count-1;
-		else return 0;
-	}
-
-	/*
-	pathArray.forEach(function(path){
-		getSingleNewsByPath(path, checkFunction, uploadFunctionSql, uploadFunctionDoc, useSummary);
-	});
-	*/
-
-	return theRemained;
-}
 
 /*
 	Summary: 
@@ -200,7 +177,15 @@ var pathArrayRecursiveFunction = function(array, cuts, checkFunction, uploadFunc
 */
 exports.getAllNewsObjectByPathsArray = function(pathArray, checkFunction, uploadFunctionSql, uploadFunctionDoc, useSummary){
 	console.log('Retrieving News From Apple Daily...');
-	
+
+	eachSeries(pathArray, function (prime, done) {
+  		getSingleNewsByPath(prime, checkFunction, uploadFunctionSql, uploadFunctionDoc, useSummary, done);
+	}, function (err) {
+  		if (err) { throw err; }
+  		console.log('AppleDaily Done!');
+	});
+
+	/*
 	var count = pathArray.length-1;
 	while(count) {
 		count = DO(count);
@@ -209,7 +194,7 @@ exports.getAllNewsObjectByPathsArray = function(pathArray, checkFunction, upload
 		if (getSingleNewsByPath(pathArray[count], checkFunction, uploadFunctionSql, uploadFunctionDoc, useSummary)) return count-1;
 		else return 0;
 	}
-
+	*/
 	/*
 	array.forEach(function(path){
 		getSingleNewsByPath(path, checkFunction, uploadFunctionSql, uploadFunctionDoc, useSummary);

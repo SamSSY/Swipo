@@ -1,6 +1,7 @@
 // import modules
 var fs = require('fs');
 var md5 = require('md5');
+var eachSeries = require('async-each-series');
 var summaryHelper = require('./summary.js');
 var helper = require('./httpStringHelper.js');
 
@@ -237,7 +238,7 @@ exports.getAllNewsLinks = function(){
 	return newsLinks;
 }
 
-var getSingleNewsByPath = function(path, checkFunction, uploadFunctionSql, uploadFunctionDoc, useSummary){
+var getSingleNewsByPath = function(path, checkFunction, uploadFunctionSql, uploadFunctionDoc, useSummary, done){
 	if(path.search('/news/') !== -1 && !checkFunction(md5(path))){
 		helper.httpGetReturnRequestBody('www.cna.com.tw',path).then(function(data){
 			var news = htmlToNewsObject(data);
@@ -261,14 +262,12 @@ var getSingleNewsByPath = function(path, checkFunction, uploadFunctionSql, uploa
 				}
 			}
 
-			return true;
+			return done();
 		},
 		function(reason){
 			console.log(reason);
 		})
 	}
-
-	return false;
 };
 
 /*
@@ -281,6 +280,13 @@ var getSingleNewsByPath = function(path, checkFunction, uploadFunctionSql, uploa
 exports.getAllNewsObjectByPathsArray = function(array, checkFunction, uploadFunctionSql, uploadFunctionDoc, useSummary){
 	console.log('Retrieveing news from CNA...');
 
+	eachSeries(array, function (prime, done) {
+  		getSingleNewsByPath(prime, checkFunction, uploadFunctionSql, uploadFunctionDoc, useSummary, done);
+	}, function (err) {
+  		if (err) { throw err; }
+  		console.log('CNA News Done!');
+	});
+	/*
 	var count = array.length-1;
 	while(count) {
 		count = DO(count);
@@ -289,7 +295,7 @@ exports.getAllNewsObjectByPathsArray = function(array, checkFunction, uploadFunc
 		if (getSingleNewsByPath(array[count], checkFunction, uploadFunctionSql, uploadFunctionDoc, useSummary)) return count-1;
 		else return 0;
 	}
-
+	*/
 	/*
 	array.forEach(function(path){
 		getSingleNewsByPath(path, checkFunction, uploadFunctionSql, uploadFunctionDoc, useSummary);
