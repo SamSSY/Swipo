@@ -223,10 +223,10 @@ class MainBody extends React.Component {
         let { isLeftNavOpen } = this.state;
         return (
             <AppBar title="Swipo" 
+                    style={{boxShadow: "0px"}}
                     iconClassNameRight="fa fa-facebook fa-2x" 
                     onLeftIconButtonTouchTap={() => this.setState({isLeftNavOpen: !isLeftNavOpen })} 
                     onRightIconButtonTouchTap={ () => { 
-                        console.log("click!"); 
                         this.setState({isLoginDialogOpen: true});
                     }} />
         );
@@ -236,14 +236,14 @@ class MainBody extends React.Component {
         let styles = {
             height: "500px",
             backgroundColor: "#00bcd4",
-            lineHeight: "370px",
+            lineHeight: "360px",
             margin: "0px",
             textAlign: "center",
             color: "white",
         };
         let titleStyle = {
             margin: "0px",
-            fontSize: "180px",
+            fontSize: "190px",
             fontWeight: "200",
             fontFamily: //'Shadows Into Light Two'//'Covered By Your Grace'//'Architects Daughter'//'Amatic SC'
             'Shadows Into Light'
