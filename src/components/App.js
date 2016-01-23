@@ -1,18 +1,16 @@
-const React = require('react');
-const { render } = require('react-dom');
-
+import React from 'react';
+import { render } from 'react-dom';
 import { Router, Route, Link, browserHistory } from 'react-router';
-import SwipePane from './SwipePane';
 
-require('./main.scss');
+import SwipePane from './SwipePane';
 // material-ui
-const RaisedButton = require('material-ui/lib/raised-button');
-const Dialog = require('material-ui/lib/dialog');
-const ThemeManager = require('material-ui/lib/styles/theme-manager');
-const LightRawTheme = require('material-ui/lib/styles/raw-themes/light-raw-theme');
-const Colors = require('material-ui/lib/styles/colors');
-const AppBar = require('material-ui/lib/app-bar');
-const LeftNav = require('material-ui/lib/left-nav');
+import RaisedButton from 'material-ui/lib/raised-button';
+import Dialog from 'material-ui/lib/dialog';
+import ThemeManager from 'material-ui/lib/styles/theme-manager';
+import LightRawTheme from 'material-ui/lib/styles/raw-themes/light-raw-theme';
+import Colors from 'material-ui/lib/styles/colors';
+import AppBar from 'material-ui/lib/app-bar';
+import LeftNav from 'material-ui/lib/left-nav';
 import IconButton from 'material-ui/lib/icon-button';
 import List from 'material-ui/lib/lists/list';
 import ListItem from 'material-ui/lib/lists/list-item';
@@ -25,11 +23,13 @@ import Card from 'material-ui/lib/card/card';
 import CardActions from 'material-ui/lib/card/card-actions';
 import CardHeader from 'material-ui/lib/card/card-header';
 import CardText from 'material-ui/lib/card/card-text';
-const FlatButton = require('material-ui/lib/flat-button');
-const TextField = require('material-ui/lib/text-field');
-const Snackbar = require('material-ui/lib/snackbar');
-const Avatar = require('material-ui/lib/avatar');
-const injectTapEventPlugin = require('react-tap-event-plugin');
+import FlatButton from 'material-ui/lib/flat-button';
+import TextField from 'material-ui/lib/text-field';
+import Snackbar from 'material-ui/lib/snackbar';
+import Avatar from'material-ui/lib/avatar';
+import injectTapEventPlugin from 'react-tap-event-plugin';
+
+require('./main.scss');
 
 //Needed for onTouchTap
 //Can go away when react 1.0 release

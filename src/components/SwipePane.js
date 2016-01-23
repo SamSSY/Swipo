@@ -1,5 +1,5 @@
-const React = require('react');
-const { render } = require('react-dom');
+import React from 'react';
+import { render } from 'react-dom';
 import Card from 'material-ui/lib/card/card';
 import CardActions from 'material-ui/lib/card/card-actions';
 import CardHeader from 'material-ui/lib/card/card-header';
