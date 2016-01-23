@@ -237,6 +237,40 @@ exports.getAllNewsLinks = function(){
 	return newsLinks;
 }
 
+var getSingleNewsByPath = function(path, checkFunction, uploadFunctionSql, uploadFunctionDoc, useSummary){
+	if(path.search('/news/') !== -1 && !checkFunction(md5(path))){
+		helper.httpGetReturnRequestBody('www.cna.com.tw',path).then(function(data){
+			var news = htmlToNewsObject(data);
+
+			if(news !== null){
+				news.dateTime = helper.createTimeByString(news.time.toString());
+				news.classification = getTagFromPath(path);
+				news.id = md5(path);
+				news.url = newsHost + path;
+
+				//db.newPostSQL( md5, time, title, url, source, tag)
+				//parameter types( String, Date, String, String, String, String )
+				uploadFunctionSql(news.id, news.dateTime, news.title, news.url, '中央社', news.classification);
+
+				if(useSummary){
+					summaryHelper.submitSummary(news, '中央社', uploadFunctionDoc);
+				}else{
+					//db.newPostDOC( md5, keywords, content, images)
+					//parameter types( String, [String], String, [ {url: String, description: String} ] )
+					uploadFunctionDoc(news.id, [],news.content, news.image);
+				}
+			}
+
+			return true;
+		},
+		function(reason){
+			console.log(reason);
+		})
+	}
+
+	return false;
+};
+
 /*
 	Summary: 
 		by reading paths in the file in file <newsPathsFile>, do httpGetRequest,
@@ -246,37 +280,19 @@ exports.getAllNewsLinks = function(){
 */
 exports.getAllNewsObjectByPathsArray = function(array, checkFunction, uploadFunctionSql, uploadFunctionDoc, useSummary){
 	console.log('Retrieveing news from CNA...');
-	var summaryGenerater = undefined;
 
+	var count = array.length-1;
+	while(count) {
+		count = DO(count);
+	}
+	function DO(count){
+		if (getSingleNewsByPath(array[count], checkFunction, uploadFunctionSql, uploadFunctionDoc, useSummary)) return count-1;
+		else return 0;
+	}
+
+	/*
 	array.forEach(function(path){
-		if(path.search('/news/') !== -1 && !checkFunction(md5(path))){
-			helper.httpGetReturnRequestBody('www.cna.com.tw',path).then(
-				function(data){
-					var news = htmlToNewsObject(data);
-
-					if(news !== null){
-						news.dateTime = helper.createTimeByString(news.time.toString());
-						news.classification = getTagFromPath(path);
-						news.id = md5(path);
-						news.url = newsHost + encodeURI(path);
-
-						//db.newPostSQL( md5, time, title, url, source, tag)
-						//parameter types( String, Date, String, String, String, String )
-						uploadFunctionSql(news.id, news.dateTime, news.title, news.url, '中央社', news.classification);
-
-						if(useSummary){
-							summaryHelper.submitSummary(news, '中央社', uploadFunctionDoc);
-						}else{
-							//db.newPostDOC( md5, keywords, content, images)
-							//parameter types( String, [String], String, [ {url: String, description: String} ] )
-							uploadFunctionDoc(news.id, [],news.content, news.image);
-						}
-					}
-				},
-				function(reason){
-					console.log(reason);
-				}
-			)
-		}
+		getSingleNewsByPath(path, checkFunction, uploadFunctionSql, uploadFunctionDoc, useSummary);
 	});
+	*/
 }
