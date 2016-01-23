@@ -112,6 +112,9 @@ class MainBody extends React.Component {
             }
             console.log($(window).width(), this.state.isMobile);
         });
+        if($(window).width() < 450){
+            this.setState({ isMobile: true});
+        }
     }
 
     componentWillMount() {
