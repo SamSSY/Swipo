@@ -15,7 +15,8 @@ var sqlzModels = require('../models/sqlz')(sequelize);
 //mongodb
 require('../models/mongo');
 var mongoose = require('mongoose');
-mongoose.connect('mongodb://davidhu34:123qweasd@ds058508.mongolab.com:58508/news');
+//mongoose.connect('mongodb://davidhu34:123qweasd@ds058508.mongolab.com:58508/news');
+mongoose.connect('mongodb://davidhu34:123qweasd@ds060478.mongolab.com:60478/news1');
 var mongoPost = mongoose.model('Post');
 
 exports = module.exports = {};
@@ -34,22 +35,23 @@ exports.checkPath = function (path) {
 	});
 	//return false if data from "path" is not yet collected
 };
-exports.newPost = function ( time, title, path, source, tags, content, images) {
-//parameter types(Date, String, String, String, String, [String], String, [String] )
+exports.newPost = function ( md5, time, title, url, source, tag, content, images) {
+//parameter types( String, Date, String, String, String, String, String, [ {url: String, description: String} ] )
 	console.log(images);
 	sqlzModels.Post.create({
+		id: md5
 		time: time,
 		title: title,
-		path: path,
+		url: url,
 		source: source,
+		tag: tag
 	}).then( function (data) {
 		console.log('created');
 		//console.log(data.dataValues);
 		var PostMongo = new mongoPost();
-		PostMongo.idx = data.dataValues.path;
-		if (tags) PostMongo.tags = tags;
-		//if (images) PostMongo.images = images;
+		PostMongo.id = md5;
 		PostMongo.content = content;
+		PostMongo.images = images;
 		PostMongo.save( function(err) {
 			if (err) {
 				console.log( 'Error in Saving PostMongo: ' + err);  

@@ -25,9 +25,9 @@ module.exports = function (sequelize) {
 			freezeTableName: true
 		}),
 
-		Post: sequelize.define('post', {
+		Post: sequelize.define('post2', {
 			id: {
-				type: Sequelize.INTEGER,
+				type: Sequelize.STRING,
 				primaryKey: true
 			},
 			time: {
@@ -36,18 +36,16 @@ module.exports = function (sequelize) {
 			title: {
 				type: Sequelize.STRING
 			},
-			path: {
+			url: {
 				type: Sequelize.STRING
 			},
 			source: {
 				type: Sequelize.STRING
 			},
-			views: {
-				type: Sequelize.INTEGER
-			},
-			author: {
+			tag: {
 				type: Sequelize.STRING
 			}
+
 		}, {
 			freezeTableName: true
 		})

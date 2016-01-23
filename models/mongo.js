@@ -3,24 +3,34 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var postSchema = new Schema({
-	idx: String,
-	likes: [Number],
-	dislikes: [Number],
-	viewed: [Number],
-	tags: [String],
+	id: String,
+	likes: [swipeSchema],
+	dislikes: [swipeSchema],
 	content: String,
 	images: [String]
 });
 
-var userSchema = new Schema({
-	idx: Number,
-	likes: [Number],
-	dislikes: [Number],
-	viewed: [Number],
-	tags: [String],
-	friends: [Number]
+var swipeSchema = new Schema({
+	id: String,
+	time: Date,
+})
+var imageSchema = new Schema({
+	url: String,
+	description: String
 });
 
+var userSchema = new Schema({
+	id: String,
+	likes: [String],
+	dislikes: [swipeSchema],
+	friends: [swipeSchema],
+	tags: [TagSchema]
+});
+
+var TagSchema = new Scema({
+	tag: String,
+	count: Number 
+})
 
 mongoose.model('Post', postSchema);
 mongoose.model('User', userSchema);
