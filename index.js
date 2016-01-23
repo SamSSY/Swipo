@@ -49,7 +49,7 @@ if(apple){
 				console.error(reason);
 			}
 		);
-	},10*60*1000);
+	},5*60*1000);
 }
 
 // CNA Crawler
