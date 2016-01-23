@@ -1,7 +1,7 @@
 // import modules
 var fs = require('fs');
 var md5 = require('md5');
-var pythonShell = require('python-shell');
+var summaryHelper = require('./summary.js');
 var helper = require('./httpStringHelper.js');
 
 // const strings
@@ -118,76 +118,6 @@ var getImagesInNewsObject = function(data){
 	return arrayToReturn;
 };
 
-/*
-	Summary: 
-		by reading paths in the file in file <newsPathsFile>, do httpGetRequest,
-		generate news object and write the result to the file 
-		(change the string './news.txt' to change the dest file)
-
-*/
-exports.getAllNewsObjectByPathsArray = function(pathArray, checkFunction, uploadFunction){
-	console.log('Retrieving News From Apple Daily...');
-
-	pathArray.forEach(function(path){
-		if(path.search('/appledaily/') !== -1 && !checkFunction(path)){
-			helper.httpGetReturnRequestBody(newsHost,encodeURI(path)).then(
-				function(data){
-					var news = getNewsObject(data);
-
-					if(news !== null){
-						news.classification = getTagFromPath(path);
-						news.dateTime = helper.createTimeByString(news.time.toString());
-						news.id = md5(path);
-						news.url = newsHost + encodeURI(path);
-						
-						fs.writeFile('./newsCrawler/TextRank4ZH/example/temp.txt', news.content.toString(),'utf8',function (err) {});
-
-						// Run Python script to generate a summary
-						pythonShell.run('./newsCrawler/TextRank4ZH/example/summary.py', function (err, result) {
-  							if (err) console.error(err);
-  							if(result !== null){
-  								// Get Keywords as tags  							
-  								var tabRegex = /\t/gi;
-	  							var textResult = undefined;
-  								var indices = [];
-
-  								while ( (textResult = tabRegex.exec(result[1])) ) {
-    								indices.push(textResult.index);
-								}
-
-								var newsTags = [];
-
-								for(var i=0;i<indices.length;i++){
-									if(i === 0)
-										newsTags.push(result[1].substring(0, indices[i]));
-									else
-										newsTags.push(result[1].substring(indices[i-1] + 1 , indices[i]));
-								}
-
-								// Get Summurized Content
-								// In AppleDaily Crawler, we get summury from the site directly
-  								//news.content = result[0];
-
-  								//db.newPost(id, time, title, url, source, classification, tags, content, images)
-								//param types(string, Date, String, String, String, String, [String], String, [Object] )
-								//uploadFunction(news.id.toString(), news.dateTime, news.title.toString(), news.url.toString(), '蘋果日報', news.classification, newsTags, news.content.toString(), news.image);
-
-								console.log('T: ' + news.title);
-								console.log('C: ' + news.content);
-								console.log(newsTags);
-								console.log('\n');
-  							}
-						});
-					}				
-				},
-				function(reason){
-					console.log(reason);
-				}
-			)
-		}
-	});
-};
-
 var getTagFromPath = function(path){
 	var toReturn = undefined;
 	if(path.indexOf('headline') !== -1) toReturn = '頭條要聞';
@@ -201,69 +131,106 @@ var getTagFromPath = function(path){
 	return toReturn;
 };
 
+var getSingleNewsByPath = function(path, checkFunction, uploadFunction){
+	if(path.search('/appledaily/') !== -1 && !checkFunction(md5(path))){
+		helper.httpGetReturnRequestBody(newsHost,encodeURI(path)).then(function(data){
+			var news = getNewsObject(data);
 
-// Main
-/*
-=======
->>>>>>> origin/Machine
-var debug = false;
+			if(news !== null){
+				news.classification = getTagFromPath(path);
+				news.dateTime = helper.createTimeByString(news.time.toString());
+				news.id = md5(path);
+				news.url = newsHost + encodeURI(path);
 
-if(!debug){
-	console.log('Apple Daily News Crawler Running...');
-	getAllNewsLinks().then(
-		function(paths){
-			fs.writeFile('./appleNews.txt','');
-			console.log('Got ' + paths.length + ' News from Apple Daily!');
-			getAllNewsObjectByPathsArray(paths);
-		},
-		function(reason){
-			console.error(reason);
-		}
-	);
-
-	setInterval(function(){
-		getAllNewsLinks().then(
-			function(paths){
-				fs.writeFile('./appleNews.txt','');
-				console.log('Got ' + paths.length + ' News from Apple Daily!');
-				getAllNewsObjectByPathsArray(paths);
-			},
-			function(reason){
-				console.error(reason);
+				if(news.content !== null && news.content !== '' && news.image.length !== 0){
+					if(news.content !== null && news.content !== ''){
+						summaryHelper.submitSummary(news, '蘋果日報', uploadFunction);
+					}else{
+						news.newsTags = []
+						//db.newPost(id, time, title, url, source, classification, tags, content, images)
+						//param types(string, Date, String, String, String, String, [String], String, [Object] )
+						uploadFunction(news.id.toString(), news.dateTime, news.title.toString(), news.url.toString(), '蘋果日報', news.classification, news.newsTags, news.content.toString(), news.image);
+					}
+				}		
 			}
-		);
-	},5*60*1000);
-}else{
-// Tester
-//
-///appledaily/article/headline/20151225/36974086/applesearch/4男同事霸凌女遭辱「用黃瓜」
-///appledaily/article/headline/20151226/36976321/趙藤雄免入監行賄全認罪捐2億換緩刑
-///appledaily/article/headline/20151226/36970019/神正妹不修圖全靠打的遮瑕膏
-
-	helper.httpGetReturnRequestBody(newsHost,encodeURI('/appledaily/article/sports/20160101/36986501/蘋果報馬仔NBA黃蜂vs.暴龍')).then(
-		function(data){
-			console.log('Got news list data from Apple Daily');
-			fs.writeFile('./appleTest.txt',data);
-			
-					var news = getNewsObject(data);
-					news.path = '/appledaily/article/headline/20160101/36966502/疲勞、濛霧、流目油、畏光你需要補腎水、養肝血！';
-					news.liked = 0;
-					news.disliked = 0;
-					news.tag = getTagFromPath('/appledaily/article/headline/20160101/36966502/疲勞、濛霧、流目油、畏光你需要補腎水、養肝血！');
-						
-					fs.appendFileSync('./appleNews.txt', 'Title: ' + news.title.toString() + '\n');
-					fs.appendFileSync('./appleNews.txt', 'Path: ' + news.path.toString() + '\n');
-					fs.appendFileSync('./appleNews.txt', 'Time: ' + news.time.toString() + '\n');
-					fs.appendFileSync('./appleNews.txt', 'Tag: ' + news.tag.toString() + '\n');					
-					if(news.image.length >= 1)
-						fs.appendFileSync('./appleNews.txt', 'Pics: ' + news.image[0].description.toString() + '\t' + news.image[0].url.toString() + '\n');
-					fs.appendFileSync('./appleNews.txt', '\n' + news.content.toString() + '\n\n\n\n');			
-
 		},
 		function(reason){
-			console.error('Apple Daily retrieving data failed: ' + reason.toString());
-		}
-	);
+			console.log(reason);
+		});
+	}
+};
+
+var pathArrayRecursiveFunction = function(array, cuts, checkFunction, uploadFunction){
+	var theRemained = array;
+	var pathArray = theRemained.splice(theRemained.length/cuts, theRemained.length);
+
+	pathArray.forEach(function(path){
+		getSingleNewsByPath(path, checkFunction, uploadFunction);
+	});
+
+	return theRemained;
 }
-<<<<<<< HEAD
+
+/*
+	Summary: 
+		by reading paths in the file in file <newsPathsFile>, do httpGetRequest,
+		generate news object and write the result to the file 
+		(change the string './news.txt' to change the dest file)
+
 */
+exports.getAllNewsObjectByPathsArray = function(pathArray, checkFunction, uploadFunction){
+	console.log('Retrieving News From Apple Daily...');
+	var summaryGenerater = undefined;
+
+	// Splice the array to prevent overloading
+	if(pathArray.length >= 20){
+		var pathArray1 = pathArrayRecursiveFunction(pathArray, 16, checkFunction, uploadFunction);
+		var pathArray2 = pathArrayRecursiveFunction(pathArray1, 16, checkFunction, uploadFunction);
+		setInterval(function(){
+			pathArray1 = pathArrayRecursiveFunction(pathArray2, 16, checkFunction, uploadFunction);
+		},1*60*1000);
+		setInterval(function(){
+			pathArray2 = pathArrayRecursiveFunction(pathArray1, 16, checkFunction, uploadFunction);
+		},2*60*1000);
+		setInterval(function(){
+			pathArray1 = pathArrayRecursiveFunction(pathArray2, 16, checkFunction, uploadFunction);
+		},3*60*1000);
+		setInterval(function(){
+			pathArray2 = pathArrayRecursiveFunction(pathArray1, 16, checkFunction, uploadFunction);
+		},4*60*1000);
+		setInterval(function(){
+			pathArray1 = pathArrayRecursiveFunction(pathArray2, 16, checkFunction, uploadFunction);
+		},5*60*1000);
+		setInterval(function(){
+			pathArray2 = pathArrayRecursiveFunction(pathArray1, 16, checkFunction, uploadFunction);
+		},6*60*1000);
+		setInterval(function(){
+			pathArray1 = pathArrayRecursiveFunction(pathArray2, 16, checkFunction, uploadFunction);
+		},7*60*1000);
+		setInterval(function(){
+			pathArray2 = pathArrayRecursiveFunction(pathArray1, 16, checkFunction, uploadFunction);
+		},8*60*1000);
+		setInterval(function(){
+			pathArray1 = pathArrayRecursiveFunction(pathArray2, 16, checkFunction, uploadFunction);
+		},9*60*1000);
+		setInterval(function(){
+			pathArray2 = pathArrayRecursiveFunction(pathArray1, 16, checkFunction, uploadFunction);
+		},10*60*1000);
+		setInterval(function(){
+			pathArray1 = pathArrayRecursiveFunction(pathArray2, 16, checkFunction, uploadFunction);
+		},11*60*1000);
+		setInterval(function(){
+			pathArray2 = pathArrayRecursiveFunction(pathArray1, 16, checkFunction, uploadFunction);
+		},12*60*1000);
+		setInterval(function(){
+			pathArray1 = pathArrayRecursiveFunction(pathArray2, 16, checkFunction, uploadFunction);
+		},13*60*1000);
+		setInterval(function(){
+			pathArray2 = pathArrayRecursiveFunction(pathArray1, 16, checkFunction, uploadFunction);
+		},14*60*1000);		
+	}else{
+		pathArray.forEach(function(path){
+			getSingleNewsByPath(path, checkFunction, uploadFunction);
+		});
+	}
+};

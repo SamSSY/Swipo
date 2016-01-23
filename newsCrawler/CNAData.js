@@ -1,7 +1,7 @@
 // import modules
 var fs = require('fs');
 var md5 = require('md5');
-var pythonShell = require('python-shell');
+var summaryHelper = require('./summary.js');
 var helper = require('./httpStringHelper.js');
 
 // const strings
@@ -189,16 +189,16 @@ var htmlToNewsObject = function(data){
 }
 
 var getTagFromPath = function(path){
-	var tagToReturn = [];
-	if(path.indexOf('aipl') !== -1 || path.indexOf('firstnews') !== -1) tagToReturn.push('頭條要聞');
-	if(path.indexOf('asoc') !== -1) tagToReturn.push('社會');
-	if(path.indexOf('ahel') !== -1) tagToReturn.push('生活');
-	if(path.indexOf('afe') !== -1) tagToReturn.push('財經');
-	if(path.indexOf('aopl') !== -1) tagToReturn.push('國際');
-	if(path.indexOf('acn') !== -1) tagToReturn.push('兩岸');
-	if(path.indexOf('amov') !== -1) tagToReturn.push('娛樂名人');
-	if(path.indexOf('aspt') !== -1) tagToReturn.push('體育');
-	if(path.indexOf('aloc') !== -1) tagToReturn.push('地方');
+	var tagToReturn = '';
+	if(path.indexOf('aipl') !== -1 || path.indexOf('firstnews') !== -1) tagToReturn = '頭條要聞';
+	if(path.indexOf('asoc') !== -1) tagToReturn = '社會';
+	if(path.indexOf('ahel') !== -1) tagToReturn = '生活';
+	if(path.indexOf('afe') !== -1) tagToReturn = '財經';
+	if(path.indexOf('aopl') !== -1) tagToReturn = '國際';
+	if(path.indexOf('acn') !== -1) tagToReturn = '兩岸';
+	if(path.indexOf('amov') !== -1) tagToReturn = '娛樂名人';
+	if(path.indexOf('aspt') !== -1) tagToReturn = '體育';
+	if(path.indexOf('aloc') !== -1) tagToReturn = '地方';
 
 	return tagToReturn;
 };
@@ -246,56 +246,21 @@ exports.getAllNewsLinks = function(){
 */
 exports.getAllNewsObjectByPathsArray = function(array, checkFunction, uploadFunction){
 	console.log('Retrieveing news from CNA...');
+	var summaryGenerater = undefined;
 
 	array.forEach(function(path){
-		if(path.search('/news/') !== -1 && !checkFunction(path)){
+		if(path.search('/news/') !== -1 && !checkFunction(md5(path))){
 			helper.httpGetReturnRequestBody('www.cna.com.tw',path).then(
 				function(data){
 					var news = htmlToNewsObject(data);
 
 					if(news !== null){
-						var dateTime = helper.createTimeByString(news.time.toString());
+						news.dateTime = helper.createTimeByString(news.time.toString());
 						news.classification = getTagFromPath(path);
 						news.id = md5(path);
 						news.url = newsHost + encodeURI(path);
 
-						fs.writeFile('./newsCrawler/TextRank4ZH/example/temp.txt', news.content.toString(),'utf8',function (err) {});
-
-						// Run Python script to generate a summary
-						pythonShell.run('./newsCrawler/TextRank4ZH/example/summary.py',function (err,result) {
-							if(err) console.error(err);
-							if(result !== null){
-								// Get Keywords as tags  							
-  								var tabRegex = /\t/gi;
-	  							var textResult = undefined;
-  								var indices = [];
-
-	  							while ( (textResult = tabRegex.exec(result[1])) ) {
-    								indices.push(textResult.index);
-								}
-
-								var newsTags = [];
-
-								for(var i=0;i<indices.length;i++){
-									if(i === 0)
-										newsTags.push(result[1].substring(0, indices[i]));
-									else
-										newsTags.push(result[1].substring(indices[i-1] + 1 , indices[i]));
-								}
-
-								// Get Summurized Content
-  								news.content = result[0];
-
-  								//db.newPost(id, time, title, url, source, classification, tags, content, images)
-								//param types(string, Date, String, String, String, String, [String], String, [Object] )
-								//uploadFunction(news.id.toString(), dateTime, news.title.toString(), news.url.toString(), '中央社', news.classification[0], newsTags, news.content.toString(), news.image);
-
-								console.log('T: ' + news.title);
-								console.log('C: ' + news.content);
-								console.log(newsTags);
-								console.log('\n');
-							}
-						});
+						summaryHelper.submitSummary(news, '中央社', uploadFunction);
 					}
 				},
 				function(reason){
@@ -305,49 +270,3 @@ exports.getAllNewsObjectByPathsArray = function(array, checkFunction, uploadFunc
 		}
 	});
 }
-
-// main
-/* 
-	Summary:
-		main function of data source server, which update news data from CNA every 5 min
-*/
-/*
-console.log('News Listener now on!');
-
-getAllNewsLinks().then(
-	function(data){
-		getAllNewsObjectByPathsArray(data);
-	},function(reason){
-		console.log(reason);
-});
-
-setInterval(function(){
-	getAllNewsLinks().then(
-		function(data){
-			getAllNewsObjectByPathsArray(data);
-		},function(reason){
-			console.log(reason);
-	});
-},5*60*1000);
-*/
-
-/* Here's a test funciton for httpGet which write the response in ./test.txt
-helper.httpGetReturnRequestBody('www.cna.com.tw','/news/aopl/201511240395-1.aspx').then(
-	function(data){
-		//console.log(data)
-		var news = htmlToNewsObject(data);
-		console.log(news.title);
-		console.log(news.time);
-		console.log(news.image.length);
-		fs.appendFileSync('./test1.txt', news.content + '\n');
-
-		for(var i=0;i<news.image.length;i++){
-			//console.log(news.image[i].url);
-			//console.log(news.image[i].description + '\n\n\n');
-		}
-	},
-	function(reason){
-		console.log(reason);
-	}
-);
-*/

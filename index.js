@@ -1,7 +1,6 @@
 var db = require('./util/db');
 var appleCrawler = require('./newsCrawler/AppleData');
 var CNACrawler = require('./newsCrawler/CNAData');
-console.log('haha');
 //db.checkPath(path)
 //return false if data from "path"(String) is not yet collected
 
@@ -22,8 +21,8 @@ if ( db.checkPath(path) ) {
 }
 */
 
-var apple = false;
-var cna = false;
+var apple = true;
+var cna = true;
 
 // Apple Daily Crawler
 if(apple){
@@ -45,7 +44,7 @@ if(apple){
 				console.error(reason);
 			}
 		);
-	},5*60*1000);
+	},16*60*1000);
 }
 
 // CNA Crawler
@@ -70,4 +69,3 @@ if(cna){
 		);
 	},5*60*1000);
 }
-
