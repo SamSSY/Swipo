@@ -87,7 +87,6 @@ class MainBody extends React.Component {
                         // a user has logged in
                         console.log("login! ");
                         this.checkLoginState();
-                        this._getUserProfilePic();
                     }
                 }.bind(this)
             );
@@ -139,6 +138,7 @@ class MainBody extends React.Component {
             this.setState({username: response.name, userID: response.id});
             this._getUserProfilePic();
             this.setState({isLogin: true});
+
         }.bind(this));
     }
 
@@ -155,10 +155,14 @@ class MainBody extends React.Component {
             this.testAPI();
             this.setState({isLoginDialogOpen: false});
             this._getUserProfilePic();
-
-        } else if (response.status === 'not_authorized') {
+            this.socket.emit('init', {
+                user: userID
+            });
+        } 
+        else if (response.status === 'not_authorized') {
             console.log("user not authorized.");
-        } else {
+        } 
+        else {
             // The person is not logged into Facebook, so we're not sure if
             // they are logged into this app or not.
             console.log("something wrong. ");
