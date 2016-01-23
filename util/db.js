@@ -8,6 +8,9 @@ var sequelize = new Sequelize('acsm_3863f055e350ee9', 'bdac84d335f56e', '613f8f9
 	port: 3306,
 	define: {
 		timestamps: false
+	},
+	pool: {
+		maxIdleTime: 15*60000
 	}
 });
 var sqlzModels = require('../models/sqlz')(sequelize);
