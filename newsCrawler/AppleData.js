@@ -1,5 +1,7 @@
 // import modules
 var fs = require('fs');
+var md5 = require('md5');
+var pythonShell = require('python-shell');
 var helper = require('./httpStringHelper.js');
 
 // const strings
@@ -133,16 +135,49 @@ exports.getAllNewsObjectByPathsArray = function(pathArray, checkFunction, upload
 					var news = getNewsObject(data);
 
 					if(news !== null){
-						var tag = getTagFromPath(path);
-						var dateTime = helper.createTimeByString(news.time.toString());
-						var imagesToUpload = [];
-						for(var i=0; i<news.image.length; i++){
-							imagesToUpload.push(news.image[i].url);
-						}
+						news.classification = getTagFromPath(path);
+						news.dateTime = helper.createTimeByString(news.time.toString());
+						news.id = md5(path);
+						news.url = newsHost + encodeURI(path);
 						
-						//db.newPost(time, title, path, source, tags, content, images)
-						//param types(Date, String, String, String, String, [String], String, [String] )
-						uploadFunction(dateTime, news.title.toString(), path.toString(), '蘋果日報', tag, news.content.toString(), imagesToUpload);
+						fs.writeFile('./newsCrawler/TextRank4ZH/example/temp.txt', news.content.toString(),'utf8',function (err) {});
+
+						// Run Python script to generate a summary
+						pythonShell.run('./newsCrawler/TextRank4ZH/example/summary.py', function (err, result) {
+  							if (err) console.error(err);
+  							if(result !== null){
+  								// Get Keywords as tags  							
+  								var tabRegex = /\t/gi;
+	  							var textResult = undefined;
+  								var indices = [];
+
+  								while ( (textResult = tabRegex.exec(result[1])) ) {
+    								indices.push(textResult.index);
+								}
+
+								var newsTags = [];
+
+								for(var i=0;i<indices.length;i++){
+									if(i === 0)
+										newsTags.push(result[1].substring(0, indices[i]));
+									else
+										newsTags.push(result[1].substring(indices[i-1] + 1 , indices[i]));
+								}
+
+								// Get Summurized Content
+								// In AppleDaily Crawler, we get summury from the site directly
+  								//news.content = result[0];
+
+  								//db.newPost(id, time, title, url, source, classification, tags, content, images)
+								//param types(string, Date, String, String, String, String, [String], String, [Object] )
+								//uploadFunction(news.id.toString(), news.dateTime, news.title.toString(), news.url.toString(), '蘋果日報', news.classification, newsTags, news.content.toString(), news.image);
+
+								console.log('T: ' + news.title);
+								console.log('C: ' + news.content);
+								console.log(newsTags);
+								console.log('\n');
+  							}
+						});
 					}				
 				},
 				function(reason){
@@ -151,21 +186,19 @@ exports.getAllNewsObjectByPathsArray = function(pathArray, checkFunction, upload
 			)
 		}
 	});
-
-	console.log('Apple Daily news uploading DONE!');
 };
 
 var getTagFromPath = function(path){
-	var tagToReturn = [];
-	if(path.indexOf('headline') !== -1) tagToReturn.push('頭條要聞');
-	if(path.indexOf('entertainment') !== -1) tagToReturn.push('娛樂名人');
-	if(path.indexOf('international') !== -1) tagToReturn.push('國際');
-	if(path.indexOf('sports') !== -1) tagToReturn.push('體育');
-	if(path.indexOf('finance') !== -1) tagToReturn.push('財經');
-	if(path.indexOf('supplement') !== -1) tagToReturn.push('副刊');
-	if(path.indexOf('forum') !== -1) tagToReturn.push('專欄');
+	var toReturn = undefined;
+	if(path.indexOf('headline') !== -1) toReturn = '頭條要聞';
+	if(path.indexOf('entertainment') !== -1) toReturn = '娛樂名人';
+	if(path.indexOf('international') !== -1) toReturn = '國際';
+	if(path.indexOf('sports') !== -1) toReturn = '體育';
+	if(path.indexOf('finance') !== -1) toReturn = '財經';
+	if(path.indexOf('supplement') !== -1) toReturn = '副刊';
+	if(path.indexOf('forum') !== -1) toReturn = '專欄';
 
-	return tagToReturn;
+	return toReturn;
 };
 
 

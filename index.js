@@ -23,8 +23,8 @@ if ( db.checkPath(path) ) {
 }
 */
 
-var apple = true;
-var cna = true;
+var apple = false;
+var cna = false;
 
 // Apple Daily Crawler
 if(apple){

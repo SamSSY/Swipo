@@ -1,5 +1,7 @@
 // import modules
 var fs = require('fs');
+var md5 = require('md5');
+var pythonShell = require('python-shell');
 var helper = require('./httpStringHelper.js');
 
 // const strings
@@ -252,20 +254,48 @@ exports.getAllNewsObjectByPathsArray = function(array, checkFunction, uploadFunc
 					var news = htmlToNewsObject(data);
 
 					if(news !== null){
-						console.log('Got news: ' + news.title.toString() + ', uploading...');
-						var tag = getTagFromPath(path);
 						var dateTime = helper.createTimeByString(news.time.toString());
+						news.classification = getTagFromPath(path);
+						news.id = md5(path);
+						news.url = newsHost + encodeURI(path);
 
-						var imagesToUpload = [];
-						for(var i=0; i<news.image.length; i++){
-							imagesToUpload.push(news.image[i].url);
-						}
+						fs.writeFile('./newsCrawler/TextRank4ZH/example/temp.txt', news.content.toString(),'utf8',function (err) {});
 
-						//db.newPost(time, title, path, source, tags, content, images)
-						//param types(Date, String, String, String, String, [String], String, [String] )
-						uploadFunction(dateTime, news.title.toString(), path.toString(), '中央社', tag, news.content.toString(), imagesToUpload);				
-						console.log('News: ' + news.title.toString() + ', uploading DONE!');
+						// Run Python script to generate a summary
+						pythonShell.run('./newsCrawler/TextRank4ZH/example/summary.py',function (err,result) {
+							if(err) console.error(err);
+							if(result !== null){
+								// Get Keywords as tags  							
+  								var tabRegex = /\t/gi;
+	  							var textResult = undefined;
+  								var indices = [];
 
+	  							while ( (textResult = tabRegex.exec(result[1])) ) {
+    								indices.push(textResult.index);
+								}
+
+								var newsTags = [];
+
+								for(var i=0;i<indices.length;i++){
+									if(i === 0)
+										newsTags.push(result[1].substring(0, indices[i]));
+									else
+										newsTags.push(result[1].substring(indices[i-1] + 1 , indices[i]));
+								}
+
+								// Get Summurized Content
+  								news.content = result[0];
+
+  								//db.newPost(id, time, title, url, source, classification, tags, content, images)
+								//param types(string, Date, String, String, String, String, [String], String, [Object] )
+								//uploadFunction(news.id.toString(), dateTime, news.title.toString(), news.url.toString(), '中央社', news.classification[0], newsTags, news.content.toString(), news.image);
+
+								console.log('T: ' + news.title);
+								console.log('C: ' + news.content);
+								console.log(newsTags);
+								console.log('\n');
+							}
+						});
 					}
 				},
 				function(reason){
@@ -274,8 +304,6 @@ exports.getAllNewsObjectByPathsArray = function(array, checkFunction, uploadFunc
 			)
 		}
 	});
-
-	console.log('CNA news uploading DONE!');
 }
 
 // main
