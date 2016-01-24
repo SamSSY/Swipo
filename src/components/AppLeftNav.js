@@ -61,6 +61,13 @@ export default class AppLeftNav extends React.Component{
                                               >schedule</FontIcon>} 
                                             value="/starred-news/view-by-date/thisweek" 
                                         />,
+                                        <ListItem key={2} primaryText="Search by date" 
+                                            leftIcon={<FontIcon
+                                                className="material-icons"
+                                                style={iconStyles}
+                                              >schedule</FontIcon>} 
+                                            value="/starred-news/view-by-date/searchbydate" 
+                                        />,
                                     ]}
                                 />,
                                 <ListItem

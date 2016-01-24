@@ -12,16 +12,20 @@ import CardText from 'material-ui/lib/card/card-text';
 import FontIcon from 'material-ui/lib/font-icon';
 import Colors from 'material-ui/lib/styles/colors';
 import RaisedButton from 'material-ui/lib/raised-button';
+import createBrowserHistory from 'history/lib/createBrowserHistory';
+import DatePicker from 'material-ui/lib/date-picker/date-picker';
 import io from 'socket.io-client';
 import './main.scss';
 
-const gridListStyle = {width: '100%', height: '95%', overflowY: 'auto', marginTop: '80px'};
+const history = createBrowserHistory();
 
 const initialState = {
     socket: io.connect(),
     datas: [ {title: 'test1'}, {title: 'test2'} ],
     date: null,
-    timerId: null
+    timerId: null,
+    isInSearchByDate: false,
+    textFieldValue: null
 }
 
 export default class StarredNewsByDate extends React.Component{
@@ -35,20 +39,21 @@ export default class StarredNewsByDate extends React.Component{
         console.log('componentWillMount: StarredNewsByDate');
         let date = window.location.pathname.substr("/starred-news/view-by-date/".length);
         console.log("current date: ", date);
-        this.setState({ date: date });
+        this.setState({ date: date, isInSearchByDate: (date == 'searchbydate') ? true: false });
     }
 
     componentDidMount(){
-        console.log('componentDidMount: StarredNewsByDate');
+        console.log("componentDidMount: StarredNewsByDate");
+        console.log("state: ", this.state);
         console.log("In viewByDate: ");
-        console.log(window.user);
+        console.log("user: ", window.user);
         console.log(this.state.date);
         // detect if url changed
         let timerId = setInterval(() => {
             let date =  window.location.pathname.substr("/starred-news/view-by-date/".length);
             if(date !== this.state.date){
                 console.log("url changed!");
-                this.setState({ date: date });
+                this.setState({ date: date, isInSearchByDate: (date == 'searchbydate') ? true: false });
                 this.handleSwitchDate();
             }
         }, 100);
@@ -79,12 +84,19 @@ export default class StarredNewsByDate extends React.Component{
     }
 
     handleSwitchDate(){
-        const { socket } = this.state; 
+        const { socket, date } = this.state; 
+        console.log("switched to date: ", date);
         socket.emit('init', {
             user: window.user,
             location: 'viewByDate',
-            date: this.state.date
+            date: date
         });
+    }
+
+    handleDatePickerValueChange(oldValue, newValue){
+        console.log("date picker value changed!");
+        console.log(newValue.getDate());
+        console.log(typeof(newValue));
     }
 
     renderNews(){
@@ -140,7 +152,8 @@ export default class StarredNewsByDate extends React.Component{
             //color: "white",
             display: 'flex', 
             flexWrap: 'wrap', 
-            justifyContent: 'space-around'
+            justifyContent: 'space-around',
+            paddingTop: '100px'
         };
         let titleStyle = {
             margin: "0px",
@@ -156,14 +169,22 @@ export default class StarredNewsByDate extends React.Component{
         }
 
         let news = this.renderNews();
+        let { isInSearchByDate } = this.state;
+        let gridListStyle = {width: '100%', height: '95%', overflowY: 'auto', marginTop: '10px' };
+        console.log("isInSearchByDate: ", isInSearchByDate);
         return(
             <div style={styles}>
+                { isInSearchByDate? this.renderDatePicker: null }
+                {isInSearchByDate? (<div>
+                    <DatePicker
+                      hintText="Search by Date"
+                      onChange={this.handleDatePickerValueChange} />
+                </div>) : null}
                 <GridList
                   cols={2}
                   cellHeight={200}
                   padding={30}
-                  style={gridListStyle}
-                  >
+                  style={gridListStyle} >
                 {news}
                 </GridList>
             </div>
