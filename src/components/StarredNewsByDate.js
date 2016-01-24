@@ -20,7 +20,8 @@ const gridListStyle = {width: '100%', height: '95%', overflowY: 'auto', marginTo
 const initialState = {
     socket: io.connect(),
     datas: [ {title: 'test1'}, {title: 'test2'} ],
-    date: null
+    date: null,
+    timerId: null
 }
 
 export default class StarredNewsByDate extends React.Component{
@@ -32,7 +33,7 @@ export default class StarredNewsByDate extends React.Component{
 
     componentDidMount(){
 
-        console.log('componentDidMount: StarredNewsBydate');
+        console.log('componentDidMount: StarredNewsByDate');
         const { socket } = this.state; 
         // socket events
         socket.emit('init', {
@@ -47,7 +48,7 @@ export default class StarredNewsByDate extends React.Component{
         });
 
         socket.on('test', function(){
-            console.log("in date");
+            console.log("in Date");
         });
 
         // other events
@@ -59,10 +60,10 @@ export default class StarredNewsByDate extends React.Component{
         console.log("In viewByDate: ");
         console.log(window.user);
         let date = window.location.pathname.substr("/starred-news/view-by-date/".length);
-        console.log("current date: ", date);
+        console.log("current Date: ", date);
         this.setState({ date: date });
         // detect if url changed
-        setInterval(() => {
+        let timerId = setInterval(() => {
             let date =  window.location.pathname.substr("/starred-news/view-by-date/".length);
             if(date !== this.state.date){
                 console.log("url changed!");
@@ -70,6 +71,13 @@ export default class StarredNewsByDate extends React.Component{
             }
         }, 100);
 
+        console.log("timerId: ", timerId);
+        this.setState({timerId: timerId});
+    }
+
+    componentWillUnmount(){
+        console.log("componentWillUnmount");
+        clearInterval(this.state.timerId);
     }
 
     renderNews(){
@@ -141,7 +149,7 @@ export default class StarredNewsByDate extends React.Component{
         }
 
         let news = this.renderNews();
-        //console.log("newsBydate state: ", this.state);
+        //console.log("newsByDate state: ", this.state);
         return(
             <div style={styles}>
                 <GridList

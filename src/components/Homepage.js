@@ -12,7 +12,7 @@ export default class Homepage extends React.Component{
             margin: "0px",
             textAlign: "center",
             color: "white",
-            paddingTop: '13%'
+            paddingTop: '10%'
         };
         let titleStyle = {
             margin: "0px",

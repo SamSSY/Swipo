@@ -20,7 +20,8 @@ const gridListStyle = {width: '100%', height: '95%', overflowY: 'auto', marginTo
 const initialState = {
     socket: io.connect(),
     datas: [ {title: 'test1'}, {title: 'test2'} ],
-    category: null
+    category: null,
+    timerId: null
 }
 
 export default class StarredNewsByCategory extends React.Component{
@@ -62,7 +63,7 @@ export default class StarredNewsByCategory extends React.Component{
         console.log("current category: ", category);
         this.setState({ category: category });
         // detect if url changed
-        setInterval(() => {
+        let timerId = setInterval(() => {
             let category =  window.location.pathname.substr("/starred-news/view-by-category/".length);
             if(category !== this.state.category){
                 console.log("url changed!");
@@ -70,6 +71,13 @@ export default class StarredNewsByCategory extends React.Component{
             }
         }, 100);
 
+        console.log("timerId: ", timerId);
+        this.setState({timerId: timerId});
+    }
+
+    componentWillUnmount(){
+        console.log("componentWillUnmount");
+        clearInterval(this.state.timerId);
     }
 
     renderNews(){
