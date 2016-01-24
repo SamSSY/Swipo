@@ -19,8 +19,8 @@ var sqlzModels = require('../models/sqlz')(sequelize);
 //mongodb
 require('../models/mongo');
 var mongoose = require('mongoose');
-//mongoose.connect('mongodb://davidhu34:123qweasd@ds058508.mongolab.com:58508/news');
-mongoose.connect('mongodb://davidhu34:123qweasd@ds060478.mongolab.com:60478/news1');
+mongoose.connect('mongodb://davidhu34:123qweasd@ds058508.mongolab.com:58508/news');
+//mongoose.connect('mongodb://davidhu34:123qweasd@ds060478.mongolab.com:60478/news1');
 var mongoPost = mongoose.model('Post');
 
 exports = module.exports = {};
