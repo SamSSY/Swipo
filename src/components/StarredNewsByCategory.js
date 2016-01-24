@@ -17,19 +17,23 @@ import './main.scss';
 
 const gridListStyle = {width: '100%', height: '95%', overflowY: 'auto', marginTop: '80px'};
 
+const initialState = {
+    socket: io.connect(),
+    datas: [ {title: 'test1'}, {title: 'test2'} ],
+    category: null
+}
+
 export default class StarredNewsByCategory extends React.Component{
 	
     constructor(props){
         super(props);
-        this.state = {
-            socket: io.connect(),
-            datas: [ {title: 'test1'}, {title: 'test2'} ]
-        }
+        this.state = initialState;
     }
 
     componentDidMount(){
-        const { socket } = this.state;
-        
+
+        console.log('componentDidMount: StarredNewsByCategory');
+        const { socket } = this.state; 
         // socket events
         socket.emit('init', {
             user: window.user,
@@ -54,6 +58,18 @@ export default class StarredNewsByCategory extends React.Component{
         //});
         console.log("In viewByCategory: ");
         console.log(window.user);
+        let category = window.location.pathname.substr("/starred-news/view-by-category/".length);
+        console.log("current category: ", category);
+        this.setState({ category: category });
+        // detect if url changed
+        setInterval(() => {
+            let category =  window.location.pathname.substr("/starred-news/view-by-category/".length);
+            if(category !== this.state.category){
+                console.log("url changed!");
+                this.setState({ category: category });
+            }
+        }, 100);
+
     }
 
     renderNews(){
@@ -125,7 +141,7 @@ export default class StarredNewsByCategory extends React.Component{
         }
 
         let news = this.renderNews();
-
+        //console.log("newsByCategory state: ", this.state);
         return(
             <div style={styles}>
                 <GridList

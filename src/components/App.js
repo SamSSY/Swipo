@@ -67,13 +67,14 @@ class MainBody extends React.Component {
     componentDidMount(){
         //appID: 882849945170096
         window.fbAyncInit = function(){
+
             FB.init({
+                version    : 'v2.5', // use version 2.5
                 appId      : 887332791388478,
                 cookie     : true,  // enable cookies to allow the server to access the session 1057383754306127/ 1521012484886298
-                xfbml      : true,  // parse social plugins on this page
-                version    : 'v2.5' // use version 2.5
+                xfbml      : true  // parse social plugins on this page
             });    
-            
+                
             console.log('init');
 
             FB.getLoginStatus(function(response) {
@@ -91,6 +92,7 @@ class MainBody extends React.Component {
                 }.bind(this)
             );
         }.bind(this);
+
 
         // Load the SDK asynchronously
         (function(d, s, id) {
