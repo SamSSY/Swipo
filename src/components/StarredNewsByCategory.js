@@ -9,11 +9,13 @@ import CardMedia from 'material-ui/lib/card/card-media';
 import CardTitle from 'material-ui/lib/card/card-title';
 import FlatButton from 'material-ui/lib/flat-button';
 import CardText from 'material-ui/lib/card/card-text';
+import FontIcon from 'material-ui/lib/font-icon';
+import Colors from 'material-ui/lib/styles/colors';
 import RaisedButton from 'material-ui/lib/raised-button';
 import io from 'socket.io-client';
 import './main.scss';
 
-const gridListStyle = {width: '90%', height: '95%', overflowY: 'auto', margin: 24};
+const gridListStyle = {width: '100%', height: '95%', overflowY: 'auto', marginTop: '80px'};
 
 export default class StarredNewsByCategory extends React.Component{
 	
@@ -55,16 +57,27 @@ export default class StarredNewsByCategory extends React.Component{
     }
 
     renderNews(){
+        let iconStyles = {
+            marginRight: '25px',
+            color: Colors.pink100
+        }
 
         return this.state.datas.map( data => 
             <GridTile
               key={data.title}
               title={data.title}
-              titlePosition="top"
-              cols={2}
+              titlePosition="bottom"
+              titleBackground={'rgba(0, 0, 0, 0.3)'}
+              subtitle={<span>by <b>{data.title}</b></span>}
+              actionIcon={<FontIcon
+                        className="material-icons"
+                        style={iconStyles}
+                        >favorite</FontIcon>}
+              cols={1}
               rows={2}
+              style={{boxShadow: '0 1px 6px rgba(0, 0, 0, 0.12), 0 1px 4px rgba(0, 0, 0, 0.24)'}}
               >
-                <Card initiallyExpanded={true} style={{height: "100%"}} >
+                <Card initiallyExpanded={true} style={{height: '100%'}}>
                     <CardHeader
                       title="Without Avatar"
                       subtitle="Subtitle"
@@ -118,7 +131,7 @@ export default class StarredNewsByCategory extends React.Component{
                 <GridList
                   cols={2}
                   cellHeight={200}
-                  padding={1}
+                  padding={30}
                   style={gridListStyle}
                   >
                 {news}
