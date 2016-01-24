@@ -68,7 +68,7 @@ class MainBody extends React.Component {
         //appID: 882849945170096
         window.fbAyncInit = function(){
             FB.init({
-                appId      : 882849945170096,
+                appId      : 887332791388478,
                 cookie     : true,  // enable cookies to allow the server to access the session 1057383754306127/ 1521012484886298
                 xfbml      : true,  // parse social plugins on this page
                 version    : 'v2.5' // use version 2.5
@@ -97,7 +97,7 @@ class MainBody extends React.Component {
             var js, fjs = d.getElementsByTagName(s)[0];
             if (d.getElementById(id)) return;
             js = d.createElement(s); js.id = id;
-            js.src = "//connect.facebook.net/en_US/sdk.js#version=v2.5&appId=882849945170096&cookie=1&xfbml=1";
+            js.src = "//connect.facebook.net/en_US/sdk.js#version=v2.5&appId=887332791388478&cookie=1&xfbml=1";
             fjs.parentNode.insertBefore(js, fjs);
         }(document, 'script', 'facebook-jssdk'));
 
@@ -118,9 +118,18 @@ class MainBody extends React.Component {
         }
 
         const { socket } = this.state;
+        // socket events
         socket.on('test', function(){
             console.log("in App");
         });
+
+        // other events
+        // not working now
+        $(document).on('switchToNewsByCategory', function(){
+            //console.log("XDDDD");
+            //console.log(this.state.userID);
+            //$.event.trigger('userID');
+        }.bind(this));
     }
 
     componentWillMount() {
@@ -138,6 +147,11 @@ class MainBody extends React.Component {
             this.setState({username: response.name, userID: response.id});
             this._getUserProfilePic();
             this.setState({isLogin: true});
+            this.state.socket.emit('init', {
+                user: this.state.userID,
+                location: 'main'
+            });
+            window.user = this.state.userID;
         }.bind(this));
     }
 
@@ -154,10 +168,6 @@ class MainBody extends React.Component {
             this.testAPI();
             this.setState({isLoginDialogOpen: false});
             this._getUserProfilePic();
-            this.socket.emit('init', {
-                user: this.state.userID,
-                location: 'main'
-            });
         } 
         else if (response.status === 'not_authorized') {
             console.log("user not authorized.");
@@ -242,7 +252,7 @@ class MainBody extends React.Component {
         let { isLeftNavOpen } = this.state;
         return this.state.isMobile ? null: (
             <AppBar title="Swipo" 
-                    style={{boxShadow: "0px"}}
+                    style={{boxShadow: "0px", position: 'fixed'}}
                     iconClassNameRight="fa fa-facebook fa-2x" 
                     onLeftIconButtonTouchTap={() => this.setState({isLeftNavOpen: !isLeftNavOpen })} 
                     onRightIconButtonTouchTap={ () => { 

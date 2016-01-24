@@ -7,7 +7,7 @@ require('./main.scss');
 export default class Homepage extends React.Component{
 	render(){
 		let styles = {
-            height: "500px",
+            height: "90%",
             backgroundColor: "#00bcd4",
             margin: "0px",
             textAlign: "center",
