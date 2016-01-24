@@ -121,13 +121,13 @@ var getImagesInNewsObject = function(data){
 
 var getTagFromPath = function(path){
 	var toReturn = undefined;
-	if(path.indexOf('headline') !== -1) toReturn = '頭條要聞';
-	if(path.indexOf('entertainment') !== -1) toReturn = '娛樂名人';
-	if(path.indexOf('international') !== -1) toReturn = '國際';
-	if(path.indexOf('sports') !== -1) toReturn = '體育';
-	if(path.indexOf('finance') !== -1) toReturn = '財經';
-	if(path.indexOf('supplement') !== -1) toReturn = '副刊';
-	if(path.indexOf('forum') !== -1) toReturn = '專欄';
+	if(path.indexOf('headline') !== -1) toReturn = 'headline';
+	if(path.indexOf('entertainment') !== -1) toReturn = 'entertainment';
+	if(path.indexOf('international') !== -1) toReturn = 'international';
+	if(path.indexOf('sports') !== -1) toReturn = 'sports';
+	if(path.indexOf('finance') !== -1) toReturn = 'finance';
+	if(path.indexOf('supplement') !== -1) toReturn = 'supplement';
+	if(path.indexOf('forum') !== -1) toReturn = 'forum';
 
 	return toReturn;
 };
