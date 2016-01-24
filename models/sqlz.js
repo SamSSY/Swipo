@@ -36,10 +36,10 @@ module.exports = function (sequelize) {
 			title: {
 				type: Sequelize.STRING
 			},
-			url: {
+			source: {
 				type: Sequelize.STRING
 			},
-			source: {
+			url: {
 				type: Sequelize.STRING
 			},
 			tag: {
@@ -90,7 +90,7 @@ module.exports = function (sequelize) {
 			},
 			type: {
 				type: Sequelize.STRING
-			},
+			}
 		}, {
 			freezeTableName: true
 		})
