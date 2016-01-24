@@ -271,7 +271,7 @@ class MainBody extends React.Component {
         console.log(value);
         if(value.indexOf("today") !== -1){
             var today = new Date();
-            value = "starred-news/view-by-date/" + today.getFullYear() + 
+            value = "/starred-news/view-by-date/" + today.getFullYear() + 
                     ((today.getMonth() + 1) < 10 ? '0' + (today.getMonth() + 1) : (today.getMonth() + 1)) + today.getDate();
         }
         this.props.history.push(value);

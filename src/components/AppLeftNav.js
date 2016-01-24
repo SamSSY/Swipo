@@ -59,6 +59,7 @@ export default class AppLeftNav extends React.Component{
                                                 className="material-icons"
                                                 style={iconStyles}
                                               >schedule</FontIcon>} 
+                                            value="/starred-news/view-by-date/thisweek" 
                                         />,
                                     ]}
                                 />,
