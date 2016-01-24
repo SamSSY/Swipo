@@ -36,6 +36,8 @@ const injectTapEventPlugin = require('react-tap-event-plugin');
 //Check this repo:
 //https://github.com/zilverline/react-tap-event-plugin
 injectTapEventPlugin();
+const io = require('socket.io-client');
+const socket = io.connect();
 
 const initialState = {
     muiTheme: ThemeManager.getMuiTheme(LightRawTheme),
@@ -69,7 +71,7 @@ class MainBody extends React.Component {
         //appID: 882849945170096
         window.fbAyncInit = function(){
             FB.init({
-                appId      : 882849945170096,
+                appId      : 887332791388478,
                 cookie     : true,  // enable cookies to allow the server to access the session 1057383754306127/ 1521012484886298
                 xfbml      : true,  // parse social plugins on this page
                 version    : 'v2.5' // use version 2.5
@@ -99,7 +101,7 @@ class MainBody extends React.Component {
             var js, fjs = d.getElementsByTagName(s)[0];
             if (d.getElementById(id)) return;
             js = d.createElement(s); js.id = id;
-            js.src = "//connect.facebook.net/en_US/sdk.js#version=v2.5&appId=882849945170096&cookie=1&xfbml=1";
+            js.src = "//connect.facebook.net/en_US/sdk.js#version=v2.5&appId=887332791388478&cookie=1&xfbml=1";
             fjs.parentNode.insertBefore(js, fjs);
         }(document, 'script', 'facebook-jssdk'));
 
@@ -115,6 +117,20 @@ class MainBody extends React.Component {
         if($(window).width() < 300){
             this.setState({ isMobile: true});
         }
+        //socket.emit('');
+        socket.on('connection', function (data) {
+            console.log('connected')
+            socket.emit('init', {test: 'test'});
+        });
+        socket.on('done', function (data) {
+            console.log(data);
+            socket.emit('get', {test: 'get'});
+        });
+        socket.on('get', function (data) {
+            console.log(data);
+        })
+
+
     }
 
     componentWillMount() {
