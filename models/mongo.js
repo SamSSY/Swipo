@@ -28,9 +28,9 @@ var tagSchema = new Schema({
 
 var userSchema = new Schema({
 	id: String,
-	likes: [String],
+	likes: [swipeSchema],
 	dislikes: [swipeSchema],
-	friends: [swipeSchema],
+	friends: [String],
 	tags: [tagSchema]
 });
 

@@ -1,45 +1,5 @@
 var Sequelize = require('sequelize');
 module.exports = function (sequelize) {
-	var tagAttr = {
-		id: {
-			type: Sequelize.STRING,
-			primaryKey: true
-		},
-		headline: {
-			type: Sequelize.INTEGER
-		},
-		entertainment: {
-			type: Sequelize.INTEGER
-		},
-		international: {
-			type: Sequelize.INTEGER
-		},
-		sports: {
-			type: Sequelize.INTEGER
-		},
-		finance: {
-			type: Sequelize.INTEGER
-		},
-		supplement: {
-			type: Sequelize.INTEGER
-		},
-		forum: {
-			type: Sequelize.INTEGER
-		},
-		society: {
-			type: Sequelize.INTEGER
-		},
-		life: {
-			type: Sequelize.INTEGER
-		},
-		china: {
-			type: Sequelize.INTEGER
-		},
-		local: {
-			type: Sequelize.INTEGER
-		}
-	};
-
 	return {
 		User: sequelize.define('user', {
 			id: {
@@ -90,13 +50,45 @@ module.exports = function (sequelize) {
 			freezeTableName: true
 		}),
 
-		TagDecay: sequelize.define('tagdecay', tagAttr, {
-			freezeTableName: true
-		}),
-		TagLikes: sequelize.define('taglikes', tagAttr, {
-			freezeTableName: true
-		}),
-		TagDislikes: sequelize.define('tagdislikes', tagAttr, {
+		TagValue: sequelize.define('tagvalue', {
+			id: {
+				type: Sequelize.STRING,
+				primaryKey: true
+			},
+			headline: {
+				type: Sequelize.INTEGER
+			},
+			entertainment: {
+				type: Sequelize.INTEGER
+			},
+			international: {
+				type: Sequelize.INTEGER
+			},
+			sports: {
+				type: Sequelize.INTEGER
+			},
+			finance: {
+				type: Sequelize.INTEGER
+			},
+			supplement: {
+				type: Sequelize.INTEGER
+			},
+			forum: {
+				type: Sequelize.INTEGER
+			},
+			society: {
+				type: Sequelize.INTEGER
+			},
+			life: {
+				type: Sequelize.INTEGER
+			},
+			china: {
+				type: Sequelize.INTEGER
+			},
+			local: {
+				type: Sequelize.INTEGER
+			}
+		}, {
 			freezeTableName: true
 		})
 	}
