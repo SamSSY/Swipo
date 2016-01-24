@@ -15,8 +15,18 @@ export default class Homepage extends React.Component{
 
     componentDidMount(){
         console.log("componentDidMount: Homepage");
+        $(window).resize(() => {
+            var width = (window.innerWidth > 0) ? window.innerWidth : screen.width;
+            if(width < 1000){
+                this.setState({ isMobile: true});
+            }
+            else{
+                this.setState({ isMobile: false});
+            }
+            console.log(width, this.state.isMobile);
+        });
         var width = (window.innerWidth > 0) ? window.innerWidth : screen.width;
-        if(width < 750){
+        if(width < 1000){
             this.setState({ isMobile: true });
         }
     }
