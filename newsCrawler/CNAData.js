@@ -191,15 +191,15 @@ var htmlToNewsObject = function(data){
 
 var getTagFromPath = function(path){
 	var tagToReturn = '';
-	if(path.indexOf('aipl') !== -1 || path.indexOf('firstnews') !== -1) tagToReturn = '頭條要聞';
-	if(path.indexOf('asoc') !== -1) tagToReturn = '社會';
-	if(path.indexOf('ahel') !== -1) tagToReturn = '生活';
-	if(path.indexOf('afe') !== -1) tagToReturn = '財經';
-	if(path.indexOf('aopl') !== -1) tagToReturn = '國際';
-	if(path.indexOf('acn') !== -1) tagToReturn = '兩岸';
-	if(path.indexOf('amov') !== -1) tagToReturn = '娛樂名人';
-	if(path.indexOf('aspt') !== -1) tagToReturn = '體育';
-	if(path.indexOf('aloc') !== -1) tagToReturn = '地方';
+	if(path.indexOf('aipl') !== -1 || path.indexOf('firstnews') !== -1) tagToReturn = 'headline';
+	if(path.indexOf('asoc') !== -1) tagToReturn = 'society';
+	if(path.indexOf('ahel') !== -1) tagToReturn = 'life';
+	if(path.indexOf('afe') !== -1) tagToReturn = 'finance';
+	if(path.indexOf('aopl') !== -1) tagToReturn = 'international';
+	if(path.indexOf('acn') !== -1) tagToReturn = 'china';
+	if(path.indexOf('amov') !== -1) tagToReturn = 'entertainment';
+	if(path.indexOf('aspt') !== -1) tagToReturn = 'sports';
+	if(path.indexOf('aloc') !== -1) tagToReturn = 'local';
 
 	return tagToReturn;
 };
@@ -238,7 +238,7 @@ exports.getAllNewsLinks = function(){
 	return newsLinks;
 }
 
-var getSingleNewsByPath = function(path, checkFunction, uploadFunctionSql, uploadFunctionDoc, useSummary, done){
+var getSingleNewsByPath = function(path, checkFunction, uploadFunctionSql, useSummary, done){
 	if(path.search('/news/') !== -1 && !checkFunction(md5(path))){
 		helper.httpGetReturnRequestBody('www.cna.com.tw',path).then(function(data){
 			var news = htmlToNewsObject(data);
@@ -249,23 +249,19 @@ var getSingleNewsByPath = function(path, checkFunction, uploadFunctionSql, uploa
 				news.id = md5(path);
 				news.url = newsHost + path;
 
-				//db.newPostSQL( md5, time, title, url, source, tag)
-				//parameter types( String, Date, String, String, String, String )
-				uploadFunctionSql(news.id, news.dateTime, news.title, news.url, '中央社', news.classification);
-
 				if(useSummary){
 					summaryHelper.submitSummary(news, '中央社', uploadFunctionDoc);
 				}else{
-					//db.newPostDOC( md5, keywords, content, images)
-					//parameter types( String, [String], String, [ {url: String, description: String} ] )
-					uploadFunctionDoc(news.id, [],news.content, news.image);
+					//newPostSQL = function ( md5, time, title, url, source, tag, keywords, content, images)
+					uploadFunctionDoc(news.id, news.dateTime, news.title, news.url, '中央社', news.classification, [],news.content, news.image);
 				}
 			}
 
 			return done();
 		},
 		function(reason){
-			console.log(reason);
+			console.error(reason);
+			return done();
 		})
 	}else{
 		return done();
@@ -279,28 +275,13 @@ var getSingleNewsByPath = function(path, checkFunction, uploadFunctionSql, uploa
 		(change the string './news.txt' to change the dest file)
 
 */
-exports.getAllNewsObjectByPathsArray = function(array, checkFunction, uploadFunctionSql, uploadFunctionDoc, useSummary){
-	console.log('Retrieveing news from CNA...');
+exports.getAllNewsObjectByPathsArray = function(pathArray, checkFunction, uploadFunctionSql, useSummary){
+	console.log('Retrieveing News from CNA...');
 
-	eachSeries(array, function (prime, done) {
-  		getSingleNewsByPath(prime, checkFunction, uploadFunctionSql, uploadFunctionDoc, useSummary, done);
+	eachSeries(pathArray, function (prime, done) {
+  		getSingleNewsByPath(prime, checkFunction, uploadFunctionSql, useSummary, done);
 	}, function (err) {
   		if (err) { throw err; }
   		console.log('CNA News Done!');
 	});
-	/*
-	var count = array.length-1;
-	while(count) {
-		count = DO(count);
-	}
-	function DO(count){
-		if (getSingleNewsByPath(array[count], checkFunction, uploadFunctionSql, uploadFunctionDoc, useSummary)) return count-1;
-		else return 0;
-	}
-	*/
-	/*
-	array.forEach(function(path){
-		getSingleNewsByPath(path, checkFunction, uploadFunctionSql, uploadFunctionDoc, useSummary);
-	});
-	*/
 }

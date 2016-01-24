@@ -121,43 +121,33 @@ var getImagesInNewsObject = function(data){
 
 var getTagFromPath = function(path){
 	var toReturn = undefined;
-	if(path.indexOf('headline') !== -1) toReturn = '頭條要聞';
-	if(path.indexOf('entertainment') !== -1) toReturn = '娛樂名人';
-	if(path.indexOf('international') !== -1) toReturn = '國際';
-	if(path.indexOf('sports') !== -1) toReturn = '體育';
-	if(path.indexOf('finance') !== -1) toReturn = '財經';
-	if(path.indexOf('supplement') !== -1) toReturn = '副刊';
-	if(path.indexOf('forum') !== -1) toReturn = '專欄';
+	if(path.indexOf('headline') !== -1) toReturn = 'headline';
+	if(path.indexOf('entertainment') !== -1) toReturn = 'entertainment';
+	if(path.indexOf('international') !== -1) toReturn = 'international';
+	if(path.indexOf('sports') !== -1) toReturn = 'sports';
+	if(path.indexOf('finance') !== -1) toReturn = 'finance';
+	if(path.indexOf('supplement') !== -1) toReturn = 'supplement';
+	if(path.indexOf('forum') !== -1) toReturn = 'forum';
 
 	return toReturn;
 };
 
-var getSingleNewsByPath = function(path, checkFunction, uploadFunctionSql, uploadFunctionDoc, useSummary, done){
+var getSingleNewsByPath = function(path, checkFunction, uploadFunctionSql, useSummary, done){
 	if(path.search('/appledaily/') !== -1 && !checkFunction(md5(path))){
-		console.log('Retriving news, path: ' + path);
 		helper.httpGetReturnRequestBody(newsHost,encodeURI(path)).then(function(data){
 			var news = getNewsObject(data);
 
 			if(news !== null){
-				//console.log('AAA');
 				news.classification = getTagFromPath(path);
 				news.dateTime = helper.createTimeByString(news.time.toString());
 				news.id = md5(path);
 				news.url = newsHost + path;
 				if(news.content !== null && news.content !== '' && news.image.length !== 0){
-					//console.log('CCC');
 					if(news.content !== null && news.content !== '' && useSummary){
-						//db.newPostSQL( md5, time, title, url, source, tag)
-						//parameter types( String, Date, String, String, String, String )
-						uploadFunctionSql(news.id, news.dateTime, news.title, news.url, '蘋果日報', news.classification);
-
 						summaryHelper.submitSummary(news, '蘋果日報', uploadFunctionSql);
 					}else{
-						uploadFunctionSql(news.id, news.dateTime, news.title, news.url, '蘋果日報', news.classification);
-
-						//db.newPostDOC( md5, keywords, content, images)
-						//parameter types( String, [String], String, [ {url: String, description: String} ] )
-						uploadFunctionDoc(news.id, [], news.content, news.image);
+						//newPostSQL = function ( md5, time, title, url, source, tag, keywords, content, images)
+						uploadFunctionSql(news.id, news.dateTime, news.title, news.url, '蘋果日報', news.classification, [], news.content, news.image);
 					}
 					console.log('News: ' + news.title + '\nID:' + news.id);
 				}		
@@ -166,7 +156,8 @@ var getSingleNewsByPath = function(path, checkFunction, uploadFunctionSql, uploa
 			return done();
 		},
 		function(reason){
-			console.log(reason);
+			console.error(reason);
+			return done();
 		});
 	}else{
 		return done();
@@ -180,29 +171,13 @@ var getSingleNewsByPath = function(path, checkFunction, uploadFunctionSql, uploa
 		(change the string './news.txt' to change the dest file)
 
 */
-exports.getAllNewsObjectByPathsArray = function(pathArray, checkFunction, uploadFunctionSql, uploadFunctionDoc, useSummary){
+exports.getAllNewsObjectByPathsArray = function(pathArray, checkFunction, uploadFunctionSql, useSummary){
 	console.log('Retrieving News From Apple Daily...');
 
 	eachSeries(pathArray, function (prime, done) {
-  		getSingleNewsByPath(prime, checkFunction, uploadFunctionSql, uploadFunctionDoc, useSummary, done);
+  		getSingleNewsByPath(prime, checkFunction, uploadFunctionSql, useSummary, done);
 	}, function (err) {
   		if (err) { throw err; }
   		console.log('AppleDaily Done!');
 	});
-
-	/*
-	var count = pathArray.length-1;
-	while(count) {
-		count = DO(count);
-	}
-	function DO(count){
-		if (getSingleNewsByPath(pathArray[count], checkFunction, uploadFunctionSql, uploadFunctionDoc, useSummary)) return count-1;
-		else return 0;
-	}
-	*/
-	/*
-	array.forEach(function(path){
-		getSingleNewsByPath(path, checkFunction, uploadFunctionSql, uploadFunctionDoc, useSummary);
-	});
-	*/
 };
