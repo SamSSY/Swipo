@@ -27,13 +27,13 @@ if ( db.checkPath(path) ) {
 
 var apple = true;
 var cna = true;
-var useSummary = false; 
+var useSummary = true;
 
 // Apple Daily Crawler
 if(apple){
 	appleCrawler.getAllNewsLinks().then(
 		function(paths){
-			appleCrawler.getAllNewsObjectByPathsArray(paths, db.checkPath, db.newPostSQL, db.newPostDOC, useSummary);
+			appleCrawler.getAllNewsObjectByPathsArray(paths, db.checkPath, db.newPostSQL, useSummary);
 		},
 		function(reason){
 			console.error(reason);
@@ -43,7 +43,7 @@ if(apple){
 	setInterval(function(){
 		appleCrawler.getAllNewsLinks().then(
 			function(paths){
-				appleCrawler.getAllNewsObjectByPathsArray(paths, db.checkPath, db.newPostSQL, db.newPostDOC, useSummary);
+				appleCrawler.getAllNewsObjectByPathsArray(paths, db.checkPath, db.newPostSQL, useSummary);
 			},
 			function(reason){
 				console.error(reason);
@@ -56,7 +56,7 @@ if(apple){
 if(cna){
 	CNACrawler.getAllNewsLinks().then(
 		function(paths){
-			CNACrawler.getAllNewsObjectByPathsArray(paths, db.checkPath, db.newPostSQL, db.newPostDOC, useSummary);
+			CNACrawler.getAllNewsObjectByPathsArray(paths, db.checkPath, db.newPostSQL, useSummary);
 		},
 		function(reason){
 			console.error(reason);
@@ -66,7 +66,7 @@ if(cna){
 	setInterval(function(){
 		CNACrawler.getAllNewsLinks().then(
 			function(paths){
-				CNACrawler.getAllNewsObjectByPathsArray(paths, db.checkPath, db.newPostSQL, db.newPostDOC, useSummary);
+				CNACrawler.getAllNewsObjectByPathsArray(paths, db.checkPath, db.newPostSQL, useSummary);
 			},
 			function(reason){
 				console.error(reason);

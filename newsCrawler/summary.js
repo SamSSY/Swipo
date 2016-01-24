@@ -37,9 +37,8 @@ exports.submitSummary = function(news, source, uploadFunction){
 			if(source === '中央社')
 				news.content = result[0];
 
-			//db.newPostDOC( md5, keywords, content, images)
-			//parameter types( String, [String], String, [ {url: String, description: String} ] )
-			uploadFunction(news.id, newsTags, news.content, news.image);
+			//newPostSQL = function ( md5, time, title, url, source, tag, keywords, content, images)
+			uploadFunction(news.id, news.dateTime, news.title, news.url, source, news.classification, newsTags, news.content, news.image);
 		}
 	});	
 }
