@@ -1,43 +1,40 @@
-const React = require('react');
-const { render } = require('react-dom');
+import React from 'react';
+import { render } from 'react-dom';
+import { Router, Route, Link, IndexLink, browserHistory } from 'react-router';
 
-import { Router, Route, Link, browserHistory } from 'react-router';
-import SwipePane from './component/SwipePane';
-
-require('./main.scss');
+import SwipePane from './SwipePane';
+import AppLeftNav from './AppLeftNav';
 // material-ui
-const RaisedButton = require('material-ui/lib/raised-button');
-const Dialog = require('material-ui/lib/dialog');
-const ThemeManager = require('material-ui/lib/styles/theme-manager');
-const LightRawTheme = require('material-ui/lib/styles/raw-themes/light-raw-theme');
-const Colors = require('material-ui/lib/styles/colors');
-const AppBar = require('material-ui/lib/app-bar');
-const LeftNav = require('material-ui/lib/left-nav');
+import RaisedButton from 'material-ui/lib/raised-button';
+import Dialog from 'material-ui/lib/dialog';
+import ThemeManager from 'material-ui/lib/styles/theme-manager';
+import LightRawTheme from 'material-ui/lib/styles/raw-themes/light-raw-theme';
+import Colors from 'material-ui/lib/styles/colors';
+import AppBar from 'material-ui/lib/app-bar';
+import LeftNav from 'material-ui/lib/left-nav';
 import IconButton from 'material-ui/lib/icon-button';
 import List from 'material-ui/lib/lists/list';
 import ListItem from 'material-ui/lib/lists/list-item';
-import ActionGrade from 'material-ui/lib/svg-icons/action/grade';
-import ContentInbox from 'material-ui/lib/svg-icons/content/inbox';
-import ContentDrafts from 'material-ui/lib/svg-icons/content/drafts';
-import ContentSend from 'material-ui/lib/svg-icons/content/send';
 import FontIcon from 'material-ui/lib/font-icon';
 import Card from 'material-ui/lib/card/card';
 import CardActions from 'material-ui/lib/card/card-actions';
 import CardHeader from 'material-ui/lib/card/card-header';
 import CardText from 'material-ui/lib/card/card-text';
-const FlatButton = require('material-ui/lib/flat-button');
-const TextField = require('material-ui/lib/text-field');
-const Snackbar = require('material-ui/lib/snackbar');
-const Avatar = require('material-ui/lib/avatar');
-const injectTapEventPlugin = require('react-tap-event-plugin');
+import FlatButton from 'material-ui/lib/flat-button';
+import TextField from 'material-ui/lib/text-field';
+import Snackbar from 'material-ui/lib/snackbar';
+import Avatar from'material-ui/lib/avatar';
+import injectTapEventPlugin from 'react-tap-event-plugin';
+
+import './main.scss';
+
+import io from 'socket.io-client';
 
 //Needed for onTouchTap
 //Can go away when react 1.0 release
 //Check this repo:
 //https://github.com/zilverline/react-tap-event-plugin
 injectTapEventPlugin();
-const io = require('socket.io-client');
-const socket = io.connect();
 
 const initialState = {
     muiTheme: ThemeManager.getMuiTheme(LightRawTheme),
@@ -51,7 +48,7 @@ const initialState = {
     autoHideDuration: 1000,
     userProfilePicUrl: null,
     isLoginDialogOpen : false,
-    inHomepage: true
+    socket: io.connect()
 }
 
 class MainBody extends React.Component {
@@ -71,7 +68,7 @@ class MainBody extends React.Component {
         //appID: 882849945170096
         window.fbAyncInit = function(){
             FB.init({
-                appId      : 887332791388478,
+                appId      : 882849945170096,
                 cookie     : true,  // enable cookies to allow the server to access the session 1057383754306127/ 1521012484886298
                 xfbml      : true,  // parse social plugins on this page
                 version    : 'v2.5' // use version 2.5
@@ -90,7 +87,6 @@ class MainBody extends React.Component {
                         // a user has logged in
                         console.log("login! ");
                         this.checkLoginState();
-                        this._getUserProfilePic();
                     }
                 }.bind(this)
             );
@@ -101,36 +97,30 @@ class MainBody extends React.Component {
             var js, fjs = d.getElementsByTagName(s)[0];
             if (d.getElementById(id)) return;
             js = d.createElement(s); js.id = id;
-            js.src = "//connect.facebook.net/en_US/sdk.js#version=v2.5&appId=887332791388478&cookie=1&xfbml=1";
+            js.src = "//connect.facebook.net/en_US/sdk.js#version=v2.5&appId=882849945170096&cookie=1&xfbml=1";
             fjs.parentNode.insertBefore(js, fjs);
         }(document, 'script', 'facebook-jssdk'));
 
         $(window).resize(() => {
-            if($(window).width() < 300){
+            var width = (window.innerWidth > 0) ? window.innerWidth : screen.width;
+            if(width < 750){
                 this.setState({ isMobile: true});
             }
             else{
                 this.setState({ isMobile: false});
             }
-            console.log($(window).width(), this.state.isMobile);
+            console.log(width, this.state.isMobile);
         });
-        if($(window).width() < 300){
+
+        var width = (window.innerWidth > 0) ? window.innerWidth : screen.width;
+        if(width < 750){
             this.setState({ isMobile: true});
         }
-        //socket.emit('');
-        socket.on('connection', function (data) {
-            console.log('connected')
-            socket.emit('init', {test: 'test'});
-        });
-        socket.on('done', function (data) {
-            console.log(data);
-            socket.emit('get', {test: 'get'});
-        });
-        socket.on('get', function (data) {
-            console.log(data);
-        })
 
-
+        const { socket } = this.state;
+        socket.on('test', function(){
+            console.log("in App");
+        });
     }
 
     componentWillMount() {
@@ -164,10 +154,15 @@ class MainBody extends React.Component {
             this.testAPI();
             this.setState({isLoginDialogOpen: false});
             this._getUserProfilePic();
-
-        } else if (response.status === 'not_authorized') {
+            this.socket.emit('init', {
+                user: this.state.userID,
+                location: 'main'
+            });
+        } 
+        else if (response.status === 'not_authorized') {
             console.log("user not authorized.");
-        } else {
+        } 
+        else {
             // The person is not logged into Facebook, so we're not sure if
             // they are logged into this app or not.
             console.log("something wrong. ");
@@ -256,124 +251,38 @@ class MainBody extends React.Component {
         );
     }
 
-    goToHomepage(){
-        this.setState({inHomepage: true});
+    handleLeftNavRequestChange(open){
+        this.setState({isLeftNavOpen: open});
     }
 
-    renderHomepage(){
-        let styles = {
-            height: "500px",
-            backgroundColor: "#00bcd4",
-            margin: "0px",
-            textAlign: "center",
-            color: "white",
-        };
-        let titleStyle = {
-            margin: "0px",
-            fontSize: "190px",
-            fontWeight: "200",
-            lineHeight: "360px",
-            fontFamily: 'Shadows Into Light'
-        };
-        let descriptStyle = {
-            lineHeight: "0px",
-            display: "block",
-            height: "30px"
+    handleRequestChangeList(event, value) {
+        console.log(value);
+        if(value.indexOf("today") !== -1){
+            var today = new Date();
+            value = "starred-news/view-by-date/" + today.getFullYear() + 
+                    ((today.getMonth() + 1) < 10 ? '0' + (today.getMonth() + 1) : (today.getMonth() + 1)) + today.getDate();
         }
-        return(
-            <div style={styles}>
-                <h1 style={titleStyle}>Swipo</h1>
-                <span style={descriptStyle}>Brand new world in a swipe.</span>
-                <RaisedButton label="Swipo!" secondary={true} />
-            </div>
-        );
+        this.props.history.push(value);
+        this.setState({
+            isLeftNavOpen: false,
+        });
     }
 
     renderLeftNav(){
         const iconStyles = {
             marginRight: 24,
         };
+        const { history, location, children } = this.props;
         return(
-            <LeftNav docked={false}
+            <AppLeftNav 
+                    history={history} 
+                    location={location} 
+                    docked={false} 
                     width={300} 
                     open={this.state.isLeftNavOpen} 
-                    onRequestChange={open => this.setState({isLeftNavOpen: open}) } >
-                    <List subheader="Swipo">
-                    <ListItem primaryText="Home" leftIcon={<FontIcon
-                        className="material-icons"
-                        style={iconStyles}
-                        color={Colors.lightBlue100}>home</FontIcon>} 
-                    />
-                    <ListItem
-                            key={1}
-                            primaryText="Starred News"
-                            leftIcon={<ActionGrade />}
-                            initiallyOpen={true}
-                            primaryTogglesNestedList={true}
-                            nestedItems={[
-                                <ListItem
-                                    key={2}
-                                    primaryText="Date"
-                                    leftIcon={<FontIcon
-                                                className="material-icons"
-                                                style={iconStyles}
-                                              >date_range</FontIcon>}
-                                    disabled={true}
-                                    nestedItems={[
-                                        <ListItem key={1} primaryText="Today" 
-                                            leftIcon={<FontIcon
-                                                className="material-icons"
-                                                style={iconStyles}
-                                              >schedule</FontIcon>} 
-                                        />,
-                                        <ListItem key={2} primaryText="This Week" 
-                                            leftIcon={<FontIcon
-                                                className="material-icons"
-                                                style={iconStyles}
-                                              >schedule</FontIcon>} 
-                                        />,
-                                    ]}
-                                />,
-                                <ListItem
-                                    key={3}
-                                    primaryText="Category"
-                                    leftIcon={<FontIcon
-                                                className="material-icons"
-                                                style={iconStyles}
-                                              >class</FontIcon>}
-                                    disabled={true}
-                                    nestedItems={[
-                                        <ListItem key={1} primaryText="Entertainment" leftIcon={<FontIcon
-                                                className="material-icons"
-                                                style={iconStyles}
-                                              >bookmark</FontIcon>} 
-                                        />,
-                                        <ListItem key={2} primaryText="Politics" leftIcon={<FontIcon
-                                                className="material-icons"
-                                                style={iconStyles}
-                                              >bookmark</FontIcon>} 
-                                        />,
-                                    ]}
-                                />
-                            ]}
-                    />
-                    <ListItem primaryText="Timeline" leftIcon={<FontIcon
-                        className="material-icons"
-                        style={iconStyles}
-                        >timeline</FontIcon>} 
-                    />
-                    <ListItem primaryText="Dashboard" leftIcon={<FontIcon
-                        className="material-icons"
-                        style={iconStyles}
-                        >dashboard</FontIcon>} 
-                    />
-                    <ListItem primaryText="Settings" leftIcon={<FontIcon
-                        className="material-icons"
-                        style={iconStyles}
-                        >settings</FontIcon>} 
-                    />
-                    </List>
-            </LeftNav>
+                    onRequestChange={this.handleLeftNavRequestChange.bind(this)}
+                    onRequestChangeList={this.handleRequestChangeList.bind(this)} 
+                    iconStyles={iconStyles} />
         );
     }
 
@@ -434,19 +343,21 @@ class MainBody extends React.Component {
         const displayNone = {display: 'none'};
         var {isMobile, isLogin} = this.state;
         var appBarStyle = {};
+
         const actions =[
             <FlatButton
                 label="Cancel"
                 secondary={true}
                 onTouchTap={this.handleLoginDialogClose.bind(this)} />,
         ];
+
         return (
             <div style={fullHeight}>
                 { this.renderAppBar() }
-                { isMobile ? null: this.renderHomepage() }
                 { isMobile? null: this.renderLeftNav() }
                 { isMobile? this.renderMobileSwipePanes(): null }
                 { isLogin? this.renderUserInfo(actions): this.renderLoginDialog(actions)}
+                {this.props.children}
                 { isMobile? null: this.renderFooter() }
             </div>
         );
@@ -457,4 +368,4 @@ MainBody.childContextTypes = {
     muiTheme: React.PropTypes.object,
 }
 
-render(<MainBody />, document.getElementById('root'));
+module.exports = MainBody;
