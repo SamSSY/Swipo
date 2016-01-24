@@ -250,10 +250,10 @@ var getSingleNewsByPath = function(path, checkFunction, uploadFunctionSql, useSu
 				news.url = newsHost + path;
 
 				if(useSummary){
-					summaryHelper.submitSummary(news, '中央社', uploadFunctionDoc);
+					summaryHelper.submitSummary(news, '中央社', uploadFunctionSql);
 				}else{
 					//newPostSQL = function ( md5, time, title, url, source, tag, keywords, content, images)
-					uploadFunctionDoc(news.id, news.dateTime, news.title, news.url, '中央社', news.classification, [],news.content, news.image);
+					uploadFunctionDoc(news.id, news.dateTime, news.title, news.url, '中央社', news.classification, [], news.content, news.image);
 				}
 			}
 
