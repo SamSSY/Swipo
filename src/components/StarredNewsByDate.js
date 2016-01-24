@@ -31,24 +31,37 @@ export default class StarredNewsByDate extends React.Component{
         this.state = initialState;
     }
 
+    componentWillMount(){
+        console.log('componentWillMount: StarredNewsByDate');
+        let date = window.location.pathname.substr("/starred-news/view-by-date/".length);
+        console.log("current date: ", date);
+        this.setState({ date: date });
+    }
+
     componentDidMount(){
-
         console.log('componentDidMount: StarredNewsByDate');
-        const { socket } = this.state; 
-        // socket events
-        socket.emit('init', {
-            user: window.user,
-            location: 'viewByDate'
-        });
-
+        console.log("In viewByDate: ");
+        console.log(window.user);
+        console.log(this.state.date);
+        // detect if url changed
+        let timerId = setInterval(() => {
+            let date =  window.location.pathname.substr("/starred-news/view-by-date/".length);
+            if(date !== this.state.date){
+                console.log("url changed!");
+                this.setState({ date: date });
+                this.handleSwitchDate();
+            }
+        }, 100);
+        
+        console.log("timerId: ", timerId);
+        this.setState({timerId: timerId});
+        this.handleSwitchDate(); 
+               
+        const { socket } = this.state;
         socket.on('returnNewsByDate', function(datas){
             console.log("StarredNewsByDate: ");
             console.log(datas)
             this.setState({datas: datas});
-        });
-
-        socket.on('test', function(){
-            console.log("in Date");
         });
 
         // other events
@@ -57,27 +70,21 @@ export default class StarredNewsByDate extends React.Component{
             //console.log("!!!!!");
             //console.log(data);
         //});
-        console.log("In viewByDate: ");
-        console.log(window.user);
-        let date = window.location.pathname.substr("/starred-news/view-by-date/".length);
-        console.log("current Date: ", date);
-        this.setState({ date: date });
-        // detect if url changed
-        let timerId = setInterval(() => {
-            let date =  window.location.pathname.substr("/starred-news/view-by-date/".length);
-            if(date !== this.state.date){
-                console.log("url changed!");
-                this.setState({ date: date });
-            }
-        }, 100);
 
-        console.log("timerId: ", timerId);
-        this.setState({timerId: timerId});
     }
 
     componentWillUnmount(){
         console.log("componentWillUnmount");
         clearInterval(this.state.timerId);
+    }
+
+    handleSwitchDate(){
+        const { socket } = this.state; 
+        socket.emit('init', {
+            user: window.user,
+            location: 'viewByDate',
+            date: this.state.date
+        });
     }
 
     renderNews(){
@@ -149,7 +156,6 @@ export default class StarredNewsByDate extends React.Component{
         }
 
         let news = this.renderNews();
-        //console.log("newsByDate state: ", this.state);
         return(
             <div style={styles}>
                 <GridList

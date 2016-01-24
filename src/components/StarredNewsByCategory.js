@@ -31,24 +31,37 @@ export default class StarredNewsByCategory extends React.Component{
         this.state = initialState;
     }
 
+    componentWillMount(){
+        console.log('componentWillMount: StarredNewsByCategory');
+        let category = window.location.pathname.substr("/starred-news/view-by-category/".length);
+        console.log("current category: ", category);
+        this.setState({ category: category });
+    }
+
     componentDidMount(){
-
         console.log('componentDidMount: StarredNewsByCategory');
-        const { socket } = this.state; 
-        // socket events
-        socket.emit('init', {
-            user: window.user,
-            location: 'viewByCategory'
-        });
-
+        console.log("In viewByCategory: ");
+        console.log(window.user);
+        console.log(this.state.category);
+        // detect if url changed
+        let timerId = setInterval(() => {
+            let category =  window.location.pathname.substr("/starred-news/view-by-category/".length);
+            if(category !== this.state.category){
+                console.log("url changed!");
+                this.setState({ category: category });
+                this.handleSwitchCategory();
+            }
+        }, 100);
+        
+        console.log("timerId: ", timerId);
+        this.setState({timerId: timerId});
+        this.handleSwitchCategory(); 
+               
+        const { socket } = this.state;
         socket.on('returnNewsByCategory', function(datas){
             console.log("StarredNewsByCategory: ");
             console.log(datas)
             this.setState({datas: datas});
-        });
-
-        socket.on('test', function(){
-            console.log("in category");
         });
 
         // other events
@@ -57,27 +70,21 @@ export default class StarredNewsByCategory extends React.Component{
             //console.log("!!!!!");
             //console.log(data);
         //});
-        console.log("In viewByCategory: ");
-        console.log(window.user);
-        let category = window.location.pathname.substr("/starred-news/view-by-category/".length);
-        console.log("current category: ", category);
-        this.setState({ category: category });
-        // detect if url changed
-        let timerId = setInterval(() => {
-            let category =  window.location.pathname.substr("/starred-news/view-by-category/".length);
-            if(category !== this.state.category){
-                console.log("url changed!");
-                this.setState({ category: category });
-            }
-        }, 100);
 
-        console.log("timerId: ", timerId);
-        this.setState({timerId: timerId});
     }
 
     componentWillUnmount(){
         console.log("componentWillUnmount");
         clearInterval(this.state.timerId);
+    }
+
+    handleSwitchCategory(){
+        const { socket } = this.state; 
+        socket.emit('init', {
+            user: window.user,
+            location: 'viewByCategory',
+            category: this.state.category
+        });
     }
 
     renderNews(){
@@ -149,7 +156,6 @@ export default class StarredNewsByCategory extends React.Component{
         }
 
         let news = this.renderNews();
-        //console.log("newsByCategory state: ", this.state);
         return(
             <div style={styles}>
                 <GridList

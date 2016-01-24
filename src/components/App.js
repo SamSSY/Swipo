@@ -65,6 +65,8 @@ class MainBody extends React.Component {
     }
 
     componentDidMount(){
+
+        window.user = null;
         //appID: 882849945170096
         window.fbAyncInit = function(){
 
