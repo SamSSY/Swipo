@@ -59,7 +59,7 @@ exports.httpGetReturnRequestBody = function(host, path){
         		});
     		}).on('error',function(e){
     			reject(e);
-    		}).end();
+    		});
 		}catch(err){
 			reject(err);
 		}
