@@ -7,17 +7,20 @@ require('./main.scss');
 export default class Homepage extends React.Component{
 	render(){
 		let styles = {
-            height: "90%",
+            height: "80%",
             backgroundColor: "#00bcd4",
             margin: "0px",
             textAlign: "center",
             color: "white",
+            paddingTop: '10%'
         };
         let titleStyle = {
             margin: "0px",
             fontSize: "190px",
             fontWeight: "200",
-            lineHeight: "360px",
+            //lineHeight: "360px",
+            //verticalAlign: 'middle',
+            //top: '50%',
             fontFamily: 'Shadows Into Light'
         };
         let descriptStyle = {
