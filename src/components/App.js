@@ -138,7 +138,6 @@ class MainBody extends React.Component {
             this.setState({username: response.name, userID: response.id});
             this._getUserProfilePic();
             this.setState({isLogin: true});
-
         }.bind(this));
     }
 
@@ -156,7 +155,8 @@ class MainBody extends React.Component {
             this.setState({isLoginDialogOpen: false});
             this._getUserProfilePic();
             this.socket.emit('init', {
-                user: userID
+                user: this.state.userID,
+                location: 'main'
             });
         } 
         else if (response.status === 'not_authorized') {

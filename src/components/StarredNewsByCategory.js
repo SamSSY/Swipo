@@ -10,7 +10,8 @@ export default class StarredNewsByCategory extends React.Component{
     constructor(props){
         super(props);
         this.state = {
-            socket: io.connect()
+            socket: io.connect(),
+            news: []
         }
     }
 
@@ -22,13 +23,17 @@ export default class StarredNewsByCategory extends React.Component{
         });
     }
 
+    renderNews(){
+
+    }
+
     render(){	
         let styles = {
             height: "100%",
-            backgroundColor: "grey",
+            //backgroundColor: "grey",
             margin: "0px",
             textAlign: "center",
-            color: "white",
+            //color: "white",
         };
         let titleStyle = {
             margin: "0px",
@@ -45,9 +50,7 @@ export default class StarredNewsByCategory extends React.Component{
 
         return(
             <div style={styles}>
-                <h1 style={titleStyle}>Swipo</h1>
-                <span style={descriptStyle}>Brand new world in a swipe.</span>
-                <RaisedButton label="Swipo!" secondary={true} />
+
             </div>
         );
 	}
