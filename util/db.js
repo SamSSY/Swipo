@@ -39,7 +39,7 @@ exports.checkPath = function (md5) {
 	});
 	//return false if data from "path" is not yet collected
 };
-exports.newPostSQL = function ( md5, time, title, url, source, tag) {
+exports.newPostSQL = function ( md5, time, title, url, source, tag, keywords, content, images) {
 
 	sqlzModels.Post.create({
 		id: md5,
@@ -51,24 +51,19 @@ exports.newPostSQL = function ( md5, time, title, url, source, tag) {
 	}).then( function (data) {
 		console.log('SQL created');
 		//console.log(data.dataValues);
+		var PostMongo = new mongoPost();
+		PostMongo.id = md5;
+		PostMongo.keywords = keywords;
+		PostMongo.content = content;
+		PostMongo.images = images;
+		PostMongo.save( function(err) {
+			if (err) {
+				console.log( 'Error in Saving PostMongo: ' + err);  
+				throw err;  
+			}
+			console.log('succesful');    
+		});
 	}, function (err) {
 		console.log('SQL creation err: ' + err);
 	});
-};
-
-exports.newPostDOC = function (md5, keywords, content, images) {
-	
-	var PostMongo = new mongoPost();
-	PostMongo.id = md5;
-	PostMongo.keywords = keywords;
-	PostMongo.content = content;
-	PostMongo.images = images;
-	PostMongo.save( function(err) {
-		if (err) {
-			console.log( 'Error in Saving PostMongo: ' + err);  
-			throw err;  
-		}
-		console.log('succesful');    
-	});
-
 };
