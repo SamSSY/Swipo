@@ -93,10 +93,14 @@ export default class StarredNewsByDate extends React.Component{
         });
     }
 
-    handleDatePickerValueChange(oldValue, newValue){
+    handleDatePickerValueChange(oldDate, newDate){
         console.log("date picker value changed!");
-        console.log(newValue.getDate());
-        console.log(typeof(newValue));
+        let searchForDate = newDate.getFullYear() + 
+                        ((newDate.getMonth() + 1) < 10 ? '0' + 
+                        (newDate.getMonth() + 1) : (newDate.getMonth() + 1)) + 
+                        ((newDate.getDate() < 10) ? ('0' + newDate.getDate()) :  newDate.getDate());
+        console.log("search for date: ", searchForDate);
+        history.push("/starred-news/view-by-date/" + searchForDate);
     }
 
     renderNews(){

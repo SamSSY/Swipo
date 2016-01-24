@@ -19,16 +19,3 @@ export default (
 		</Route>
 	</Route>
 );
-
-/*
-<Route path="/" component={App}>
-		<IndexRoute component={Home} />
-		<Route path="/about-us" component={AboutUs} />
-		<Route path="/posts">
-		    <IndexRoute component={PostList} />
-		    <Route path=":postId" component={SinglePost} />
-		    </Route>
-		<Redirect from="/abc" to="/" />
-		<Route path="*" component={NotFound} />
-</Route>
-*/
