@@ -57,7 +57,9 @@ exports.httpGetReturnRequestBody = function(host, path){
             		// Data reception is done, do whatever with it!
             		resolve(body);
         		});
-    		});
+    		}).on('error',function(e){
+    			reject(e);
+    		}).end();
 		}catch(err){
 			reject(err);
 		}
