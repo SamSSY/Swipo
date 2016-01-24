@@ -67,3 +67,20 @@ exports.newPostSQL = function ( md5, time, title, url, source, tag, keywords, co
 		console.log('SQL creation err: ' + err);
 	});
 };
+
+exports.updateDecay = function () {
+	sqlzModels.TagValue.findAll({
+		where: {
+			type: 'decay'
+		}
+	}).then( function (array) {
+		array.map( function (data) {
+			for ( var  key in data.dataValues) {
+				if (key !== 'id' && key !== 'type')
+					data.setDataValue( key, 0.75*data.getDataValue() );	
+			}
+		});
+	}, function (err) {
+		console.log('update decay err: ' + err);
+	});
+}

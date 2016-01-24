@@ -55,6 +55,9 @@ module.exports = function (sequelize) {
 				type: Sequelize.STRING,
 				primaryKey: true
 			},
+			type: {
+				type: Sequelize.STRING
+			},
 			headline: {
 				type: Sequelize.INTEGER
 			},
