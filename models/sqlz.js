@@ -25,7 +25,7 @@ module.exports = function (sequelize) {
 			freezeTableName: true
 		}),
 
-		Post: sequelize.define('post', {
+		Post: sequelize.define('post2', {
 			id: {
 				type: Sequelize.STRING,
 				primaryKey: true
@@ -55,9 +55,6 @@ module.exports = function (sequelize) {
 				type: Sequelize.STRING,
 				primaryKey: true
 			},
-			type: {
-				type: Sequelize.STRING
-			},
 			headline: {
 				type: Sequelize.INTEGER
 			},
@@ -79,9 +76,6 @@ module.exports = function (sequelize) {
 			forum: {
 				type: Sequelize.INTEGER
 			},
-			society: {
-				type: Sequelize.INTEGER
-			},
 			life: {
 				type: Sequelize.INTEGER
 			},
@@ -90,7 +84,13 @@ module.exports = function (sequelize) {
 			},
 			local: {
 				type: Sequelize.INTEGER
-			}
+			},
+			society: {
+				type: Sequelize.INTEGER
+			},
+			type: {
+				type: Sequelize.STRING
+			},
 		}, {
 			freezeTableName: true
 		})
