@@ -48,6 +48,7 @@ const initialState = {
     autoHideDuration: 1000,
     userProfilePicUrl: null,
     isLoginDialogOpen : false,
+    isSwiping: false,
     socket: io.connect()
 }
 
@@ -245,11 +246,12 @@ class MainBody extends React.Component {
     }
 
     renderMobileSwipePanes(){
-        return(                
+        let { isSwiping } = this.state;
+        return isSwiping ? (                
             <div className='swipePanes' style={{height: "100%" }} > 
                 {this.renderSingleSwipePane()}
             </div>
-        );
+        ) : null ;
     }
 
     renderAppBar(){
@@ -355,7 +357,7 @@ class MainBody extends React.Component {
     render() {
         const fullHeight = {height: "100%" };
         const displayNone = {display: 'none'};
-        var {isMobile, isLogin} = this.state;
+        var {isMobile, isLogin, isSwiping } = this.state;
         var appBarStyle = {};
 
         const actions =[
@@ -368,11 +370,11 @@ class MainBody extends React.Component {
         return (
             <div style={fullHeight}>
                 { this.renderAppBar() }
-                { isMobile? null: this.renderLeftNav() }
+                { this.renderLeftNav() }
                 { isMobile? this.renderMobileSwipePanes(): null }
                 { isLogin? this.renderUserInfo(actions): this.renderLoginDialog(actions)}
                 {this.props.children}
-                { isMobile? null: this.renderFooter() }
+                { isSwiping? null: this.renderFooter() }
             </div>
         );
     }

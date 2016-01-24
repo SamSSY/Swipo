@@ -5,9 +5,28 @@ import RaisedButton from 'material-ui/lib/raised-button';
 require('./main.scss');
 
 export default class Homepage extends React.Component{
-	render(){
+	
+    constructor(props){
+        super(props);
+        this.state = {
+            isMobile: false
+        }
+    }
+
+    componentDidMount(){
+        console.log("componentDidMount: Homepage");
+        var width = (window.innerWidth > 0) ? window.innerWidth : screen.width;
+        if(width < 750){
+            this.setState({ isMobile: true });
+        }
+    }
+
+    render(){
+
+        let { isMobile } = this.state;
+
 		let styles = {
-            height: "80%",
+            height: isMobile ? '90%' : '80%',
             backgroundColor: "#00bcd4",
             margin: "0px",
             textAlign: "center",
