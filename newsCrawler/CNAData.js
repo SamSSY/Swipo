@@ -191,15 +191,15 @@ var htmlToNewsObject = function(data){
 
 var getTagFromPath = function(path){
 	var tagToReturn = '';
-	if(path.indexOf('aipl') !== -1 || path.indexOf('firstnews') !== -1) tagToReturn = 'headline';
-	if(path.indexOf('asoc') !== -1) tagToReturn = 'society';
-	if(path.indexOf('ahel') !== -1) tagToReturn = 'life';
-	if(path.indexOf('afe') !== -1) tagToReturn = 'finance';
-	if(path.indexOf('aopl') !== -1) tagToReturn = 'international';
-	if(path.indexOf('acn') !== -1) tagToReturn = 'china';
-	if(path.indexOf('amov') !== -1) tagToReturn = 'entertainment';
-	if(path.indexOf('aspt') !== -1) tagToReturn = 'sports';
-	if(path.indexOf('aloc') !== -1) tagToReturn = 'local';
+	if(path.indexOf('aipl') !== -1 || path.indexOf('firstnews') !== -1) tagToReturn = '頭條要聞';
+	if(path.indexOf('asoc') !== -1) tagToReturn = '社會';
+	if(path.indexOf('ahel') !== -1) tagToReturn = '生活';
+	if(path.indexOf('afe') !== -1) tagToReturn = '財經';
+	if(path.indexOf('aopl') !== -1) tagToReturn = '國際';
+	if(path.indexOf('acn') !== -1) tagToReturn = '兩岸';
+	if(path.indexOf('amov') !== -1) tagToReturn = '娛樂名人';
+	if(path.indexOf('aspt') !== -1) tagToReturn = '體育';
+	if(path.indexOf('aloc') !== -1) tagToReturn = '地方';
 
 	return tagToReturn;
 };
