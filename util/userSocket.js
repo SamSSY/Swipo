@@ -77,7 +77,7 @@ UserSocket.prototype.listenLocation = function(io) {
 	});
  
 	io.on('likeThePost', function (data) {
-		db.swpie(1, data);
+		db.swipe(1, data);
 	});
 	io.on('dislikeThePost', function (data) {
 		db.swipe(0, data);
