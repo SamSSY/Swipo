@@ -23,7 +23,7 @@ var mongoPost = mongoose.model('Post');
 var mongoUser = mongoose.model('User');
 exports = module.exports = {};
 function swipedQuery (user) {
-	return new Promese function (resolve, reject) {
+	return new Promise (function(resolve, reject) {
 		 mongoUser.findOne({
 			'id': user
 		}).then(function (data) {
