@@ -9,7 +9,9 @@ import FlatButton from 'material-ui/lib/flat-button';
 import CardText from 'material-ui/lib/card/card-text';
 
 import Highcharts from 'highcharts';
+import Highcharts3d from 'highcharts-3d';
 import addFunnel from 'highcharts/modules/funnel';
+import ReactHighcharts from 'react-highcharts/dist/bundle/highcharts';
 
 import io from 'socket.io-client';
 import injectTapEventPlugin from 'react-tap-event-plugin';
@@ -49,6 +51,11 @@ export default class DashBoard extends React.Component{
             location: 'Dashboard',
         });
         this.getNewDashboardData();
+        // Apply funnel after window is present
+        addFunnel(Highcharts);
+
+        let chart = this.refs.chart.getChart();
+        //chart.series[0].addPoint({x: 10, y: 12});
     }
 
     getNewDashboardData(){
@@ -64,9 +71,46 @@ export default class DashBoard extends React.Component{
 
     render(){
         let { datas } = this.state;
+        let config = {
+                chart: {
+                    type: 'pie',
+                    options3d: {
+                        enabled: true,
+                        alpha: 45
+                    }
+                },
+                title: {
+                    text: 'Contents of Highsoft\'s weekly fruit delivery'
+                },
+                subtitle: {
+                    text: '3D donut in Highcharts'
+                },
+                plotOptions: {
+                    pie: {
+                        innerSize: 100,
+                        depth: 45
+                    }
+                },
+                series: [{
+                    name: 'Delivered amount',
+                    data: [
+                        ['Bananas', 8],
+                        ['Kiwi', 3],
+                        ['Mixed nuts', 1],
+                        ['Oranges', 6],
+                        ['Apples', 8],
+                        ['Pears', 4],
+                        ['Clementines', 4],
+                        ['Reddish (bag)', 1],
+                        ['Grapes (bunch)', 1]
+                    ]
+                }]
+            };
+
         return(
             <div style={{height: "85%", paddingTop: '100px', margin: "0" }} >
                 <div className="container" style={{height: "100%"}}>
+                    <ReactHighcharts config={config} ref="chart"></ReactHighcharts>
                 </div>
             </div>
         );
