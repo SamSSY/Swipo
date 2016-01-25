@@ -105,11 +105,12 @@ exports.getByCategory = function (category, fnsql) {
 		console.log('err getByCategory sqlz: '+ err);
 	});
 }
-exports.getByDate = function (time) {
+exports.getByDate = function (time, fnsql) {
+	//console.log()
 	sqlzModels.Post.findAll({
 		where: {
 			time: {
-				$gt: new Date(2016,0,25) //- 7*24 * 60 * 60 * 1000
+					$gt: time
 			}
 		},
 		limit: 10,

@@ -21,7 +21,7 @@ const history = createBrowserHistory();
 
 const initialState = {
     socket: io.connect(),
-    //datas: [ {title: 'test1'}, {title: 'test2'} ],
+    datas: [ {title: 'test1'}, {title: 'test2'} ],
     metaDatas: [],
     contentDatas: [],
     date: null,
@@ -65,12 +65,12 @@ export default class StarredNewsByDate extends React.Component{
         this.handleSwitchDate(); 
                
         const { socket } = this.state;
-        socket.on('returnMetaDataByDate', function(datas){
+        socket.on('returnMetaDataByDate', (datas) => {
             console.log("StarredNewsByDate: ");
             console.log(datas)
             this.setState({metaDatas: datas});
         });
-        socket.on('returnContentDataByDate', function(datas){
+        socket.on('returnContentDataByDate', (datas) => {
             console.log("StarredNewsByDate: ");
             console.log(datas)
             this.setState({contentDatas: datas});
@@ -91,17 +91,34 @@ export default class StarredNewsByDate extends React.Component{
     }
 
     handleSwitchDate(){
-        const { socket, date } = this.state; 
+        const { socket, date } = this.state;
+        let newDate = new Date(2016, 0, 25, 0, 0, 0); 
+        let searchForDate = newDate.getFullYear() + 
+                        ((newDate.getMonth() + 1) < 10 ? '0' + 
+                        (newDate.getMonth() + 1) : (newDate.getMonth() + 1)) + 
+                        ((newDate.getDate() < 10) ? ('0' + newDate.getDate()) :  newDate.getDate());
         console.log("switched to date: ", date);
-        socket.emit('init', {
-            user: window.user,
-            location: 'viewByDate',
-            date: date
-        });
+        console.log(searchForDate, date);
+        var temp;
+        if(searchForDate == date){
+            console.log("XXXXXXX");
+            console.log(newDate);
+            socket.emit('init', {
+                user: window.user,
+                location: 'viewByDate',
+                date: newDate
+            });
+            socket.emit('getNewsByDate', {
+                user: window.user,
+                date: newDate
+            });
+        }
     }
 
     getStarredNewsByDate(date){
         const { socket } = this.state; 
+        console.log("search by date: ");
+        console.log(date);
         socket.emit('getNewsByDate', {
             user: window.user,
             date: date
@@ -116,7 +133,7 @@ export default class StarredNewsByDate extends React.Component{
                         ((newDate.getDate() < 10) ? ('0' + newDate.getDate()) :  newDate.getDate());
         console.log("search for date: ", searchForDate);
         history.push("/starred-news/view-by-date/" + searchForDate);
-        getStarredNewsByDate(newDate);
+        this.getStarredNewsByDate(newDate);
     }
 
     renderNews(){
@@ -124,17 +141,21 @@ export default class StarredNewsByDate extends React.Component{
             marginRight: '25px',
             color: Colors.pink100
         }
-        var datas = {
-            metaDatas:this.state.metaDatas,
-            contentDatas: this.state.contentDatas
-        };
-        return this.state.datas.map( data => 
+
+        let { metaDatas, contentDatas } = this.state;
+        var datas = [];
+        for( var i = 0; i < metaDatas.length; ++i){
+            let temp = { metaData: metaDatas[i], contentData: contentDatas[i]};
+            datas.push(temp);
+        }
+
+        return ( datas.map( data => 
             <GridTile
-              key={data.metaDatas.title}
-              title={data.metaDatas.title}
+              key={data.metaData.title}
+              title={data.metaData.title}
               titlePosition="bottom"
               titleBackground={'rgba(0, 0, 0, 0.3)'}
-              subtitle={<span>by <b>{data.metaDatas.title}</b></span>}
+              subtitle={<span>by <b>{data.metaData.title}</b></span>}
               actionIcon={<FontIcon
                         className="material-icons"
                         style={iconStyles}
@@ -150,7 +171,7 @@ export default class StarredNewsByDate extends React.Component{
                       actAsExpander={true}
                       showExpandableButton={false} />
                     <CardText expandable={false}>
-                        {data.contentDatas.content}
+                        {data.contentData.content}
                     </CardText>
                     <CardText expandable={false}>
                       Lorem ipsum dolor sit amet, consectetur adipiscing elit.
@@ -160,7 +181,7 @@ export default class StarredNewsByDate extends React.Component{
                     </CardText>
                 </Card>
             </GridTile>
-        );
+        ));
     }
 
     render(){   
@@ -198,7 +219,7 @@ export default class StarredNewsByDate extends React.Component{
                 {isInSearchByDate? (<div>
                     <DatePicker
                       hintText="Search by Date"
-                      onChange={this.handleDatePickerValueChange} />
+                      onChange={this.handleDatePickerValueChange.bind(this)} />
                 </div>) : null}
                 <GridList
                   cols={2}

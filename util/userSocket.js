@@ -54,7 +54,7 @@ UserSocket.prototype.listenLocation = function(io) {
 				});
 			});
 		});
-		prom.then( function (send){io.emit('returnContentDateByDate', send); });
+		prom.then( function (send){io.emit('returnContentDataByDate', send); });
 		
 	}.bind(this) );
 
