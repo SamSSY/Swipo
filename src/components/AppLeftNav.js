@@ -158,6 +158,7 @@ export default class AppLeftNav extends React.Component{
                         className="material-icons"
                         style={iconStyles}
                         >dashboard</FontIcon>} 
+                        value="/dashboard"
                     />
                     <ListItem primaryText="Settings" leftIcon={<FontIcon
                         className="material-icons"
