@@ -3,6 +3,7 @@ import { render } from 'react-dom';
 import Card from 'material-ui/lib/card/card';
 import CardActions from 'material-ui/lib/card/card-actions';
 import CardHeader from 'material-ui/lib/card/card-header';
+import CardMedia from 'material-ui/lib/card/card-media';
 import FlatButton from 'material-ui/lib/flat-button';
 import CardText from 'material-ui/lib/card/card-text';
 import io from 'socket.io-client';
@@ -17,9 +18,9 @@ export default class SwipePane extends React.Component{
         super(props);
         this.state= {
             socket: io.connect(),
-            datas: [],
-            index: 0
-
+            metaDatas: [],
+            contentDatas: [],
+            currentIndex: 0
         }
     }
 
@@ -37,32 +38,72 @@ export default class SwipePane extends React.Component{
             $(this).animate({
                 right: '-3000px',
              }, 200, function(){
-                updateIndex(1);
                 $(this).css("right", "0");
              });
+            this.dislikeThePost();
         }
 
         function swipeLeftHandler( event ){
             $(this).animate({
                 right: '3000px'
              }, 200, function(){
-                updateIndex(1);
                 $(this).css("right", "0");
              });
+            this.likeThePost();
         }
 
         function tapHandler(){
             console.log("tapped!");
             console.log($(".pane" ).css("left"));
+            $(this).animate({
+                right: '3000px'
+             }, 200, function(){
+                $(this).css("right", "0");
+             });
+            this.likeThePost();
         }
 
         const { socket } = this.state; 
-        socket.on('returnNewSwipe', function(datas){
-            console.log("new swipe data: ");
-            console.log(datas)
-            this.setState({datas: datas});
+        socket.on('returnNewMetaData', function(newDatas){
+            console.log("new swipe metadata: ");
+            console.log(newDatas)
+            let { metaDatas } = this.state;
+            this.setState({metaDatas: metaDatas.concat(newDatas)});
         });
+        socket.on('returnNewContentData', function(newDatas){
+            console.log("new swipe contentdata: ");
+            console.log(newDatas)
+            let { contentDatas } = this.state;
+            this.setState({contentDatas: contentDatas.concat(newDatas) });
+        });
+        this.startSwiping();
+    }
 
+    likeThePost(){
+        const { socket, currentIndex, metaDatas } = this.state; 
+        socket.emit('likeThePost', {
+            user: window.user,
+            post: metaDatas[currentIndex].id
+        });
+        this.checkNumberOfPosts();
+        this.setState({currentIndex: currentIndex + 1});
+    }
+
+    dislikeThePost(){
+        const { socket, currentIndex, metaDatas } = this.state; 
+        socket.emit('dislikeThePost', {
+            user: window.user,
+            post: metaDatas[currentIndex].id
+        });
+        this.checkNumberOfPosts();
+        this.setState({currentIndex: currentIndex + 1});
+    }
+    
+    checkNumberOfPosts(){
+        const { metaDatas } = this.state;
+        if( metaDatas.length < 3){
+            this.getNewSwipeData();
+        }
     }
 
     startSwiping(){
@@ -71,6 +112,7 @@ export default class SwipePane extends React.Component{
             user: window.user,
             location: 'SwipePane',
         });
+        this.getNewSwipeData();
     }
 
     getNewSwipeData(){
@@ -81,26 +123,50 @@ export default class SwipePane extends React.Component{
     }
 
     render(){
+        /* -- Post data structure --  
+            Post: sequelize.define('post2', {
+                id: {
+                    type: Sequelize.STRING,
+                    primaryKey: true
+                },
+                time: {
+                    type: Sequelize.DATE
+                },
+                title: {
+                    type: Sequelize.STRING
+                },
+                url: {
+                    type: Sequelize.STRING
+                },
+                source: {
+                    type: Sequelize.STRING
+                },
+                tag: {
+                    type: Sequelize.STRING
+                }
+            }
+        */
+
+        let { metaDatas, contentDatas, currentIndex } = this.state;
+        let mataData = metaDatas.pop();
+        let contentData = contentDatas.pop();
         return(
             <div className="pane" style={{height: "85%", top:'80px', margin: "0% 1% 0% 1%"}} >
                 <Card initiallyExpanded={true} style={{height: "100%"}} >
                     <CardHeader
-                      title="Without Avatar"
-                      subtitle="Subtitle"
+                      title= { metaData.title }
+                      subtitle= { metaData.source }
                       actAsExpander={true}
                       showExpandableButton={false} />
                     <CardText expandable={false}>
-                      Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                      Donec mattis pretium massa. Aliquam erat volutpat. Nulla facilisi.
-                      Donec vulputate interdum sollicitudin. Nunc lacinia auctor quam sed pellentesque.
-                      Aliquam dui mauris, mattis quis lacus id, pellentesque lobortis odio.
+                     {contentdata.content}                      
                     </CardText>
-                    <CardText expandable={false}>
-                      Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                      Donec mattis pretium massa. Aliquam erat volutpat. Nulla facilisi.
-                      Donec vulputate interdum sollicitudin. Nunc lacinia auctor quam sed pellentesque.
-                      Aliquam dui mauris, mattis quis lacus id, pellentesque lobortis odio.
-                    </CardText>
+                    <CardMedia overlay={<CardTitle title={contentdata.images[0].description} subtitle="Subtitle"/>}>
+                        <img src={contentdata.images[0].url} />
+                    </CardMedia>
+                        <CardActions expandable={false}>
+                            <FlatButton label="view source" linkButton={true} href={metaData.url} secondary={true}/>
+                        </CardActions>
                 </Card>
             </div>
         );

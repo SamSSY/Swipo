@@ -93,6 +93,14 @@ export default class StarredNewsByDate extends React.Component{
         });
     }
 
+    getStarredNewsByDate(date){
+        const { socket } = this.state; 
+        socket.emit('getNewsByDate', {
+            user: window.user,
+            date: date
+        });
+    }
+
     handleDatePickerValueChange(oldDate, newDate){
         console.log("date picker value changed!");
         let searchForDate = newDate.getFullYear() + 
@@ -101,6 +109,7 @@ export default class StarredNewsByDate extends React.Component{
                         ((newDate.getDate() < 10) ? ('0' + newDate.getDate()) :  newDate.getDate());
         console.log("search for date: ", searchForDate);
         history.push("/starred-news/view-by-date/" + searchForDate);
+        getStarredNewsByDate(newDate);
     }
 
     renderNews(){
