@@ -37,6 +37,5 @@ io.sockets.on('connection', function (socket) {
   socketArray.push(socket);
   socket.on('init', function (userData) {
       console.log(userData);
-      socketArray[1].emit('test');
-    });
+  });
 }); 

@@ -65,15 +65,18 @@ class MainBody extends React.Component {
     }
 
     componentDidMount(){
+
+        window.user = null;
         //appID: 882849945170096
         window.fbAyncInit = function(){
+
             FB.init({
+                version    : 'v2.5', // use version 2.5
                 appId      : 887332791388478,
                 cookie     : true,  // enable cookies to allow the server to access the session 1057383754306127/ 1521012484886298
-                xfbml      : true,  // parse social plugins on this page
-                version    : 'v2.5' // use version 2.5
+                xfbml      : true  // parse social plugins on this page
             });    
-            
+                
             console.log('init');
 
             FB.getLoginStatus(function(response) {
@@ -92,6 +95,7 @@ class MainBody extends React.Component {
             );
         }.bind(this);
 
+
         // Load the SDK asynchronously
         (function(d, s, id) {
             var js, fjs = d.getElementsByTagName(s)[0];
@@ -103,7 +107,7 @@ class MainBody extends React.Component {
 
         $(window).resize(() => {
             var width = (window.innerWidth > 0) ? window.innerWidth : screen.width;
-            if(width < 750){
+            if(width < 1000){
                 this.setState({ isMobile: true});
             }
             else{
@@ -113,7 +117,7 @@ class MainBody extends React.Component {
         });
 
         var width = (window.innerWidth > 0) ? window.innerWidth : screen.width;
-        if(width < 750){
+        if(width < 1000){
             this.setState({ isMobile: true});
         }
 
@@ -131,11 +135,11 @@ class MainBody extends React.Component {
 
         // other events
         // not working now
-        $(document).on('switchToNewsByCategory', function(){
-            //console.log("XDDDD");
+        $(document).on('mobileHomepage', function(){
+            console.log("XDDDD");
             //console.log(this.state.userID);
             //$.event.trigger('userID');
-        }.bind(this));
+        });
     }
 
     componentWillMount() {
@@ -247,11 +251,12 @@ class MainBody extends React.Component {
     }
 
     renderMobileSwipePanes(){
-        return(                
+        let { isSwiping } = this.state;
+        return isSwiping ? (                
             <div className='swipePanes' style={{height: "100%" }} > 
                 {this.renderSingleSwipePane()}
             </div>
-        );
+        ) : null ;
     }
 
     renderAppBar(){
@@ -275,7 +280,7 @@ class MainBody extends React.Component {
         console.log(value);
         if(value.indexOf("today") !== -1){
             var today = new Date();
-            value = "starred-news/view-by-date/" + today.getFullYear() + 
+            value = "/starred-news/view-by-date/" + today.getFullYear() + 
                     ((today.getMonth() + 1) < 10 ? '0' + (today.getMonth() + 1) : (today.getMonth() + 1)) + today.getDate();
         }
         this.props.history.push(value);
@@ -357,7 +362,7 @@ class MainBody extends React.Component {
     render() {
         const fullHeight = {height: "100%" };
         const displayNone = {display: 'none'};
-        var {isMobile, isLogin} = this.state;
+        var {isMobile, isLogin, isSwiping } = this.state;
         var appBarStyle = {};
 
         const actions =[
@@ -370,11 +375,10 @@ class MainBody extends React.Component {
         return (
             <div style={fullHeight}>
                 { this.renderAppBar() }
-                { isMobile? null: this.renderLeftNav() }
-                { isMobile? this.renderMobileSwipePanes(): null }
+                { this.renderLeftNav() }
                 { isLogin? this.renderUserInfo(actions): this.renderLoginDialog(actions)}
                 {this.props.children}
-                { isMobile? null: this.renderFooter() }
+                { isMobile ? null: this.renderFooter() }
             </div>
         );
     }

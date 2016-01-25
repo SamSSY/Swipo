@@ -4,11 +4,13 @@ import App from './components/App';
 import Homepage from './components/Homepage';
 import StarredNewsByDate from './components/StarredNewsByDate';
 import StarredNewsByCategory from './components/StarredNewsByCategory';
-
+import SwipePane from './components/SwipePane';
+import Dashboard from './components/Dashboard';
 
 export default (
 	<Route path="/" component={App}>
 	    <IndexRoute component={Homepage} />
+	    <Route path="swipe" component={SwipePane} />
 	    <Route path="starred-news" >
 		    <Route path="view-by-date" >
 		    	<Route path=":date" component={StarredNewsByDate} />
@@ -17,18 +19,6 @@ export default (
 		    	<Route path=":category" component={StarredNewsByCategory} />
 		    </Route>
 		</Route>
+		<Route path="dashboard" component={Dashboard} />
 	</Route>
 );
-
-/*
-<Route path="/" component={App}>
-		<IndexRoute component={Home} />
-		<Route path="/about-us" component={AboutUs} />
-		<Route path="/posts">
-		    <IndexRoute component={PostList} />
-		    <Route path=":postId" component={SinglePost} />
-		    </Route>
-		<Redirect from="/abc" to="/" />
-		<Route path="*" component={NotFound} />
-</Route>
-*/
