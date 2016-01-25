@@ -153,6 +153,7 @@ export default class AppLeftNav extends React.Component{
                         className="material-icons"
                         style={iconStyles}
                         >timeline</FontIcon>} 
+                        value="/timeline"
                     />
                     <ListItem primaryText="Dashboard" leftIcon={<FontIcon
                         className="material-icons"

@@ -6,6 +6,8 @@ import StarredNewsByDate from './components/StarredNewsByDate';
 import StarredNewsByCategory from './components/StarredNewsByCategory';
 import SwipePane from './components/SwipePane';
 import Dashboard from './components/Dashboard';
+import Timeline from './components/Timeline';
+
 
 export default (
 	<Route path="/" component={App}>
@@ -19,6 +21,7 @@ export default (
 		    	<Route path=":category" component={StarredNewsByCategory} />
 		    </Route>
 		</Route>
+		<Route path="timeline" component={Timeline} />
 		<Route path="dashboard" component={Dashboard} />
 	</Route>
 );
