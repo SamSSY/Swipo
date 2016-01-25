@@ -48,7 +48,6 @@ const initialState = {
     autoHideDuration: 1000,
     userProfilePicUrl: null,
     isLoginDialogOpen : false,
-    isSwiping: false,
     socket: io.connect()
 }
 
@@ -371,10 +370,9 @@ class MainBody extends React.Component {
             <div style={fullHeight}>
                 { this.renderAppBar() }
                 { this.renderLeftNav() }
-                { isMobile? this.renderMobileSwipePanes(): null }
                 { isLogin? this.renderUserInfo(actions): this.renderLoginDialog(actions)}
                 {this.props.children}
-                { isSwiping || isMobile ? null: this.renderFooter() }
+                { isMobile ? null: this.renderFooter() }
             </div>
         );
     }

@@ -5,17 +5,29 @@ import CardActions from 'material-ui/lib/card/card-actions';
 import CardHeader from 'material-ui/lib/card/card-header';
 import FlatButton from 'material-ui/lib/flat-button';
 import CardText from 'material-ui/lib/card/card-text';
-require('./main.scss');
+import io from 'socket.io-client';
+import injectTapEventPlugin from 'react-tap-event-plugin';
+import './main.scss';
+
+injectTapEventPlugin();
 
 export default class SwipePane extends React.Component{
-	
+
+    constructor(props){
+        super(props);
+        this.state= {
+            socket: io.connect(),
+            datas: [],
+            index: 0
+
+        }
+    }
+
     componentWillMount(){
-        console.log("componentWillMount");
+        console.log("componentWillMount: SwipePane");
     }
 
     componentDidMount(){
-
-        const {updateIndex, paneIndex} = this.props;
         
         $( ".pane" ).hammer().on( "swiperight", swipeRightHandler );
         $( ".pane" ).hammer().on( "swipeleft", swipeLeftHandler );
@@ -43,11 +55,34 @@ export default class SwipePane extends React.Component{
             console.log("tapped!");
             console.log($(".pane" ).css("left"));
         }
+
+        const { socket } = this.state; 
+        socket.on('returnNewSwipe', function(datas){
+            console.log("new swipe data: ");
+            console.log(datas)
+            this.setState({datas: datas});
+        });
+
     }
+
+    startSwiping(){
+        const { socket } = this.state; 
+        socket.emit('init', {
+            user: window.user,
+            location: 'SwipePane',
+        });
+    }
+
+    getNewSwipeData(){
+        const { socket } = this.state; 
+        socket.emit('getNewSwipe', {
+            user: window.user
+        });
+    }
+
     render(){
-		const {paneContent, paneIndex} = this.props;
         return(
-            <div className="pane" style={{height: "95%", margin: "3% 1% 0% 1%"}} >
+            <div className="pane" style={{height: "85%", top:'80px', margin: "0% 1% 0% 1%"}} >
                 <Card initiallyExpanded={true} style={{height: "100%"}} >
                     <CardHeader
                       title="Without Avatar"
