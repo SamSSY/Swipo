@@ -130,11 +130,11 @@ class MainBody extends React.Component {
 
         // other events
         // not working now
-        $(document).on('switchToNewsByCategory', function(){
-            //console.log("XDDDD");
+        $(document).on('mobileHomepage', function(){
+            console.log("XDDDD");
             //console.log(this.state.userID);
             //$.event.trigger('userID');
-        }.bind(this));
+        });
     }
 
     componentWillMount() {
@@ -374,7 +374,7 @@ class MainBody extends React.Component {
                 { isMobile? this.renderMobileSwipePanes(): null }
                 { isLogin? this.renderUserInfo(actions): this.renderLoginDialog(actions)}
                 {this.props.children}
-                { isSwiping? null: this.renderFooter() }
+                { isSwiping || isMobile ? null: this.renderFooter() }
             </div>
         );
     }

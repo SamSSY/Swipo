@@ -1,8 +1,17 @@
 import React from 'react';
 import { render } from 'react-dom';
+import { Router, Route, Link, IndexLink, browserHistory } from 'react-router';
 import RaisedButton from 'material-ui/lib/raised-button';
+import createBrowserHistory from 'history/lib/createBrowserHistory';
+import injectTapEventPlugin from 'react-tap-event-plugin';
+import './main.scss';
 
-require('./main.scss');
+//Needed for onTouchTap
+//Can go away when react 1.0 release
+//Check this repo:
+//https://github.com/zilverline/react-tap-event-plugin
+injectTapEventPlugin();
+const history = createBrowserHistory();
 
 export default class Homepage extends React.Component{
 	
@@ -28,6 +37,7 @@ export default class Homepage extends React.Component{
         var width = (window.innerWidth > 0) ? window.innerWidth : screen.width;
         if(width < 1000){
             this.setState({ isMobile: true });
+            $.event.trigger('mobileHomepage');
         }
     }
 
@@ -36,12 +46,12 @@ export default class Homepage extends React.Component{
         let { isMobile } = this.state;
 
 		let styles = {
-            height: isMobile ? '90%' : '80%',
+            height: isMobile ? '100%' : '80%',
             backgroundColor: "#00bcd4",
             margin: "0px",
             textAlign: "center",
             color: "white",
-            paddingTop: '10%'
+            paddingTop: isMobile ? 0 : '10%'
         };
         let titleStyle = {
             margin: "0px",
@@ -61,7 +71,8 @@ export default class Homepage extends React.Component{
             <div style={styles}>
                 <h1 style={titleStyle}>Swipo</h1>
                 <span style={descriptStyle}>Brand new world in a swipe.</span>
-                <RaisedButton label="Swipo!" secondary={true} />
+                <RaisedButton containerElement={<Link to="/swipe" activeClassName="active" /> }
+                    linkButton={true} label="Swipo!" secondary={true} ></RaisedButton>
             </div>
         );
 	}
