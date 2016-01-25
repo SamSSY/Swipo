@@ -54,21 +54,19 @@ UserSocket.prototype.listenLocation = function(io) {
 				});
 			});
 		});
-		prom.then( function (send){io.emit('returnContentDataByDate', send); });
+		prom.then( function (send){io.emit('returnContentDateByDate', send); });
 		
 	}.bind(this) );
 
 	io.on('getNewSwipe', function (data) {
 		var send = [];
 		var prom = new Promise (function (res, req) {
-			db.swiped(user, function (swiped) {
-				db.get(data.user, swiped, function (array) {
-					io.emit('returnNewMetaData', array);
-					array.forEach(function (el) {
-						db.docById( el.id ).then( function (doc) {
-							send.push(doc);
-							if(send.length === array.length) res(send);
-						});
+			db.get(data.user, function (array) {
+				io.emit('returnNewMetaData', array);
+				array.forEach(function (el) {
+					db.docById( el.id ).then( function (doc) {
+						send.push(doc);
+						if(send.length === array.length) res(send);
 					});
 				});
 			});
