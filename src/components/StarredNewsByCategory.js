@@ -20,6 +20,8 @@ const gridListStyle = {width: '100%', height: '95%', overflowY: 'auto', marginTo
 const initialState = {
     socket: io.connect(),
     datas: [ {title: 'test1'}, {title: 'test2'} ],
+    metaDatas: [],
+    contentDatas: [],
     category: null,
     timerId: null
 }
@@ -58,10 +60,15 @@ export default class StarredNewsByCategory extends React.Component{
         this.handleSwitchCategory(); 
                
         const { socket } = this.state;
-        socket.on('returnNewsByCategory', function(datas){
-            console.log("StarredNewsByCategory: ");
+        socket.on('returnMetaDataByCategory', function(datas){
+            console.log("StarredNewsByCategory(meta): ");
             console.log(datas)
-            this.setState({datas: datas});
+            this.setState({metaDatas: datas});
+        });
+        socket.on('returnContentDataByCategory', function(datas){
+            console.log("StarredNewsByCategory(content): ");
+            console.log(datas)
+            this.setState({contentDatas: datas});
         });
 
         // other events

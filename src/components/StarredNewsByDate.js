@@ -21,7 +21,9 @@ const history = createBrowserHistory();
 
 const initialState = {
     socket: io.connect(),
-    datas: [ {title: 'test1'}, {title: 'test2'} ],
+    //datas: [ {title: 'test1'}, {title: 'test2'} ],
+    metaDatas: [],
+    contentDatas: [],
     date: null,
     timerId: null,
     isInSearchByDate: false,
@@ -63,10 +65,15 @@ export default class StarredNewsByDate extends React.Component{
         this.handleSwitchDate(); 
                
         const { socket } = this.state;
-        socket.on('returnNewsByDate', function(datas){
+        socket.on('returnMetaDataByDate', function(datas){
             console.log("StarredNewsByDate: ");
             console.log(datas)
-            this.setState({datas: datas});
+            this.setState({metaDatas: datas});
+        });
+        socket.on('returnContentDataByDate', function(datas){
+            console.log("StarredNewsByDate: ");
+            console.log(datas)
+            this.setState({contentDatas: datas});
         });
 
         // other events
@@ -117,14 +124,17 @@ export default class StarredNewsByDate extends React.Component{
             marginRight: '25px',
             color: Colors.pink100
         }
-
+        var datas = {
+            metaDatas:this.state.metaDatas,
+            contentDatas: this.state.contentDatas
+        };
         return this.state.datas.map( data => 
             <GridTile
-              key={data.title}
-              title={data.title}
+              key={data.metaDatas.title}
+              title={data.metaDatas.title}
               titlePosition="bottom"
               titleBackground={'rgba(0, 0, 0, 0.3)'}
-              subtitle={<span>by <b>{data.title}</b></span>}
+              subtitle={<span>by <b>{data.metaDatas.title}</b></span>}
               actionIcon={<FontIcon
                         className="material-icons"
                         style={iconStyles}
@@ -140,10 +150,7 @@ export default class StarredNewsByDate extends React.Component{
                       actAsExpander={true}
                       showExpandableButton={false} />
                     <CardText expandable={false}>
-                      Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                      Donec mattis pretium massa. Aliquam erat volutpat. Nulla facilisi.
-                      Donec vulputate interdum sollicitudin. Nunc lacinia auctor quam sed pellentesque.
-                      Aliquam dui mauris, mattis quis lacus id, pellentesque lobortis odio.
+                        {data.contentDatas.content}
                     </CardText>
                     <CardText expandable={false}>
                       Lorem ipsum dolor sit amet, consectetur adipiscing elit.

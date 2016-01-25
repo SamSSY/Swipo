@@ -261,7 +261,7 @@ class MainBody extends React.Component {
 
     renderAppBar(){
         let { isLeftNavOpen } = this.state;
-        return this.state.isMobile ? null: (
+        return(
             <AppBar title="Swipo" 
                     style={{boxShadow: "0px", position: 'fixed'}}
                     iconClassNameRight="fa fa-facebook fa-2x" 
@@ -293,13 +293,14 @@ class MainBody extends React.Component {
         const iconStyles = {
             marginRight: 24,
         };
+        let { isMobile } = this.state;
         const { history, location, children } = this.props;
         return(
             <AppLeftNav 
                     history={history} 
                     location={location} 
                     docked={false} 
-                    width={300} 
+                    width={isMobile? 250: 300} 
                     open={this.state.isLeftNavOpen} 
                     onRequestChange={this.handleLeftNavRequestChange.bind(this)}
                     onRequestChangeList={this.handleRequestChangeList.bind(this)} 

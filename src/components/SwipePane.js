@@ -153,10 +153,11 @@ export default class SwipePane extends React.Component{
         var metaData = metaDatas[metaDatas.length - 1];
         var contentData = contentDatas[contentDatas.length - 1];
         console.log("contentData: ");
-        //console.log(contentData); 
-        console.log(metaData.id);           
+        console.log(contentData);
+        console.log(contentData.images[0]); 
+        //console.log("http\:\/\/" + metaData.url);           
         return (
-                <div className="pane" style={{height: "95%", top: isMobile? '0': '80px', margin: "3% 1% 0% 1%"}} >
+                <div className="pane" style={{height: "95%", top: isMobile? '0': '80px', margin: isMobile? "0% 1% 0% 1%": "0% 1% 0% 1%"}} >
                     <Card initiallyExpanded={true} style={{height: "100%"}} >
                         <CardHeader
                             itle= { metaData.title }
@@ -166,15 +167,14 @@ export default class SwipePane extends React.Component{
                         <CardText expandable={false}>
                             {contentData.content}                      
                         </CardText>
-                        <CardMedia overlay={<CardTitle title={contentData.images[0] ? contentData.images[0].description: ""} subtitle="Subtitle"/>}>
+                        {contentData.images[0]? (<CardMedia overlay={<CardTitle title={contentData.images[0] ? contentData.images[0].description: ""} subtitle="Subtitle"/>}>
                             <img src={contentData.images[0]? contentData.images[0].url : null} />
-                        </CardMedia>
-                        <CardActions expandable={false}>
-                            <FlatButton label="view source" linkButton={true} href={metaData.url} secondary={true}/>
-                        </CardActions>
+                        </CardMedia>): null}
+                        {isMobile? null: (<CardActions expandable={false}>
+                            <FlatButton label="view source" linkButton={true} href={"http\:\/\/" + metaData.url} secondary={true}/>
+                        </CardActions>)}
                     </Card>       
                 </div>
-                
         );
-	}
+    }
 }

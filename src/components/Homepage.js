@@ -51,7 +51,7 @@ export default class Homepage extends React.Component{
             margin: "0px",
             textAlign: "center",
             color: "white",
-            paddingTop: isMobile ? 0 : '10%'
+            paddingTop: isMobile ? '10%' : '10%'
         };
         let titleStyle = {
             margin: "0px",
