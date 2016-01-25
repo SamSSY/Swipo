@@ -144,28 +144,6 @@ export default class SwipePane extends React.Component{
             user: window.user
         });
     }
-    /*
-    <Card initiallyExpanded={true} style={{height: "100%"}} >
-                    <CardHeader
-                      title= { metaData.title }
-                      subtitle= { metaData.source }
-                      actAsExpander={true}
-                      showExpandableButton={false} />
-                    <CardText expandable={false}>
-                     {contentdata.content}                      
-                    </CardText>
-                    <CardMedia overlay={<CardTitle title={contentdata.images[0].description} subtitle="Subtitle"/>}>
-                        <img src={contentdata.images[0].url} />
-                    </CardMedia>
-                        <CardActions expandable={false}>
-                            <FlatButton label="view source" linkButton={true} href={metaData.url} secondary={true}/>
-                        </CardActions>
-                </Card>
-
-
-
-    */
-
 
     render(){
         let { metaDatas, contentDatas, currentIndex, isLoading, isMobile} = this.state;
