@@ -119,9 +119,15 @@ class MainBody extends React.Component {
 
         const { socket } = this.state;
         // socket events
-        socket.on('test', function(){
-            console.log("in App");
+        socket.on('done', function(data){
+            console.log('data');
+            socket.emit('likeThePost', {user:'944604335576214',
+                post:'fisadglsad'});
+            socket.on('get', function(data) {
+                console.log(data);
+            })
         });
+
 
         // other events
         // not working now

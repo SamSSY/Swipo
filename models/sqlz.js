@@ -3,23 +3,11 @@ module.exports = function (sequelize) {
 	return {
 		User: sequelize.define('user', {
 			id: {
-				type: Sequelize.INTEGER,
+				type: Sequelize.STRING,
 				primaryKey: true
 			},
 			password: {
 				type: Sequelize.STRING
-			},
-			fb_id: {
-				type: Sequelize.INTEGER,
-			},
-			fb_name: {
-				type: Sequelize.STRING
-			},
-			fb_email: {
-				type: Sequelize.STRING
-			},
-			fb_token: {
-				type: Sequelize.STRING	
 			}
 		}, {
 			freezeTableName: true
@@ -36,16 +24,61 @@ module.exports = function (sequelize) {
 			title: {
 				type: Sequelize.STRING
 			},
-			url: {
+			source: {
 				type: Sequelize.STRING
 			},
-			source: {
+			url: {
 				type: Sequelize.STRING
 			},
 			tag: {
 				type: Sequelize.STRING
 			}
 
+		}, {
+			freezeTableName: true
+		}),
+
+		TagValue: sequelize.define('tagvalue', {
+			id: {
+				type: Sequelize.STRING,
+				primaryKey: true
+			},
+			headline: {
+				type: Sequelize.INTEGER
+			},
+			entertainment: {
+				type: Sequelize.INTEGER
+			},
+			international: {
+				type: Sequelize.INTEGER
+			},
+			sports: {
+				type: Sequelize.INTEGER
+			},
+			finance: {
+				type: Sequelize.INTEGER
+			},
+			supplement: {
+				type: Sequelize.INTEGER
+			},
+			forum: {
+				type: Sequelize.INTEGER
+			},
+			life: {
+				type: Sequelize.INTEGER
+			},
+			china: {
+				type: Sequelize.INTEGER
+			},
+			local: {
+				type: Sequelize.INTEGER
+			},
+			society: {
+				type: Sequelize.INTEGER
+			},
+			type: {
+				type: Sequelize.STRING
+			}
 		}, {
 			freezeTableName: true
 		})

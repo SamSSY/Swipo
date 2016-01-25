@@ -29,8 +29,13 @@ io.on('connection', function (socket) {
 	console.log('connect client');
 	socket.emit('connection', {test: 'server test'});
 	socket.on('init', function (data) {
-		console.log(data);
-		online_users[data] = new UserSocket(socket, data);
+		if (data.location == 'main') {
+				console.log('new ' + data.user + 'socket.');
+				online_users[data.user] = new UserSocket(socket, data.user);
+		} else {
+			console.log('new ' + data.user + 'location.');
+			online_users[data.user] .newLocation(socket, data);
+		};
 	});
 });
 

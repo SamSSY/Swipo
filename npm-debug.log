@@ -1,34 +1,32 @@
 0 info it worked if it ends with ok
-1 verbose cli [ '/home/david/.nvm/versions/node/v5.5.0/bin/node',
-1 verbose cli   '/home/david/.nvm/versions/node/v5.5.0/bin/npm',
-1 verbose cli   'start' ]
+1 verbose cli [ '/usr/local/bin/node', '/usr/local/bin/npm', 'start' ]
 2 info using npm@3.3.12
-3 info using node@v5.5.0
+3 info using node@v5.4.1
 4 verbose run-script [ 'prestart', 'start', 'poststart' ]
 5 info lifecycle swipo@1.0.0~prestart: swipo@1.0.0
 6 silly lifecycle swipo@1.0.0~prestart: no script for prestart, continuing
 7 info lifecycle swipo@1.0.0~start: swipo@1.0.0
 8 verbose lifecycle swipo@1.0.0~start: unsafe-perm in lifecycle true
-9 verbose lifecycle swipo@1.0.0~start: PATH: /home/david/.nvm/versions/node/v5.5.0/lib/node_modules/npm/bin/node-gyp-bin:/home/david/webs/Swipo/node_modules/.bin:/home/david/.nvm/versions/node/v5.5.0/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/home/david/Android/Sdk/tools:/home/david/Android/Sdk/platform-tools
+9 verbose lifecycle swipo@1.0.0~start: PATH: /usr/local/lib/node_modules/npm/bin/node-gyp-bin:/home/david/webs/Swipo/node_modules/.bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/home/david/Android/Sdk/tools:/home/david/Android/Sdk/platform-tools
 10 verbose lifecycle swipo@1.0.0~start: CWD: /home/david/webs/Swipo
 11 silly lifecycle swipo@1.0.0~start: Args: [ '-c', 'node ./bin/www' ]
 12 silly lifecycle swipo@1.0.0~start: Returned: code: 1  signal: null
 13 info lifecycle swipo@1.0.0~start: Failed to exec start script
 14 verbose stack Error: swipo@1.0.0 start: `node ./bin/www`
 14 verbose stack Exit status 1
-14 verbose stack     at EventEmitter.<anonymous> (/home/david/.nvm/versions/node/v5.5.0/lib/node_modules/npm/lib/utils/lifecycle.js:232:16)
-14 verbose stack     at emitTwo (events.js:100:13)
-14 verbose stack     at EventEmitter.emit (events.js:185:7)
-14 verbose stack     at ChildProcess.<anonymous> (/home/david/.nvm/versions/node/v5.5.0/lib/node_modules/npm/lib/utils/spawn.js:24:14)
-14 verbose stack     at emitTwo (events.js:100:13)
-14 verbose stack     at ChildProcess.emit (events.js:185:7)
+14 verbose stack     at EventEmitter.<anonymous> (/usr/local/lib/node_modules/npm/lib/utils/lifecycle.js:232:16)
+14 verbose stack     at emitTwo (events.js:87:13)
+14 verbose stack     at EventEmitter.emit (events.js:172:7)
+14 verbose stack     at ChildProcess.<anonymous> (/usr/local/lib/node_modules/npm/lib/utils/spawn.js:24:14)
+14 verbose stack     at emitTwo (events.js:87:13)
+14 verbose stack     at ChildProcess.emit (events.js:172:7)
 14 verbose stack     at maybeClose (internal/child_process.js:821:16)
 14 verbose stack     at Process.ChildProcess._handle.onexit (internal/child_process.js:211:5)
 15 verbose pkgid swipo@1.0.0
 16 verbose cwd /home/david/webs/Swipo
 17 error Linux 3.16.0-39-generic
-18 error argv "/home/david/.nvm/versions/node/v5.5.0/bin/node" "/home/david/.nvm/versions/node/v5.5.0/bin/npm" "start"
-19 error node v5.5.0
+18 error argv "/usr/local/bin/node" "/usr/local/bin/npm" "start"
+19 error node v5.4.1
 20 error npm  v3.3.12
 21 error code ELIFECYCLE
 22 error swipo@1.0.0 start: `node ./bin/www`

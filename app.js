@@ -54,14 +54,14 @@ app.use(require('webpack-hot-middleware')(compiler));
 app.use('/', index);
 //app.use('/', authenticate);
 app.get('/', function(req, res) {
-  res.sendFile(path.join(__dirname, 'index.html'));
+  res.sendFile(path.join(__dirname, 'test.html'));
 });
 
 /*
 var initPassport = require('./passport-init');
 initPassport(passport);
 */
-
+/*
 // catch 404 and forward to error handler
 app.use( function(req, res, next) {
 	var err = new Error('Not Found');
@@ -70,7 +70,6 @@ app.use( function(req, res, next) {
 });
 
 // error handlers
-/*
 // development error handler
 // will print stacktrace
 if ( app.get('env') === 'development' ) {
