@@ -23,24 +23,22 @@ var mongoPost = mongoose.model('Post');
 var mongoUser = mongoose.model('User');
 exports = module.exports = {};
 
-exports.get = function (fn) {
-	sqlzModels.Post.findAll(	{
-
-		where: {
-			time: {
-				$gt: new Date(2016,0,25) //- 7*24 * 60 * 60 * 1000
-			}
-		},
-		limit: 10,
-		order: [ ['time', 'DESC' ] ]
-	}).then( function (data) {
-		fn(data.dataValues);
+exports.get = function (user, fnsql) {
+	return new Promise( function (resolve, reject) {
+		sqlzModels.Post.findAll(	{
+			where: {
+				time: {
+					$gt: new Date(2016,0,25) //- 7*24 * 60 * 60 * 1000
+				}
+			},
+			limit: 10,
+			order: [ ['time', 'DESC' ] ]
+		}).then( function (array) {
+			fnsql( array.map( function (data) {
+				return data.dataValues;
+			}));
+		});
 	});
-	
-	/*{
-		console.log(data.dataValues);
-		io.emit('get', data.dataValues);
-	});*/
 };
 
 exports.swipe = function ( bool_LR, data) {
@@ -101,7 +99,7 @@ exports.getByCategory = function (category, fnsql) {
 		order: [ ['time', 'DESC' ] ]
 	}).then( function (array) {
 		fnsql( array.map( function (data) {
-			return data.dataValues.id;
+			return data.dataValues;
 		}));
 	}, function (err) {
 		console.log('err getByCategory sqlz: '+ err);
@@ -118,13 +116,13 @@ exports.getByDate = function (time) {
 		order: [ ['time', 'DESC' ] ]
 	}).then( function (array) {
 		fnsql( array.map( function (data) {
-			return data.dataValues.id;
+			return data.dataValues;
 		}));
 	}, function (err) {
 		console.log('err getByCategory sqlz: '+ err);
 	});
 }
-exports.docByCategory = function (id) {
+exports.docById = function (id) {
 	return new Promise( function (resolve, reject) {
 		mongoPost.findOne({
 			'id': id
@@ -132,7 +130,7 @@ exports.docByCategory = function (id) {
 			if (doc)	
 				resolve(doc);
 		}, function (err) {
-			console.log('err getByCategory mongo: '+ err);
+			console.log('err getById mongo: '+ err);
 		});
 	});
 }

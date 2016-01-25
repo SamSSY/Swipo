@@ -15,15 +15,6 @@ UserSocket.prototype.emitCall = function(data) {
 }
 UserSocket.prototype.listenMain = function (io) {
 	io.emit('done', {test: 'done'});
-	io.on('getNewSwipe', function (data) {
-		io.emit('get', data);
-		db.get( function(data) {
-			this.test = data;
-			io.emit('get', data);
-			console.log('in func: ',  this.test);
-		}.bind(this));
-		//setTimeout(function(){console.log('outside: ',x); }, 10000);
-	}.bind(this));
 
 //	io.on('', function () {
 		
@@ -31,45 +22,56 @@ UserSocket.prototype.listenMain = function (io) {
 };
 
 UserSocket.prototype.listenLocation = function(io) {
+
 	io.on('getNewsByCategory', function (data) {
 		console.log('in');
 		var send = ['sadfsad'];
 		var prom = new Promise( function(res, rej) {
-			db.getByCategory('sports', function (sql) {
-				io.emit('returnMetaDataByCategory', sql);
-				sql.forEach(function (el) {
-					db.docByCategory( el ).then( function (data) {
-						send.push(data);
-						if(send.length === sql.length) res(send);
+			db.getByCategory(data.category, function (array) {
+				io.emit('returnMetaDataByCategory', array);
+				array.forEach(function (el) {
+					db.docById( el.id ).then( function (doc) {
+						send.push(doc);
+						if(send.length === array.length) res(send);
 					});
 				});
 			});
-
 		});
 		prom.then( function (send){io.emit('returnContentDataByCategory', send); });
 		
 	}.bind(this) );
 	io.on('getNewsByDate', function (data) {
 		console.log('in');
-		var send = ['sadfsad'];
+		var send = [];
 		var prom = new Promise( function(res, rej) {
-			db.getByDate('sports', function (sql) {
-				io.emit('returnMetaDataByDate', sql);
-				sql.forEach(function (el) {
-					db.docByCategory( el ).then( function (data) {
-						send.push(data);
-						if(send.length === sql.length) res(send);
+			db.getByDate(data.date, function (array) {
+				io.emit('returnMetaDataByDate', array);
+				array.forEach(function (el) {
+					db.docById( el.id ).then( function (doc) {
+						send.push(doc);
+						if(send.length === array.length) res(send);
 					});
 				});
 			});
-
 		});
 		prom.then( function (send){io.emit('returnContentDateByDate', send); });
 		
 	}.bind(this) );
 
 	io.on('getNewSwipe', function (data) {
-		db.getFeed(data.user);
+		var send = [];
+		var prom = new Promise (function (res, req) {
+			db.get(data.user, function (array) {
+				io.emit('returnNewMetaData', array);
+				array.forEach(function (el) {
+					db.docById( el.id ).then( function (doc) {
+						send.push(doc);
+						if(send.length === array.length) res(send);
+					});
+				});
+			});
+		});
+		prom.then(function (send){io.emit('returnNewContentData', send); });
 	});
  
 	io.on('likeThePost', function (data) {

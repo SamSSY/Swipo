@@ -18,8 +18,8 @@ export default class SwipePane extends React.Component{
         super(props);
         this.state= {
             socket: io.connect(),
-            metaDatas: [],
-            contentDatas: [],
+            metaDatas: [{title: "test", url:"123", source:"123"}],
+            contentDatas: [{content: "211231321321321",images:[{url:"123", description:"123"}]}],
             currentIndex: 0
         }
     }
@@ -64,13 +64,13 @@ export default class SwipePane extends React.Component{
         }
 
         const { socket } = this.state; 
-        socket.on('returnNewMetaData', function(newDatas){
+        socket.on('returnNewMetaData', (newDatas) => {
             console.log("new swipe metadata: ");
             console.log(newDatas)
             let { metaDatas } = this.state;
             this.setState({metaDatas: metaDatas.concat(newDatas)});
         });
-        socket.on('returnNewContentData', function(newDatas){
+        socket.on('returnNewContentData', (newDatas) => {
             console.log("new swipe contentdata: ");
             console.log(newDatas)
             let { contentDatas } = this.state;
@@ -123,34 +123,16 @@ export default class SwipePane extends React.Component{
     }
 
     render(){
-        /* -- Post data structure --  
-            Post: sequelize.define('post2', {
-                id: {
-                    type: Sequelize.STRING,
-                    primaryKey: true
-                },
-                time: {
-                    type: Sequelize.DATE
-                },
-                title: {
-                    type: Sequelize.STRING
-                },
-                url: {
-                    type: Sequelize.STRING
-                },
-                source: {
-                    type: Sequelize.STRING
-                },
-                tag: {
-                    type: Sequelize.STRING
-                }
-            }
-        */
-
         let { metaDatas, contentDatas, currentIndex } = this.state;
-        let mataData = metaDatas.pop();
-        let contentData = contentDatas.pop();
-        return(
+        
+        console.log("!!!!!!", metaDatas);
+        var mataData = null;
+        var contentData = null;
+        if( metaDatas.length >  0){
+            mataData = metaDatas.pop();
+            contentData = contentDatas.pop();
+        }
+        return  (
             <div className="pane" style={{height: "85%", top:'80px', margin: "0% 1% 0% 1%"}} >
                 <Card initiallyExpanded={true} style={{height: "100%"}} >
                     <CardHeader
