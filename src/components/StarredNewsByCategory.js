@@ -60,12 +60,12 @@ export default class StarredNewsByCategory extends React.Component{
         this.handleSwitchCategory(); 
                
         const { socket } = this.state;
-        socket.on('returnMetaDataByCategory', function(datas){
+        socket.on('returnMetaDataByCategory', (datas) => {
             console.log("StarredNewsByCategory(meta): ");
             console.log(datas)
             this.setState({metaDatas: datas});
         });
-        socket.on('returnContentDataByCategory', function(datas){
+        socket.on('returnContentDataByCategory', (datas) => {
             console.log("StarredNewsByCategory(content): ");
             console.log(datas)
             this.setState({contentDatas: datas});
@@ -87,9 +87,14 @@ export default class StarredNewsByCategory extends React.Component{
 
     handleSwitchCategory(){
         const { socket } = this.state; 
+        
         socket.emit('init', {
             user: window.user,
             location: 'viewByCategory',
+        });
+
+        socket.emit('getNewsByCategory', {
+            user: window.user,
             category: this.state.category
         });
     }
@@ -100,13 +105,20 @@ export default class StarredNewsByCategory extends React.Component{
             color: Colors.pink100
         }
 
-        return this.state.datas.map( data => 
+        let { metaDatas, contentDatas } = this.state;
+        var datas = [];
+        for( var i = 0; i < metaDatas.length; ++i){
+            let temp = { metaData: metaDatas[i], contentData: contentDatas[i]};
+            datas.push(temp);
+        }
+
+        return datas.map( data => 
             <GridTile
-              key={data.title}
-              title={data.title}
+              key={data.metaData.title}
+              title={data.metaData.title}
               titlePosition="bottom"
               titleBackground={'rgba(0, 0, 0, 0.3)'}
-              subtitle={<span>by <b>{data.title}</b></span>}
+              subtitle={<span>by <b>{data.metaData.title}</b></span>}
               actionIcon={<FontIcon
                         className="material-icons"
                         style={iconStyles}
@@ -117,22 +129,16 @@ export default class StarredNewsByCategory extends React.Component{
               >
                 <Card initiallyExpanded={true} style={{height: '100%'}}>
                     <CardHeader
-                      title="Without Avatar"
-                      subtitle="Subtitle"
+                      title={data.metaData.title}
+                      subtitle={data.metaData.source}
                       actAsExpander={true}
                       showExpandableButton={false} />
                     <CardText expandable={false}>
-                      Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                      Donec mattis pretium massa. Aliquam erat volutpat. Nulla facilisi.
-                      Donec vulputate interdum sollicitudin. Nunc lacinia auctor quam sed pellentesque.
-                      Aliquam dui mauris, mattis quis lacus id, pellentesque lobortis odio.
+                    {data.contentData.content}
                     </CardText>
-                    <CardText expandable={false}>
-                      Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                      Donec mattis pretium massa. Aliquam erat volutpat. Nulla facilisi.
-                      Donec vulputate interdum sollicitudin. Nunc lacinia auctor quam sed pellentesque.
-                      Aliquam dui mauris, mattis quis lacus id, pellentesque lobortis odio.
-                    </CardText>
+                    <CardActions expandable={false}>
+                        <FlatButton label="view source" linkButton={true} href={"http\:\/\/" + data.metaData.url} secondary={true}/>
+                    </CardActions>
                 </Card>
             </GridTile>
         );

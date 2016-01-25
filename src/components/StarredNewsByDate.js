@@ -45,6 +45,7 @@ export default class StarredNewsByDate extends React.Component{
     }
 
     componentDidMount(){
+
         console.log("componentDidMount: StarredNewsByDate");
         console.log("state: ", this.state);
         console.log("In viewByDate: ");
@@ -55,7 +56,12 @@ export default class StarredNewsByDate extends React.Component{
             let date =  window.location.pathname.substr("/starred-news/view-by-date/".length);
             if(date !== this.state.date){
                 console.log("url changed!");
-                this.setState({ date: date, isInSearchByDate: (date == 'searchbydate') ? true: false });
+                let newDate = new Date(2016, 0, 25, 0, 0, 0); 
+                let today = newDate.getFullYear() + 
+                        ((newDate.getMonth() + 1) < 10 ? '0' + 
+                        (newDate.getMonth() + 1) : (newDate.getMonth() + 1)) + 
+                        ((newDate.getDate() < 10) ? ('0' + newDate.getDate()) :  newDate.getDate());
+                this.setState({ date: date, isInSearchByDate: (date == today) ? false: true });
                 this.handleSwitchDate();
             }
         }, 100);
@@ -166,19 +172,16 @@ export default class StarredNewsByDate extends React.Component{
               >
                 <Card initiallyExpanded={true} style={{height: '100%'}}>
                     <CardHeader
-                      title="Without Avatar"
-                      subtitle="Subtitle"
+                      title={data.metaData.title}
+                      subtitle={data.metaData.source}
                       actAsExpander={true}
                       showExpandableButton={false} />
                     <CardText expandable={false}>
                         {data.contentData.content}
                     </CardText>
-                    <CardText expandable={false}>
-                      Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                      Donec mattis pretium massa. Aliquam erat volutpat. Nulla facilisi.
-                      Donec vulputate interdum sollicitudin. Nunc lacinia auctor quam sed pellentesque.
-                      Aliquam dui mauris, mattis quis lacus id, pellentesque lobortis odio.
-                    </CardText>
+                    <CardActions expandable={false}>
+                        <FlatButton label="view source" linkButton={true} href={"http\:\/\/" + data.metaData.url} secondary={true}/>
+                    </CardActions>
                 </Card>
             </GridTile>
         ));
@@ -215,7 +218,6 @@ export default class StarredNewsByDate extends React.Component{
         console.log("isInSearchByDate: ", isInSearchByDate);
         return(
             <div style={styles}>
-                { isInSearchByDate? this.renderDatePicker: null }
                 {isInSearchByDate? (<div>
                     <DatePicker
                       hintText="Search by Date"

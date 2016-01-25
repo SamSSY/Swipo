@@ -71,8 +71,9 @@ export default class Homepage extends React.Component{
             <div style={styles}>
                 <h1 style={titleStyle}>Swipo</h1>
                 <span style={descriptStyle}>Brand new world in a swipe.</span>
-                <RaisedButton containerElement={<Link to="/swipe" activeClassName="active" /> }
-                    linkButton={true} label="Swipo!" secondary={true} ></RaisedButton>
+                {isMobile ? (<RaisedButton containerElement={<Link to="/swipe" activeClassName="active" /> }
+                    linkButton={true} label="Swipo!" secondary={true} >
+                </RaisedButton>): null}
             </div>
         );
 	}
