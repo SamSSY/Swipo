@@ -1,3 +1,4 @@
+import CardTitle from 'material-ui/lib/card/card-title';
 import React from 'react';
 import { render } from 'react-dom';
 import Card from 'material-ui/lib/card/card';
@@ -32,7 +33,16 @@ export default class SwipePane extends React.Component{
         
         $( ".pane" ).hammer().on( "swiperight", swipeRightHandler );
         $( ".pane" ).hammer().on( "swipeleft", swipeLeftHandler );
-        $( ".pane" ).hammer().on( "tap", tapHandler );
+        $( ".pane" ).hammer().on( "tap",function(){
+             console.log("tapped!");
+            console.log($(".pane" ).css("left"));
+            $(this).animate({
+                right: '3000px'
+             }, 200, function(){
+                $(this).css("right", "0");
+             });
+            this.likeThePost();
+        });
 
         function swipeRightHandler( event ){       
             $(this).animate({
@@ -52,7 +62,7 @@ export default class SwipePane extends React.Component{
             this.likeThePost();
         }
 
-        function tapHandler(){
+       function tapHandler() {
             console.log("tapped!");
             console.log($(".pane" ).css("left"));
             $(this).animate({
@@ -61,7 +71,7 @@ export default class SwipePane extends React.Component{
                 $(this).css("right", "0");
              });
             this.likeThePost();
-        }
+        };
 
         const { socket } = this.state; 
         socket.on('returnNewMetaData', (newDatas) => {
@@ -124,12 +134,12 @@ export default class SwipePane extends React.Component{
 
     render(){
         let { metaDatas, contentDatas, currentIndex } = this.state;
-        
+
         console.log("!!!!!!", metaDatas);
-        var mataData = null;
+        var metaData = null;
         var contentData = null;
         if( metaDatas.length >  0){
-            mataData = metaDatas.pop();
+            metaData = metaDatas.pop();
             contentData = contentDatas.pop();
         }
         return  (
@@ -141,10 +151,10 @@ export default class SwipePane extends React.Component{
                       actAsExpander={true}
                       showExpandableButton={false} />
                     <CardText expandable={false}>
-                     {contentdata.content}                      
+                     {contentData.content}                      
                     </CardText>
-                    <CardMedia overlay={<CardTitle title={contentdata.images[0].description} subtitle="Subtitle"/>}>
-                        <img src={contentdata.images[0].url} />
+                    <CardMedia overlay={<CardTitle title={contentData.images[0].description} subtitle="Subtitle"/>}>
+                        <img src={contentData.images[0].url} />
                     </CardMedia>
                         <CardActions expandable={false}>
                             <FlatButton label="view source" linkButton={true} href={metaData.url} secondary={true}/>

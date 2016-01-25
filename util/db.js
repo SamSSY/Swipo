@@ -22,11 +22,30 @@ mongoose.connect('mongodb://davidhu34:123qweasd@ds060478.mongolab.com:60478/news
 var mongoPost = mongoose.model('Post');
 var mongoUser = mongoose.model('User');
 exports = module.exports = {};
+function swipedQuery (user) {
+	return new Promese function (resolve, reject) {
+		 mongoUser.findOne({
+			'id': user
+		}).then(function (data) {
+			resolve(data.swiped);
+		});
+	});
+};
+function swiped (user, fn) {
+	mongoUser.findOne({
+		'id': user
+	}).then(function (data) {
+		fn(data.swiped);
+	});
+}
 
-exports.get = function (user, fnsql) {
+exports.get = function (user, swiped, fnsql) {
 	return new Promise( function (resolve, reject) {
 		sqlzModels.Post.findAll(	{
 			where: {
+				id: {
+					notIn: swiped
+				},
 				time: {
 					$gt: new Date(2016,0,25) //- 7*24 * 60 * 60 * 1000
 				}

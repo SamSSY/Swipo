@@ -80,10 +80,10 @@ export default class DashBoard extends React.Component{
                     }
                 },
                 title: {
-                    text: 'Contents of Highsoft\'s weekly fruit delivery'
+                    text: 'Category chart '
                 },
                 subtitle: {
-                    text: '3D donut in Highcharts'
+                    text: 'what you liked recently!'
                 },
                 plotOptions: {
                     pie: {
@@ -94,15 +94,17 @@ export default class DashBoard extends React.Component{
                 series: [{
                     name: 'Delivered amount',
                     data: [
-                        ['Bananas', 8],
-                        ['Kiwi', 3],
-                        ['Mixed nuts', 1],
-                        ['Oranges', 6],
-                        ['Apples', 8],
-                        ['Pears', 4],
-                        ['Clementines', 4],
-                        ['Reddish (bag)', 1],
-                        ['Grapes (bunch)', 1]
+                        ['headline', 8],
+                        ['entertainment', 3],
+                        ['international', 1],
+                        ['sports', 6],
+                        ['finance', 8],
+                        ['supplement', 4],
+                        ['forum', 4],
+                        ['life', 1],
+                        ['china', 1],
+                        ['local', 1],
+                        ['society', 1]
                     ]
                 }]
             };
