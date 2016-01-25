@@ -174,4 +174,6 @@ export default class SwipePane extends React.Component{
                         </CardActions>
                     </Card>       
                 </div>
-                
+        );
+    }
+}
